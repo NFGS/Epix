@@ -123,3 +123,49 @@ export function ChevronDownIcon({ className }: IconProps) {
     </svg>
   );
 }
+
+export function HeartFilledIcon({ className }: IconProps) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      stroke="currentColor"
+      strokeWidth={STROKE_WIDTH}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M12 20.5 4.8 13.7a5 5 0 0 1 .2-7.3 4.7 4.7 0 0 1 6.6.4l.4.4.4-.4a4.7 4.7 0 0 1 6.6-.4 5 5 0 0 1 .2 7.3Z" />
+    </svg>
+  );
+}
+
+export function TrashIcon({ className }: IconProps) {
+  return (
+    <svg {...iconProps(className)}>
+      <path d="M4 7h16" />
+      <path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+      <path d="M6 7l1 13a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-13" />
+      <path d="M10 11v6M14 11v6" />
+    </svg>
+  );
+}
+
+export function RefreshIcon({ className }: IconProps) {
+  return (
+    <svg {...iconProps(className)}>
+      <path d="M20 11a8 8 0 1 0-2.3 5.7" />
+      <path d="M20 5v6h-6" />
+    </svg>
+  );
+}
+
+export function CloudOffIcon({ className }: IconProps) {
+  return (
+    <svg {...iconProps(className)}>
+      <path d="M7 17a4.5 4.5 0 0 1-.4-9A6 6 0 0 1 18 9.5a4 4 0 0 1 1.6 7.6" />
+      <path d="m4 4 16 16" />
+    </svg>
+  );
+}

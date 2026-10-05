@@ -21,6 +21,9 @@ export const es = {
     offline: 'Sin conexión — mostrando lo guardado',
     slowLoading: 'Está tardando más de lo normal…',
     tvmazeAttribution: 'Datos e imágenes de TVmaze',
+    cancel: 'Cancelar',
+    today: 'Hoy',
+    yesterday: 'Ayer',
   },
   screens: {
     home: {
@@ -64,6 +67,8 @@ export const es = {
       backToSearch: 'Volver a buscar',
       errorDescription:
         'No pudimos cargar el detalle de esta serie. Revisa tu conexión e inténtalo de nuevo.',
+      addFavorite: 'Añadir a favoritos',
+      removeFavorite: 'Quitar de favoritos',
     },
     schedule: {
       title: 'Agenda',
@@ -79,11 +84,23 @@ export const es = {
       title: 'Favoritos',
       emptyTitle: 'Todavía no tienes favoritos',
       emptyDescription: 'Guarda series para encontrarlas rápido, incluso sin conexión.',
+      emptyCta: 'Explorar series',
+      remove: 'Quitar de favoritos',
+      offlineNote: 'Disponible sin conexión',
     },
     history: {
       title: 'Historial',
       emptyTitle: 'Todavía no hay historial',
       emptyDescription: 'Las series que abras aparecerán aquí ordenadas por fecha y hora.',
+      viewsTitle: 'Vistos',
+      searchesTitle: 'Búsquedas',
+      clearAction: 'Vaciar historial',
+      confirmTitle: '¿Vaciar todo el historial?',
+      confirmDescription:
+        'Se borrarán las series vistas y las búsquedas de este dispositivo. Esta acción no se puede deshacer.',
+      confirmAction: 'Vaciar',
+      resultsOne: '{count} resultado',
+      resultsMany: '{count} resultados',
     },
     profile: {
       title: 'Perfil',
@@ -100,6 +117,17 @@ export const es = {
       notificationsHint: 'Recordatorios de nuevos episodios',
       telemetry: 'Telemetría',
       telemetryHint: 'Ayuda anónima para mejorar Epix',
+      dataSync: 'Datos y sincronización',
+      syncLocalOnly: 'Solo local',
+      syncOffline: 'Sin conexión',
+      syncSyncing: 'Sincronizando…',
+      syncIdle: 'Al día',
+      syncError: 'Error de sincronización',
+      syncNow: 'Sincronizar ahora',
+      lastSync: 'Última sincronización: {date}',
+      neverSynced: 'Aún no se ha sincronizado',
+      supabaseNote:
+        'Sin VITE_SUPABASE_URL y VITE_SUPABASE_ANON_KEY, Epix guarda todo en este dispositivo. Configúralas para sincronizar favoritos e historial entre dispositivos.',
     },
     notFound: {
       title: 'Página no encontrada',
@@ -133,6 +161,9 @@ export const en: Dictionary = {
     offline: 'Offline — showing what is saved',
     slowLoading: 'This is taking longer than usual…',
     tvmazeAttribution: 'Data and images from TVmaze',
+    cancel: 'Cancel',
+    today: 'Today',
+    yesterday: 'Yesterday',
   },
   screens: {
     home: {
@@ -175,6 +206,8 @@ export const en: Dictionary = {
       backToSearch: 'Back to search',
       errorDescription:
         "We couldn't load this show's detail. Check your connection and try again.",
+      addFavorite: 'Add to favorites',
+      removeFavorite: 'Remove from favorites',
     },
     schedule: {
       title: 'Schedule',
@@ -190,11 +223,23 @@ export const en: Dictionary = {
       title: 'Favorites',
       emptyTitle: 'No favorites yet',
       emptyDescription: 'Save shows to find them fast, even offline.',
+      emptyCta: 'Explore shows',
+      remove: 'Remove from favorites',
+      offlineNote: 'Available offline',
     },
     history: {
       title: 'History',
       emptyTitle: 'No history yet',
       emptyDescription: 'Shows you open will appear here, ordered by date and time.',
+      viewsTitle: 'Watched',
+      searchesTitle: 'Searches',
+      clearAction: 'Clear history',
+      confirmTitle: 'Clear all history?',
+      confirmDescription:
+        'Watched shows and searches will be removed from this device. This action cannot be undone.',
+      confirmAction: 'Clear',
+      resultsOne: '{count} result',
+      resultsMany: '{count} results',
     },
     profile: {
       title: 'Profile',
@@ -211,6 +256,17 @@ export const en: Dictionary = {
       notificationsHint: 'New episode reminders',
       telemetry: 'Telemetry',
       telemetryHint: 'Anonymous help to improve Epix',
+      dataSync: 'Data & sync',
+      syncLocalOnly: 'Local only',
+      syncOffline: 'Offline',
+      syncSyncing: 'Syncing…',
+      syncIdle: 'Up to date',
+      syncError: 'Sync error',
+      syncNow: 'Sync now',
+      lastSync: 'Last sync: {date}',
+      neverSynced: 'Not synced yet',
+      supabaseNote:
+        'Without VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY, Epix keeps everything on this device. Set them to sync favorites and history across devices.',
     },
     notFound: {
       title: 'Page not found',

@@ -1,5 +1,12 @@
-import type { Language } from '@/shared/i18n/dictionaries';
+import { useLiveQuery } from 'dexie-react-hooks';
+
+import type { SyncEngineState } from '@/infrastructure/sync/sync-engine';
+import { RefreshIcon } from '@/presentation/components/icons';
+import { useDependencies } from '@/presentation/hooks/dependencies-context';
+import { useSyncStatus } from '@/presentation/hooks/use-sync-status';
+import type { Dictionary, Language } from '@/shared/i18n/dictionaries';
 import { useI18n } from '@/shared/i18n/i18n-context';
+import { formatDateTime, formatTemplate } from '@/shared/lib/format';
 
 import type { ThemePreference } from '@/presentation/hooks/theme-context';
 import { useTheme } from '@/presentation/hooks/theme-context';
@@ -50,6 +57,82 @@ const languageOptions: ReadonlyArray<{ value: Language; label: string }> = [
 
 const demoGenres = ['Drama', 'Ciencia ficción', 'Comedia', 'Terror'] as const;
 const demoAgeRatings = ['TV-Y', 'TV-G', 'TV-PG', 'TV-14', 'TV-MA'] as const;
+
+const syncStatusStyles: Record<SyncEngineState, string> = {
+  'local-only': 'bg-surface-2 text-muted',
+  offline: 'bg-warning/12 text-warning',
+  syncing: 'bg-accent-soft text-accent-text',
+  idle: 'bg-success/12 text-success',
+  error: 'bg-danger/12 text-danger',
+};
+
+function syncStatusLabel(state: SyncEngineState, t: Dictionary): string {
+  switch (state) {
+    case 'local-only':
+      return t.screens.profile.syncLocalOnly;
+    case 'offline':
+      return t.screens.profile.syncOffline;
+    case 'syncing':
+      return t.screens.profile.syncSyncing;
+    case 'idle':
+      return t.screens.profile.syncIdle;
+    case 'error':
+      return t.screens.profile.syncError;
+  }
+}
+
+function SyncSection() {
+  const { t, language } = useI18n();
+  const { adapter, engine, syncMeta } = useDependencies();
+  const status = useSyncStatus();
+  const lastSyncAt = useLiveQuery(() => syncMeta.get('lastSyncAt'), [syncMeta], undefined);
+
+  const isSyncDisabled =
+    status.state === 'local-only' || status.state === 'offline' || status.state === 'syncing';
+
+  return (
+    <section className="space-y-3 rounded-xl border border-border bg-surface p-4">
+      <h2 className="text-sm font-semibold uppercase tracking-wide text-muted">
+        {t.screens.profile.dataSync}
+      </h2>
+
+      <div className="flex items-center justify-between gap-3">
+        <span
+          className={[
+            'inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-bold uppercase tracking-[1.4px]',
+            syncStatusStyles[status.state],
+          ].join(' ')}
+        >
+          {syncStatusLabel(status.state, t)}
+        </span>
+
+        <button
+          type="button"
+          disabled={isSyncDisabled}
+          onClick={() => {
+            void engine.syncNow();
+          }}
+          className="inline-flex min-h-11 items-center gap-2 rounded-full bg-accent px-4 text-xs font-bold uppercase tracking-[1.4px] text-white transition-colors duration-150 hover:bg-accent-hover disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          <RefreshIcon className="h-4 w-4" />
+          {t.screens.profile.syncNow}
+        </button>
+      </div>
+
+      <p className="text-sm text-muted">
+        {lastSyncAt !== undefined && lastSyncAt !== null
+          ? formatTemplate(t.screens.profile.lastSync, {
+              date: formatDateTime(lastSyncAt, language),
+            })
+          : t.screens.profile.neverSynced}
+      </p>
+
+      {adapter === null && (
+        <p className="text-xs leading-relaxed text-muted">{t.screens.profile.supabaseNote}</p>
+      )}
+    </section>
+  );
+}
 
 export function ProfileScreen() {
   const { t, language, setLanguage } = useI18n();
@@ -170,6 +253,8 @@ export function ProfileScreen() {
           comingSoonLabel={t.common.comingSoon}
         />
       </section>
+
+      <SyncSection />
     </div>
   );
 }

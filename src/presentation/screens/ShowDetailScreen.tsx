@@ -1,12 +1,17 @@
+import { useEffect, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
+import { recordView } from '@/application/use-cases/record-view';
 import type { Episode, Show } from '@/domain/entities/show';
 import { EmptyState } from '@/presentation/components/EmptyState';
 import { ErrorState } from '@/presentation/components/ErrorState';
-import { FilmIcon, StarIcon } from '@/presentation/components/icons';
+import { FilmIcon, HeartFilledIcon, HeartIcon, StarIcon } from '@/presentation/components/icons';
+import { useDependencies } from '@/presentation/hooks/dependencies-context';
 import { useShowDetail, useShowEpisodes } from '@/presentation/hooks/queries/use-show-detail';
 import { useSlowLoading } from '@/presentation/hooks/queries/use-slow-loading';
+import { useToggleFavorite } from '@/presentation/hooks/use-favorites';
 import type { Dictionary } from '@/shared/i18n/dictionaries';
+import { currentTimezone, nowIso, randomId } from '@/shared/lib/clock';
 import { formatTemplate } from '@/shared/lib/format';
 import { groupEpisodesBySeason } from '@/shared/lib/episodes';
 import { useI18n } from '@/shared/i18n/i18n-context';
@@ -117,6 +122,49 @@ function ShowHero({ show }: { show: Show }) {
   );
 }
 
+function FavoriteButton({ show }: { show: Show }) {
+  const { t } = useI18n();
+  const { isFavorite, isPending, toggle } = useToggleFavorite(show);
+  const [popCount, setPopCount] = useState(0);
+
+  const handleClick = () => {
+    if (!isFavorite) {
+      setPopCount((count) => count + 1);
+    }
+    void toggle();
+  };
+
+  return (
+    <button
+      type="button"
+      aria-pressed={isFavorite}
+      aria-label={isFavorite ? t.screens.detail.removeFavorite : t.screens.detail.addFavorite}
+      aria-busy={isPending}
+      disabled={isPending}
+      onClick={handleClick}
+      className="flex h-11 w-11 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-md transition-colors duration-150 hover:bg-black/65 disabled:opacity-70"
+    >
+      {isPending ? (
+        <span
+          aria-hidden="true"
+          className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent"
+        />
+      ) : isFavorite ? (
+        <HeartFilledIcon
+          key={popCount}
+          className={
+            popCount > 0
+              ? 'h-5 w-5 animate-[epix-heart-pop_200ms_cubic-bezier(0.2,0,0,1)]'
+              : 'h-5 w-5'
+          }
+        />
+      ) : (
+        <HeartIcon className="h-5 w-5" />
+      )}
+    </button>
+  );
+}
+
 function DetailSkeleton() {
   return (
     <div className="space-y-5" aria-hidden="true">
@@ -177,6 +225,7 @@ function EpisodeList({ episodes }: { episodes: Episode[] }) {
 export function ShowDetailScreen() {
   const { id } = useParams<{ id: string }>();
   const { t } = useI18n();
+  const deps = useDependencies();
   const showId = Number(id);
   const isValidId = Number.isInteger(showId) && showId > 0;
 
@@ -188,6 +237,25 @@ export function ShowDetailScreen() {
     isValidId && episodesQuery.isPending && episodesQuery.isFetching;
 
   const show = showQuery.data ?? null;
+  const recordedShowIds = useRef<Set<number>>(new Set());
+
+  useEffect(() => {
+    if (show === null || recordedShowIds.current.has(show.id)) {
+      return;
+    }
+
+    recordedShowIds.current.add(show.id);
+    void recordView(
+      {
+        history: deps.history,
+        outbox: deps.outbox,
+        now: nowIso,
+        uuid: randomId,
+        timezone: currentTimezone,
+      },
+      { showId: show.id, showName: show.name },
+    );
+  }, [deps, show]);
 
   if (!isValidId || (!isShowLoading && !showQuery.isError && show === null)) {
     return (
@@ -226,7 +294,12 @@ export function ShowDetailScreen() {
 
   return (
     <div className="space-y-5">
-      <ShowHero show={show} />
+      <div className="relative">
+        <ShowHero show={show} />
+        <div className="absolute right-3 top-3 z-10">
+          <FavoriteButton show={show} />
+        </div>
+      </div>
 
       {show.summary !== undefined && (
         <p className="text-base leading-relaxed text-fg">{show.summary}</p>
