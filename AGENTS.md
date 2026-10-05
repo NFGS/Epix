@@ -50,6 +50,8 @@ puertos de `domain`. El dominio no conoce React, fetch ni IndexedDB.
   jamás `service_role` en el cliente. Datos de telemetría = mínimo necesario + consentimiento.
 - **Accesibilidad**: WCAG 2.2 AA, touch targets ≥ 44 px, contraste, ARIA en navegación.
 - **Rendimiento**: medir antes de optimizar; presupuesto bundle inicial < 250 KB gzip.
+- **Repo limpio**: nunca versionar `Memory/` (material de clase) ni archivos/directorios de
+  OpenCode (`.opencode/`, `opencode.json`); ya están protegidos en `.gitignore`.
 
 ## 🌐 Reglas de uso de TVmaze
 
