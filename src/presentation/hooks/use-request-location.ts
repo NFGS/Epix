@@ -1,16 +1,6 @@
 import { useCallback, useRef, useState } from 'react';
 
-import { resolveCountry, type ResolvedCountry } from '@/application/use-cases/resolve-country';
-import {
-  createGeolocationClient,
-  GeoError,
-  type GeoErrorCode,
-} from '@/infrastructure/geo/geolocation';
-import {
-  createReverseGeocoder,
-  ReverseGeocodeError,
-  type ReverseGeocodeErrorCode,
-} from '@/infrastructure/geo/reverse-geocode';
+import { locationErrorCode, type LocationErrorCode } from '@/application/ports/location';
 import type { Dictionary } from '@/shared/i18n/dictionaries';
 import { useI18n } from '@/shared/i18n/i18n-context';
 
@@ -18,12 +8,7 @@ import { useDependencies } from './dependencies-context';
 import { useUpdatePreferences } from './use-preferences';
 
 export type LocationRequestStatus = 'idle' | 'requesting' | 'success' | 'error';
-export type LocationErrorCode = GeoErrorCode | ReverseGeocodeErrorCode | 'unknown';
-
-export interface UseRequestLocationOptions {
-  /** Inyecta el flujo completo (GPS + geocodificación) en pruebas. */
-  resolveCountryFn?: () => Promise<ResolvedCountry>;
-}
+export type { LocationErrorCode };
 
 export interface UseRequestLocationResult {
   status: LocationRequestStatus;
@@ -34,21 +19,6 @@ export interface UseRequestLocationResult {
   message: string | null;
   requestLocation: () => void;
   reset: () => void;
-}
-
-function defaultResolveCountry(): Promise<ResolvedCountry> {
-  return resolveCountry({
-    getPosition: createGeolocationClient().getPosition,
-    reverseGeocode: createReverseGeocoder(),
-  });
-}
-
-function toLocationErrorCode(error: unknown): LocationErrorCode {
-  if (error instanceof GeoError || error instanceof ReverseGeocodeError) {
-    return error.code;
-  }
-
-  return 'unknown';
 }
 
 function errorMessage(code: LocationErrorCode, t: Dictionary): string {
@@ -75,18 +45,18 @@ function errorMessage(code: LocationErrorCode, t: Dictionary): string {
  * Solicita la ubicación solo cuando el usuario lo pide explícitamente y, al
  * resolver el país, lo guarda como preferencia con `countrySource: 'gps'`.
  * Nunca dispara el permiso al montar: eso evita el bloqueo automático (CA-09.2).
+ *
+ * La resolución GPS + geocodificación se inyecta por `DependenciesContext`
+ * (R-03): el hook no conoce los clientes concretos de infraestructura.
  */
-export function useRequestLocation(
-  options: UseRequestLocationOptions = {},
-): UseRequestLocationResult {
+export function useRequestLocation(): UseRequestLocationResult {
   const { t } = useI18n();
-  const { telemetry } = useDependencies();
+  const { telemetry, resolveCountry } = useDependencies();
   const updatePreferences = useUpdatePreferences();
   const [status, setStatus] = useState<LocationRequestStatus>('idle');
   const [errorCode, setErrorCode] = useState<LocationErrorCode | null>(null);
   const [detectedCountry, setDetectedCountry] = useState<string | null>(null);
   const requestInFlight = useRef(false);
-  const resolveCountryFn = options.resolveCountryFn ?? defaultResolveCountry;
 
   const requestLocation = useCallback(() => {
     if (requestInFlight.current) {
@@ -97,7 +67,7 @@ export function useRequestLocation(
     setStatus('requesting');
     setErrorCode(null);
 
-    void resolveCountryFn()
+    void resolveCountry()
       .then(async ({ country }) => {
         setDetectedCountry(country);
         await updatePreferences({ country, countrySource: 'gps' });
@@ -105,13 +75,13 @@ export function useRequestLocation(
         void telemetry.track('gps_used', { country });
       })
       .catch((error: unknown) => {
-        setErrorCode(toLocationErrorCode(error));
+        setErrorCode(locationErrorCode(error));
         setStatus('error');
       })
       .finally(() => {
         requestInFlight.current = false;
       });
-  }, [resolveCountryFn, updatePreferences, telemetry]);
+  }, [resolveCountry, updatePreferences, telemetry]);
 
   const reset = useCallback(() => {
     setStatus('idle');

@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -96,6 +96,18 @@ describe('ProfileScreen · preferencias de contenido', () => {
       const record = await dependencies.db.preferences.get('app');
       expect(record?.maxAgeRating).toBe('TV-PG');
       expect(record?.favoriteGenres).toEqual(['Horror']);
+    });
+  });
+
+  it('aplica dos taps rápidos de género sin perder el primero (R-08)', async () => {
+    const dependencies = renderProfile();
+
+    fireEvent.click(await screen.findByRole('button', { name: 'Drama' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Comedy' }));
+
+    await waitFor(async () => {
+      const record = await dependencies.db.preferences.get('app');
+      expect(record?.favoriteGenres).toEqual(expect.arrayContaining(['Drama', 'Comedy']));
     });
   });
 });

@@ -68,4 +68,29 @@ describe('mergeFavorites (last-write-wins)', () => {
 
     expect(merged[0].deletedAt).toBe(T2);
   });
+
+  it('ante timestamps iguales gana el remoto de forma determinista (R-05)', () => {
+    const merged = mergeFavorites(
+      [localFavorite({ name: 'Local', syncStatus: 'pending', updatedAt: T1 })],
+      [remoteFavorite({ updatedAt: T1 })],
+    );
+
+    expect(merged[0]).toMatchObject({ name: 'Remota', syncStatus: 'synced' });
+  });
+
+  it('con updatedAt igual, el tombstone remoto gana al local vivo (R-05)', () => {
+    const merged = mergeFavorites(
+      [localFavorite({ updatedAt: T1 })],
+      [remoteFavorite({ updatedAt: T1, deletedAt: T1 })],
+    );
+
+    expect(merged[0].deletedAt).toBe(T1);
+  });
+
+  it('con updatedAt igual, un tombstone local más reciente se conserva (R-05)', () => {
+    const localTombstone = localFavorite({ updatedAt: T1, deletedAt: T2, syncStatus: 'pending' });
+    const merged = mergeFavorites([localTombstone], [remoteFavorite({ updatedAt: T1 })]);
+
+    expect(merged[0]).toMatchObject({ syncStatus: 'pending', deletedAt: T2 });
+  });
 });

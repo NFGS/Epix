@@ -1,6 +1,8 @@
 import { createContext, useContext } from 'react';
 
+import type { ResolveCountryFn } from '@/application/ports/location';
 import type { SyncAdapter } from '@/application/ports/sync-adapter';
+import type { SyncEngine } from '@/application/ports/sync-engine';
 import type { FavoritesRepository } from '@/domain/ports/favorites-repository';
 import type { HistoryRepository } from '@/domain/ports/history-repository';
 import type { NotificationsPort } from '@/domain/ports/notifications';
@@ -9,9 +11,9 @@ import type { OutboxRepository } from '@/domain/ports/outbox-repository';
 import type { SyncMetaRepository } from '@/domain/ports/sync-meta-repository';
 import type { TelemetryPort } from '@/domain/ports/telemetry';
 import type { UsageEventsRepository } from '@/domain/ports/usage-events-repository';
+// composición (solo wiring): la base Dexie se expone para pruebas y borrado.
 import type { EpixDatabase } from '@/infrastructure/local/db';
 import type { PreferencesRepositoryHandle } from '@/infrastructure/local/preferences.repository';
-import type { SyncEngine } from '@/infrastructure/sync/sync-engine';
 
 /** Composición de dependencias inyectadas por la app (offline-first + sync). */
 export interface Dependencies {
@@ -27,6 +29,8 @@ export interface Dependencies {
   telemetry: TelemetryPort;
   adapter: SyncAdapter | null;
   engine: SyncEngine;
+  /** Resolución de país por GPS (composición en `providers.tsx`, R-03). */
+  resolveCountry: ResolveCountryFn;
 }
 
 export const DependenciesContext = createContext<Dependencies | null>(null);

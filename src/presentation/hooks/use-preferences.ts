@@ -1,7 +1,8 @@
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useCallback } from 'react';
 
-import type { PreferencesPatch, UserPreferences } from '@/domain/entities/preferences';
+import type { UserPreferences } from '@/domain/entities/preferences';
+import type { PreferencesRepository } from '@/domain/ports/preferences-repository';
 
 import { useDependencies } from './dependencies-context';
 
@@ -11,9 +12,12 @@ export function usePreferences(): UserPreferences | undefined {
   return useLiveQuery(() => preferences.get(), [preferences], undefined);
 }
 
-/** Guarda cambios parciales de preferencias; `updatedAt` lo sella el repositorio. */
-export function useUpdatePreferences(): (patch: PreferencesPatch) => Promise<UserPreferences> {
+/** Guarda cambios parciales (o funcionales) de preferencias; `updatedAt` lo sella el repositorio. */
+export function useUpdatePreferences(): PreferencesRepository['update'] {
   const { preferences } = useDependencies();
 
-  return useCallback((patch: PreferencesPatch) => preferences.update(patch), [preferences]);
+  return useCallback(
+    (patch: Parameters<PreferencesRepository['update']>[0]) => preferences.update(patch),
+    [preferences],
+  );
 }

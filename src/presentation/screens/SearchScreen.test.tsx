@@ -12,8 +12,11 @@ import { createTestDependencies, type TestDependencies } from '@/test/test-depen
 
 import { SearchScreen } from './SearchScreen';
 
-function createRepositories(searchResults: Awaited<ReturnType<ShowRepository['search']>>) {
-  const search = vi.fn(async () => searchResults);
+function createRepositories(
+  searchResults: Awaited<ReturnType<ShowRepository['search']>>,
+  searchImpl?: ShowRepository['search'],
+) {
+  const search = vi.fn(searchImpl ?? (async () => searchResults));
   const shows: ShowRepository = {
     search,
     getById: vi.fn(async () => null),
@@ -103,6 +106,29 @@ describe('SearchScreen', () => {
       type: 'search',
       query: 'girls',
       resultCount: 1,
+    });
+  });
+
+  it('muestra ErrorState y «Reintentar» dispara refetch hasta recuperarse (R-07)', async () => {
+    const search = vi
+      .fn<ShowRepository['search']>()
+      .mockRejectedValueOnce(new Error('sin red'))
+      .mockResolvedValue([{ id: 1, name: 'Girls', genres: ['Drama'], year: 2012, rating: 7.2 }]);
+    const { repositories } = createRepositories([], search);
+    renderSearch(repositories, createTestDependencies());
+
+    fireEvent.change(screen.getByRole('searchbox'), { target: { value: 'girls' } });
+
+    expect(await screen.findByRole('alert')).toBeInTheDocument();
+    expect(
+      screen.getByText('No pudimos consultar TVmaze. Revisa tu conexión e inténtalo de nuevo.'),
+    ).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Reintentar' }));
+
+    expect(await screen.findByRole('link', { name: /girls/i })).toBeInTheDocument();
+    await waitFor(() => {
+      expect(search).toHaveBeenCalledTimes(2);
     });
   });
 });

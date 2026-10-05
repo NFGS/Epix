@@ -124,7 +124,7 @@ function ShowHero({ show }: { show: Show }) {
 
 function FavoriteButton({ show }: { show: Show }) {
   const { t } = useI18n();
-  const { isFavorite, isPending, toggle } = useToggleFavorite(show);
+  const { isFavorite, isPending, toggle, error } = useToggleFavorite(show);
   const [popCount, setPopCount] = useState(0);
 
   const handleClick = () => {
@@ -135,33 +135,44 @@ function FavoriteButton({ show }: { show: Show }) {
   };
 
   return (
-    <button
-      type="button"
-      aria-pressed={isFavorite}
-      aria-label={isFavorite ? t.screens.detail.removeFavorite : t.screens.detail.addFavorite}
-      aria-busy={isPending}
-      disabled={isPending}
-      onClick={handleClick}
-      className="flex h-11 w-11 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-md transition-colors duration-150 hover:bg-black/65 disabled:opacity-70"
-    >
-      {isPending ? (
-        <span
-          aria-hidden="true"
-          className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent"
-        />
-      ) : isFavorite ? (
-        <HeartFilledIcon
-          key={popCount}
-          className={
-            popCount > 0
-              ? 'h-5 w-5 animate-[epix-heart-pop_200ms_cubic-bezier(0.2,0,0,1)]'
-              : 'h-5 w-5'
-          }
-        />
-      ) : (
-        <HeartIcon className="h-5 w-5" />
+    <div className="flex flex-col items-end gap-1">
+      <button
+        type="button"
+        aria-pressed={isFavorite}
+        aria-label={isFavorite ? t.screens.detail.removeFavorite : t.screens.detail.addFavorite}
+        aria-busy={isPending}
+        disabled={isPending}
+        onClick={handleClick}
+        className="flex h-11 w-11 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-md transition-colors duration-150 hover:bg-black/65 disabled:opacity-70"
+      >
+        {isPending ? (
+          <span
+            aria-hidden="true"
+            className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent"
+          />
+        ) : isFavorite ? (
+          <HeartFilledIcon
+            key={popCount}
+            className={
+              popCount > 0
+                ? 'h-5 w-5 animate-[epix-heart-pop_200ms_cubic-bezier(0.2,0,0,1)]'
+                : 'h-5 w-5'
+            }
+          />
+        ) : (
+          <HeartIcon className="h-5 w-5" />
+        )}
+      </button>
+
+      {error && (
+        <p
+          role="status"
+          className="rounded-full bg-danger/90 px-2.5 py-1 text-[11px] font-medium text-white"
+        >
+          {t.screens.detail.favoriteError}
+        </p>
       )}
-    </button>
+    </div>
   );
 }
 

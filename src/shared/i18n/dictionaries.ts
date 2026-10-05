@@ -108,6 +108,7 @@ export const es = {
         'No pudimos cargar el detalle de esta serie. Revisa tu conexión e inténtalo de nuevo.',
       addFavorite: 'Añadir a favoritos',
       removeFavorite: 'Quitar de favoritos',
+      favoriteError: 'No pudimos actualizar tus favoritos.',
     },
     schedule: {
       title: 'Agenda',
@@ -126,6 +127,7 @@ export const es = {
       emptyCta: 'Explorar series',
       remove: 'Quitar de favoritos',
       offlineNote: 'Disponible sin conexión',
+      toggleError: 'No pudimos actualizar tus favoritos.',
     },
     history: {
       title: 'Historial',
@@ -138,6 +140,8 @@ export const es = {
       confirmDescription:
         'Se borrarán las series vistas y las búsquedas de este dispositivo. Esta acción no se puede deshacer.',
       confirmAction: 'Vaciar',
+      cleared: 'Tu historial se vació correctamente.',
+      clearError: 'No pudimos vaciar el historial. Inténtalo de nuevo.',
       resultsOne: '{count} resultado',
       resultsMany: '{count} resultados',
     },
@@ -364,6 +368,7 @@ export const en: Dictionary = {
       errorDescription: "We couldn't load this show's detail. Check your connection and try again.",
       addFavorite: 'Add to favorites',
       removeFavorite: 'Remove from favorites',
+      favoriteError: "We couldn't update your favorites.",
     },
     schedule: {
       title: 'Schedule',
@@ -382,6 +387,7 @@ export const en: Dictionary = {
       emptyCta: 'Explore shows',
       remove: 'Remove from favorites',
       offlineNote: 'Available offline',
+      toggleError: "We couldn't update your favorites.",
     },
     history: {
       title: 'History',
@@ -394,6 +400,8 @@ export const en: Dictionary = {
       confirmDescription:
         'Watched shows and searches will be removed from this device. This action cannot be undone.',
       confirmAction: 'Clear',
+      cleared: 'Your history was cleared successfully.',
+      clearError: "We couldn't clear your history. Try again.",
       resultsOne: '{count} result',
       resultsMany: '{count} results',
     },

@@ -1,4 +1,5 @@
 import { useLiveQuery } from 'dexie-react-hooks';
+import { useMemo } from 'react';
 
 import type { HistoryEntry, SearchHistoryEntry } from '@/domain/entities/history-entry';
 
@@ -15,9 +16,10 @@ export function useHistory(): HistoryData {
 
   const entries = useLiveQuery(() => history.list(), [history], undefined);
   const searches = useLiveQuery(() => history.listSearches(), [history], undefined);
+  const views = useMemo(
+    () => entries?.filter((entry) => entry.type === 'view'),
+    [entries],
+  );
 
-  return {
-    views: entries?.filter((entry) => entry.type === 'view'),
-    searches,
-  };
+  return { views, searches };
 }

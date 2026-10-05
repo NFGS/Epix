@@ -1,14 +1,14 @@
-import { useLiveQuery } from 'dexie-react-hooks';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { TVMAZE_GENRES } from '@/domain/content-rating';
 import { DEFAULT_PREFERENCES, type AgeRating } from '@/domain/entities/preferences';
 import type { NotificationPermissionState } from '@/domain/ports/notifications';
-import type { SyncEngineState } from '@/infrastructure/sync/sync-engine';
+import type { SyncEngineState } from '@/application/ports/sync-engine';
 import { AgeRatingSelector } from '@/presentation/components/AgeRatingSelector';
 import { GenreChips } from '@/presentation/components/GenreChips';
 import { Spinner } from '@/presentation/components/Spinner';
+import { Switch } from '@/presentation/components/Switch';
 import { ActivityIcon, BellIcon, LocationIcon, RefreshIcon } from '@/presentation/components/icons';
 import { useDependencies } from '@/presentation/hooks/dependencies-context';
 import {
@@ -18,6 +18,7 @@ import {
 import { usePreferences, useUpdatePreferences } from '@/presentation/hooks/use-preferences';
 import { useRequestLocation } from '@/presentation/hooks/use-request-location';
 import { useScheduleCountry } from '@/presentation/hooks/use-schedule-country';
+import { useSyncMeta } from '@/presentation/hooks/use-sync-meta';
 import { useSyncStatus } from '@/presentation/hooks/use-sync-status';
 import type { Dictionary, Language } from '@/shared/i18n/dictionaries';
 import { useI18n } from '@/shared/i18n/i18n-context';
@@ -53,30 +54,13 @@ function TelemetrySection({
           <h2 className="text-sm font-semibold uppercase tracking-wide text-muted">{label}</h2>
         </div>
 
-        <button
-          type="button"
-          role="switch"
-          aria-checked={enabled}
-          aria-label={label}
-          onClick={() => {
-            void updatePreferences({ telemetryEnabled: !enabled });
+        <Switch
+          checked={enabled}
+          onCheckedChange={(next) => {
+            void updatePreferences({ telemetryEnabled: next });
           }}
-          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-        >
-          <span
-            className={[
-              'relative h-6 w-11 rounded-full transition-colors duration-150',
-              enabled ? 'bg-accent' : 'bg-surface-2',
-            ].join(' ')}
-          >
-            <span
-              className={[
-                'absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow-sm transition-transform duration-150',
-                enabled ? 'translate-x-5' : '',
-              ].join(' ')}
-            />
-          </span>
-        </button>
+          label={label}
+        />
       </div>
 
       <p className="text-xs leading-relaxed text-muted">{consent}</p>
@@ -133,9 +117,9 @@ function syncStatusLabel(state: SyncEngineState, t: Dictionary): string {
 
 function SyncSection() {
   const { t, language } = useI18n();
-  const { adapter, engine, syncMeta } = useDependencies();
+  const { adapter, engine } = useDependencies();
   const status = useSyncStatus();
-  const lastSyncAt = useLiveQuery(() => syncMeta.get('lastSyncAt'), [syncMeta], undefined);
+  const lastSyncAt = useSyncMeta('lastSyncAt');
 
   const isSyncDisabled =
     status.state === 'local-only' || status.state === 'offline' || status.state === 'syncing';
@@ -194,12 +178,14 @@ function ContentPreferencesSection() {
   const maxAgeRating = preferences?.maxAgeRating ?? DEFAULT_PREFERENCES.maxAgeRating;
 
   const handleToggleGenre = (genre: string) => {
-    const nextGenres = selectedGenres.includes(genre)
-      ? selectedGenres.filter((selected) => selected !== genre)
-      : [...selectedGenres, genre];
-
-    void updatePreferences({ favoriteGenres: nextGenres });
-    void telemetry.track('filter_change', { field: 'genres', value: nextGenres });
+    // Actualizador funcional dentro de la transacción: dos taps rápidos no se pisan (R-08).
+    void updatePreferences((current) => ({
+      favoriteGenres: current.favoriteGenres.includes(genre)
+        ? current.favoriteGenres.filter((selected) => selected !== genre)
+        : [...current.favoriteGenres, genre],
+    })).then((next) => {
+      void telemetry.track('filter_change', { field: 'genres', value: next.favoriteGenres });
+    });
   };
 
   const handleAgeChange = (rating: AgeRating) => {
@@ -392,28 +378,11 @@ function NotificationsSection() {
           <p className="text-xs text-muted">{t.screens.profile.notificationsHint}</p>
         </div>
 
-        <button
-          type="button"
-          role="switch"
-          aria-checked={enabled}
-          aria-label={t.screens.profile.notifications}
-          onClick={() => void handleToggle()}
-          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-        >
-          <span
-            className={[
-              'relative h-6 w-11 rounded-full transition-colors duration-150',
-              enabled ? 'bg-accent' : 'bg-surface-2',
-            ].join(' ')}
-          >
-            <span
-              className={[
-                'absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow-sm transition-transform duration-150',
-                enabled ? 'translate-x-5' : '',
-              ].join(' ')}
-            />
-          </span>
-        </button>
+        <Switch
+          checked={enabled}
+          onCheckedChange={() => void handleToggle()}
+          label={t.screens.profile.notifications}
+        />
       </div>
 
       {message !== null && (

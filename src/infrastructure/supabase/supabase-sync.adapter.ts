@@ -1,4 +1,5 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
+import { z } from 'zod';
 
 import type {
   RemoteFavorite,
@@ -20,13 +21,22 @@ interface FavoriteRow {
   deleted_at: string | null;
 }
 
-interface FavoritePullRow {
-  show_id: number;
-  snapshot: FavoriteSnapshot | null;
-  added_at: string;
-  updated_at: string;
-  deleted_at: string | null;
-}
+const favoriteSnapshotSchema = z.object({
+  name: z.string(),
+  genres: z.array(z.string()),
+  imageMedium: z.string().nullish(),
+  premiered: z.number().nullish(),
+  rating: z.number().nullish(),
+});
+
+/** Valida cada fila del pull antes de tocarla: una fila corrupta se omite (R-04). */
+export const favoritePullRowSchema = z.object({
+  show_id: z.number().int(),
+  snapshot: favoriteSnapshotSchema,
+  added_at: z.string().min(1),
+  updated_at: z.string().min(1),
+  deleted_at: z.string().nullable().optional(),
+});
 
 interface FavoriteDeleteRow {
   show_id: number;
@@ -65,6 +75,11 @@ function assertNoError(error: AuthErrorLike | PostgrestErrorLike | null, context
  */
 export function createSupabaseSyncAdapter(client: SupabaseClient): SyncAdapter {
   let userId: string | null = null;
+
+  // R-14: si la sesión cambia (logout, refresh, otra pestaña), el caché se invalida.
+  client.auth.onAuthStateChange((_event, session) => {
+    userId = session?.user.id ?? null;
+  });
 
   async function getUserId(): Promise<string> {
     if (userId !== null) {
@@ -106,14 +121,38 @@ export function createSupabaseSyncAdapter(client: SupabaseClient): SyncAdapter {
 
       assertNoError(error, 'No se pudieron leer los favoritos remotos');
 
-      const rows = (data ?? []) as unknown as FavoritePullRow[];
-      return rows.map((row) => ({
-        showId: row.show_id,
-        snapshot: row.snapshot ?? { name: '', genres: [] },
-        addedAt: row.added_at,
-        updatedAt: row.updated_at,
-        deletedAt: row.deleted_at ?? undefined,
-      }));
+      const rows: unknown[] = data ?? [];
+      const favorites: RemoteFavorite[] = [];
+
+      for (const row of rows) {
+        const parsed = favoritePullRowSchema.safeParse(row);
+
+        if (!parsed.success) {
+          console.warn(
+            'Epix: fila de favorito remoto omitida por datos inválidos.',
+            parsed.error.message,
+          );
+          continue;
+        }
+
+        const { show_id, snapshot, added_at, updated_at, deleted_at } = parsed.data;
+
+        favorites.push({
+          showId: show_id,
+          snapshot: {
+            name: snapshot.name,
+            genres: snapshot.genres,
+            imageMedium: snapshot.imageMedium ?? undefined,
+            premiered: snapshot.premiered ?? undefined,
+            rating: snapshot.rating ?? undefined,
+          },
+          addedAt: added_at,
+          updatedAt: updated_at,
+          deletedAt: deleted_at ?? undefined,
+        });
+      }
+
+      return favorites;
     },
 
     async upsertFavorites(favorites: RemoteFavorite[]): Promise<void> {

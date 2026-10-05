@@ -24,5 +24,38 @@ export default tseslint.config(
       '@typescript-eslint/consistent-type-imports': 'error',
     },
   },
+  {
+    // Guard de capas (R-17): dominio y aplicación no conocen framework,
+    // presentación ni adaptadores concretos. Los tests pueden usar dobles.
+    files: ['src/domain/**/*.{ts,tsx}', 'src/application/**/*.{ts,tsx}'],
+    ignores: ['**/*.test.ts', '**/*.test.tsx'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: [
+                'react',
+                'react-dom',
+                'react-router-dom',
+                'react/*',
+                'react-dom/*',
+                'react-router-dom/*',
+                'dexie',
+                'dexie/*',
+                'dexie-react-hooks',
+                '@supabase/*',
+                '@/presentation/*',
+                '@/infrastructure/*',
+              ],
+              message:
+                'Las capas domain/application no pueden depender de framework, presentación ni infraestructura (Clean Architecture).',
+            },
+          ],
+        },
+      ],
+    },
+  },
   prettierConfig,
 );

@@ -4,6 +4,9 @@ import type { UsageEvent } from '@/domain/entities/usage-event';
 
 export type OutboxStatus = 'pending' | 'sent' | 'failed';
 
+/** Entidades cuyas operaciones se encolan para sincronizar. */
+export type OutboxEntity = 'favorite' | 'history' | 'telemetry';
+
 interface OutboxBase {
   id?: number;
   opId: string;
@@ -81,4 +84,10 @@ export interface OutboxRepository {
   listPending(): Promise<OutboxOperation[]>;
   markSent(id: number): Promise<void>;
   markFailed(id: number): Promise<void>;
+  /**
+   * Elimina todas las operaciones de una entidad (pendientes, enviadas y
+   * fallidas). Se usa al borrar datos locales para no resucitarlos con el
+   * push remoto (R-01).
+   */
+  purgeByEntity(entity: OutboxEntity): Promise<void>;
 }

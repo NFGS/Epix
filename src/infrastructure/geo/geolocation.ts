@@ -7,7 +7,10 @@
  * cada error sin tocar el navegador.
  */
 
-export type GeoErrorCode = 'denied' | 'unavailable' | 'timeout' | 'unsupported';
+import type { GeolocationErrorCode } from '@/application/ports/location';
+
+/** Códigos de error de geolocalización (contrato del puerto de ubicación). */
+export type GeoErrorCode = GeolocationErrorCode;
 
 const GEO_ERROR_MESSAGES: Record<GeoErrorCode, string> = {
   denied: 'El usuario denegó el permiso de ubicación.',

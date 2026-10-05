@@ -8,7 +8,9 @@
  * agenda reutiliza el país guardado (no se repite la llamada).
  */
 
-export type ReverseGeocodeErrorCode = 'network' | 'timeout' | 'http' | 'invalid-response';
+import type { ReverseGeocodeErrorCode } from '@/application/ports/location';
+
+export type { ReverseGeocodeErrorCode } from '@/application/ports/location';
 
 const REVERSE_GEOCODE_MESSAGES: Record<ReverseGeocodeErrorCode, string> = {
   network: 'No se pudo conectar con Nominatim.',

@@ -36,4 +36,20 @@ describe('useToggleFavorite · telemetría', () => {
     });
     expect(track).toHaveBeenCalledWith('favorite_remove', { showId: 7 });
   });
+
+  it('expone el fallo sin dejar un rechazo sin manejar (R-09)', async () => {
+    const dependencies = createTestDependencies();
+    vi.spyOn(dependencies.favorites, 'add').mockRejectedValue(new Error('cuota excedida'));
+    const { result } = renderHook(() => useToggleFavorite(SHOW), {
+      wrapper: createWrapper(dependencies),
+    });
+
+    await act(async () => {
+      await result.current.toggle();
+    });
+
+    expect(result.current.error).toBe(true);
+    expect(result.current.isPending).toBe(false);
+    expect(result.current.isFavorite).toBe(false);
+  });
 });

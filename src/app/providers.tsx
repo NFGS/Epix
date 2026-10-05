@@ -1,6 +1,9 @@
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { BrowserRouter } from 'react-router-dom';
 
+import { resolveCountry as resolveCountryUseCase } from '@/application/use-cases/resolve-country';
+import { createGeolocationClient } from '@/infrastructure/geo/geolocation';
+import { createReverseGeocoder } from '@/infrastructure/geo/reverse-geocode';
 import { createFavoritesRepository } from '@/infrastructure/local/favorites.repository';
 import { createEpixDatabase } from '@/infrastructure/local/db';
 import { createHistoryRepository } from '@/infrastructure/local/history.repository';
@@ -57,6 +60,12 @@ function createDependencies(): Dependencies {
     },
   });
 
+  const resolveCountry = () =>
+    resolveCountryUseCase({
+      getPosition: createGeolocationClient().getPosition,
+      reverseGeocode: createReverseGeocoder(),
+    });
+
   return {
     db,
     favorites,
@@ -70,6 +79,7 @@ function createDependencies(): Dependencies {
     telemetry,
     adapter,
     engine,
+    resolveCountry,
   };
 }
 

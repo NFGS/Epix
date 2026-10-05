@@ -18,9 +18,29 @@ export function favoriteFromRemote(remote: RemoteFavorite): FavoriteShow {
 }
 
 /**
+ * ¿Gana el remoto? Last-write-wins por `updatedAt` con desempate determinista
+ * (R-05): a igualdad de `updatedAt` compara `deletedAt` (el tombstone más
+ * reciente gana) y, si todo empata, gana el remoto.
+ */
+function remoteWins(local: FavoriteShow, remote: RemoteFavorite): boolean {
+  if (remote.updatedAt !== local.updatedAt) {
+    return remote.updatedAt > local.updatedAt;
+  }
+
+  const localDeletedAt = local.deletedAt ?? '';
+  const remoteDeletedAt = remote.deletedAt ?? '';
+
+  if (remoteDeletedAt !== localDeletedAt) {
+    return remoteDeletedAt > localDeletedAt;
+  }
+
+  return true;
+}
+
+/**
  * Fusiona favoritos locales y remotos con last-write-wins por `updatedAt`.
  * Los elementos solo locales se conservan (aún pueden estar pendientes de push);
- * los remotos ganan únicamente si son estrictamente más recientes.
+ * los remotos ganan si son más recientes o si empatan (determinista).
  */
 export function mergeFavorites(
   local: readonly FavoriteShow[],
@@ -35,7 +55,7 @@ export function mergeFavorites(
   for (const remoteFavorite of remote) {
     const localFavorite = merged.get(remoteFavorite.showId);
 
-    if (localFavorite === undefined || remoteFavorite.updatedAt > localFavorite.updatedAt) {
+    if (localFavorite === undefined || remoteWins(localFavorite, remoteFavorite)) {
       merged.set(remoteFavorite.showId, favoriteFromRemote(remoteFavorite));
     }
   }

@@ -24,28 +24,39 @@ function toShow(favorite: FavoriteShow): Show {
 
 function RemoveFavoriteButton({ show }: { show: Show }) {
   const { t } = useI18n();
-  const { isPending, toggle } = useToggleFavorite(show);
+  const { isPending, toggle, error } = useToggleFavorite(show);
 
   return (
-    <button
-      type="button"
-      aria-label={t.screens.favorites.remove}
-      aria-busy={isPending}
-      disabled={isPending}
-      onClick={() => {
-        void toggle();
-      }}
-      className="flex h-11 w-11 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-md transition-transform duration-150 ease-standard hover:bg-black/65 active:scale-95 disabled:opacity-70"
-    >
-      {isPending ? (
-        <span
-          aria-hidden="true"
-          className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent"
-        />
-      ) : (
-        <HeartFilledIcon className="h-5 w-5" />
+    <div className="flex flex-col items-end gap-1">
+      <button
+        type="button"
+        aria-label={t.screens.favorites.remove}
+        aria-busy={isPending}
+        disabled={isPending}
+        onClick={() => {
+          void toggle();
+        }}
+        className="flex h-11 w-11 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-md transition-transform duration-150 ease-standard hover:bg-black/65 active:scale-95 disabled:opacity-70"
+      >
+        {isPending ? (
+          <span
+            aria-hidden="true"
+            className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent"
+          />
+        ) : (
+          <HeartFilledIcon className="h-5 w-5" />
+        )}
+      </button>
+
+      {error && (
+        <p
+          role="status"
+          className="max-w-32 rounded-full bg-danger/90 px-2.5 py-1 text-[11px] font-medium text-white"
+        >
+          {t.screens.favorites.toggleError}
+        </p>
       )}
-    </button>
+    </div>
   );
 }
 

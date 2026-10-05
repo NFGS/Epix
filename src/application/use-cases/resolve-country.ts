@@ -6,6 +6,10 @@
  * se propagan tal cual para que la presentación los traduzca.
  */
 
+import type { ResolvedCountry } from '@/application/ports/location';
+
+export type { ResolvedCountry } from '@/application/ports/location';
+
 export interface ResolveCountryCoordinates {
   readonly latitude: number;
   readonly longitude: number;
@@ -14,11 +18,6 @@ export interface ResolveCountryCoordinates {
 export interface ResolveCountryDependencies {
   getPosition: () => Promise<ResolveCountryCoordinates>;
   reverseGeocode: (position: ResolveCountryCoordinates) => Promise<string>;
-}
-
-export interface ResolvedCountry {
-  readonly country: string;
-  readonly source: 'gps';
 }
 
 export async function resolveCountry(

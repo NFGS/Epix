@@ -1,6 +1,8 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import { isInternalUrl } from '@/shared/lib/is-internal-url';
+
 interface NavigateMessage {
   type: 'navigate';
   url: string;
@@ -17,7 +19,7 @@ function isNavigateMessage(data: unknown): data is NavigateMessage {
   }
 
   const { type, url } = data as { type?: unknown; url?: unknown };
-  return type === 'navigate' && typeof url === 'string' && url.startsWith('/');
+  return type === 'navigate' && typeof url === 'string' && isInternalUrl(url);
 }
 
 /**

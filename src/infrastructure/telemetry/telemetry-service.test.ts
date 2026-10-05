@@ -42,6 +42,9 @@ function createOutbox(sink: NewOutboxOperation[]): OutboxRepository {
     async markFailed() {
       // no-op
     },
+    async purgeByEntity() {
+      // no-op
+    },
   };
 }
 
@@ -112,9 +115,10 @@ describe('telemetry service (RF-11)', () => {
     ]);
   });
 
-  it('enriquece el evento con fecha, zona horaria, versión y país', async () => {
+  it('adjunta el país solo al evento gps_used (INFO-02)', async () => {
     const { service, added } = createHarness({ telemetryEnabled: true, country: 'CO' });
 
+    await service.track('gps_used');
     await service.track('session_start');
 
     expect(added[0]).toMatchObject({
@@ -125,12 +129,14 @@ describe('telemetry service (RF-11)', () => {
       country: 'CO',
     });
     expect(added[0]?.payload).toBeUndefined();
+    expect(added[1]).toMatchObject({ eventType: 'session_start' });
+    expect(added[1]?.country).toBeUndefined();
   });
 
   it('omite el país cuando la preferencia es nula', async () => {
     const { service, added } = createHarness({ telemetryEnabled: true, country: null });
 
-    await service.track('session_start');
+    await service.track('gps_used');
 
     expect(added[0]?.country).toBeUndefined();
   });

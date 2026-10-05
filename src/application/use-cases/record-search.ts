@@ -15,6 +15,9 @@ export interface RecordSearchInput {
   resultCount: number;
 }
 
+/** Tope de la consulta persistida/sincronizada (INFO-01). */
+export const MAX_HISTORY_QUERY_LENGTH = 120;
+
 /** Registra una búsqueda con su número de resultados y la encola para sincronizar. */
 export async function recordSearch(deps: RecordSearchDeps, input: RecordSearchInput): Promise<void> {
   const occurredAt = deps.now();
@@ -22,7 +25,7 @@ export async function recordSearch(deps: RecordSearchDeps, input: RecordSearchIn
 
   const entry: HistoryEntry = {
     type: 'search',
-    query: input.query,
+    query: input.query.slice(0, MAX_HISTORY_QUERY_LENGTH),
     resultCount: input.resultCount,
     occurredAt,
     timezone: deps.timezone(),

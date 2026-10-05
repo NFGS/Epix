@@ -11,6 +11,8 @@ import {
 import { NavigationRoute, registerRoute } from 'workbox-routing';
 import { CacheFirst, NetworkFirst } from 'workbox-strategies';
 
+import { isInternalUrl } from './shared/lib/is-internal-url';
+
 declare let self: ServiceWorkerGlobalScope & {
   __WB_MANIFEST: Array<PrecacheEntry | string>;
 };
@@ -66,16 +68,17 @@ function notificationUrl(data: unknown): string | null {
 }
 
 async function focusOrOpen(url: string): Promise<void> {
+  const safeUrl = isInternalUrl(url) ? url : '/';
   const windowClients = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
   const existing = windowClients.find((client): client is WindowClient => 'focus' in client);
 
   if (existing !== undefined) {
     await existing.focus();
-    existing.postMessage({ type: 'navigate', url });
+    existing.postMessage({ type: 'navigate', url: safeUrl });
     return;
   }
 
-  await self.clients.openWindow(url);
+  await self.clients.openWindow(safeUrl);
 }
 
 self.addEventListener('notificationclick', (event) => {

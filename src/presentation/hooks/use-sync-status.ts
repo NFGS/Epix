@@ -1,6 +1,6 @@
 import { useSyncExternalStore } from 'react';
 
-import type { SyncEngineStatus } from '@/infrastructure/sync/sync-engine';
+import type { SyncEngineStatus } from '@/application/ports/sync-engine';
 
 import { useDependencies } from './dependencies-context';
 

@@ -1,6 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import type { FavoriteShow } from '@/domain/entities/favorite';
+import type { HistoryEntry } from '@/domain/entities/history-entry';
+import type { UsageEvent } from '@/domain/entities/usage-event';
 
 import { createEpixDatabase, type EpixDatabase } from './db';
 import { createFavoritesRepository } from './favorites.repository';
@@ -140,6 +142,57 @@ describe('repositorios locales (Dexie)', () => {
 
     const pending = await outbox.listPending();
     expect(pending.map((operation) => operation.operation)).toEqual(['upsert', 'delete']);
+  });
+
+  it('purga por entidad las operaciones pendientes y enviadas (R-01)', async () => {
+    const outbox = createOutboxRepository(db);
+    const historyEntry: HistoryEntry = {
+      type: 'view',
+      showId: 1,
+      showName: 'Girls',
+      occurredAt: T1,
+      syncStatus: 'pending',
+    };
+    const usageEvent: UsageEvent = {
+      id: 'event-1',
+      eventType: 'session_start',
+      occurredAt: T1,
+      timezone: 'America/Bogota',
+      appVersion: '0.1.0',
+    };
+
+    const sent = await outbox.enqueue({
+      entity: 'history',
+      operation: 'push',
+      entityId: 'op-1',
+      payload: historyEntry,
+      createdAt: T1,
+    });
+    await outbox.enqueue({
+      entity: 'history',
+      operation: 'clear',
+      entityId: null,
+      payload: null,
+      createdAt: T2,
+    });
+    await outbox.enqueue({
+      entity: 'telemetry',
+      operation: 'push',
+      entityId: usageEvent.id,
+      payload: usageEvent,
+      createdAt: T2,
+    });
+
+    if (sent.id === undefined) {
+      throw new Error('La operación debía tener id.');
+    }
+    await outbox.markSent(sent.id);
+
+    await outbox.purgeByEntity('history');
+
+    const remaining = await db.outbox.toArray();
+    expect(remaining).toHaveLength(1);
+    expect(remaining[0]?.entity).toBe('telemetry');
   });
 
   it('incrementa intentos al fallar y termina en failed tras el máximo', async () => {

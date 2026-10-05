@@ -18,6 +18,7 @@ export function HistoryScreen() {
   const deps = useDependencies();
   const { views, searches } = useHistory();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [clearStatus, setClearStatus] = useState<'idle' | 'cleared' | 'error'>('idle');
 
   const isLoading = views === undefined || searches === undefined;
   const hasHistory = (views?.length ?? 0) + (searches?.length ?? 0) > 0;
@@ -25,12 +26,22 @@ export function HistoryScreen() {
 
   const handleConfirmClear = () => {
     setIsDialogOpen(false);
+    setClearStatus('idle');
+
     void clearHistory({
       history: deps.history,
       outbox: deps.outbox,
+      hasRemote: deps.adapter !== null,
       now: nowIso,
       uuid: randomId,
-    });
+    })
+      .then(() => {
+        setClearStatus('cleared');
+      })
+      .catch(() => {
+        // R-09: el fallo se muestra en pantalla; nunca queda sin manejar.
+        setClearStatus('error');
+      });
   };
 
   return (
@@ -53,6 +64,16 @@ export function HistoryScreen() {
           </button>
         )}
       </div>
+
+      {clearStatus !== 'idle' && (
+        <p
+          role="status"
+          aria-live="polite"
+          className={['text-xs', clearStatus === 'cleared' ? 'text-success' : 'text-danger'].join(' ')}
+        >
+          {clearStatus === 'cleared' ? t.screens.history.cleared : t.screens.history.clearError}
+        </p>
+      )}
 
       {isLoading ? (
         <div className="space-y-3" aria-hidden="true">

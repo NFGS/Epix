@@ -61,6 +61,7 @@ function createFakeRepositories() {
     listPending: async () => [],
     markSent: async () => undefined,
     markFailed: async () => undefined,
+    purgeByEntity: async () => undefined,
   };
 
   return { favorites, outbox, enqueued, store };

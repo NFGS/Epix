@@ -27,11 +27,12 @@ export function useIsFavorite(showId: number | null): boolean {
   return isFavorite ?? false;
 }
 
-/** Alterna el favorito con estado de carga para el botón (check + outbox). */
+/** Alterna el favorito con estado de carga y error para el botón (check + outbox). */
 export function useToggleFavorite(show: Show | null) {
   const deps = useDependencies();
   const isFavorite = useIsFavorite(show?.id ?? null);
   const [isPending, setIsPending] = useState(false);
+  const [error, setError] = useState(false);
 
   const toggle = useCallback(async () => {
     if (show === null) {
@@ -39,6 +40,7 @@ export function useToggleFavorite(show: Show | null) {
     }
 
     setIsPending(true);
+    setError(false);
     try {
       const isNowFavorite = await toggleFavorite(
         {
@@ -52,10 +54,13 @@ export function useToggleFavorite(show: Show | null) {
       void deps.telemetry.track(isNowFavorite ? 'favorite_add' : 'favorite_remove', {
         showId: show.id,
       });
+    } catch {
+      // R-09: el fallo se refleja en la UI; nunca queda un rechazo sin manejar.
+      setError(true);
     } finally {
       setIsPending(false);
     }
   }, [deps, show]);
 
-  return { isFavorite, isPending, toggle };
+  return { isFavorite, isPending, toggle, error };
 }

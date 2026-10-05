@@ -19,6 +19,7 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
+      injectRegister: 'script-defer',
       includeAssets: ['favicon.svg', 'icons/*.png'],
       manifest: {
         name: 'Epix — Series y TV',

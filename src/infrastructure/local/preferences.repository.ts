@@ -3,7 +3,10 @@ import {
   type PreferencesPatch,
   type UserPreferences,
 } from '@/domain/entities/preferences';
-import type { PreferencesRepository } from '@/domain/ports/preferences-repository';
+import type {
+  PreferencesPatchUpdater,
+  PreferencesRepository,
+} from '@/domain/ports/preferences-repository';
 import { isScheduleCountryCode } from '@/shared/lib/locale';
 
 import type { EpixDatabase, PreferenceRecord } from './db';
@@ -105,13 +108,14 @@ export function createPreferencesRepository(
       return toPreferences(existing ?? createSeedRecord());
     },
 
-    async update(patch: PreferencesPatch): Promise<UserPreferences> {
+    async update(patch: PreferencesPatch | PreferencesPatchUpdater): Promise<UserPreferences> {
       // Transacción de lectura-escritura: taps rápidos se serializan sin perder cambios.
       return db.transaction('rw', db.preferences, async () => {
         const current = (await db.preferences.get(PREFERENCES_KEY)) ?? createSeedRecord();
+        const resolved = typeof patch === 'function' ? patch(toPreferences(current)) : patch;
         const next: PreferenceRecord = {
           ...current,
-          ...patch,
+          ...resolved,
           updatedAt: now(),
           syncStatus: 'pending',
         };

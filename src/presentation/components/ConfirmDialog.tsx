@@ -10,9 +10,13 @@ interface ConfirmDialogProps {
   onCancel: () => void;
 }
 
+const FOCUSABLE_SELECTOR =
+  'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
 /**
  * Diálogo de confirmación accesible: role dialog, aria-modal, cierre con Esc,
- * foco inicial en «Cancelar» y entrada de 200 ms (DESIGN §6).
+ * foco inicial en «Cancelar», focus trap con Tab (R-06), restauración del foco
+ * al cerrar y entrada de 200 ms (DESIGN §6).
  */
 export function ConfirmDialog({
   open,
@@ -25,6 +29,7 @@ export function ConfirmDialog({
 }: ConfirmDialogProps) {
   const titleId = useId();
   const descriptionId = useId();
+  const dialogRef = useRef<HTMLDivElement>(null);
   const cancelRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
@@ -32,17 +37,59 @@ export function ConfirmDialog({
       return;
     }
 
+    // R-06: recuerda quién tenía el foco para devolvérselo al cerrar.
+    const previouslyFocused =
+      document.activeElement instanceof HTMLElement ? document.activeElement : null;
     cancelRef.current?.focus();
+
+    const focusableElements = (): HTMLElement[] => {
+      const root = dialogRef.current;
+      if (root === null) {
+        return [];
+      }
+
+      return [...root.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)];
+    };
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         onCancel();
+        return;
+      }
+
+      if (event.key !== 'Tab') {
+        return;
+      }
+
+      const elements = focusableElements();
+      const first = elements[0];
+      const last = elements[elements.length - 1];
+
+      if (first === undefined || last === undefined) {
+        return;
+      }
+
+      const active = document.activeElement;
+      const isInside = active instanceof HTMLElement && dialogRef.current?.contains(active) === true;
+
+      if (event.shiftKey) {
+        if (!isInside || active === first) {
+          event.preventDefault();
+          last.focus();
+        }
+        return;
+      }
+
+      if (!isInside || active === last) {
+        event.preventDefault();
+        first.focus();
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
+      previouslyFocused?.focus();
     };
   }, [open, onCancel]);
 
@@ -55,10 +102,11 @@ export function ConfirmDialog({
       <div
         aria-hidden="true"
         onClick={onCancel}
-        className="absolute inset-0 bg-black/60 animate-[epix-fade-in_200ms_cubic-bezier(0.2,0,0,1)]"
+        className="absolute inset-0 bg-scrim animate-[epix-fade-in_200ms_cubic-bezier(0.2,0,0,1)]"
       />
 
       <div
+        ref={dialogRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}

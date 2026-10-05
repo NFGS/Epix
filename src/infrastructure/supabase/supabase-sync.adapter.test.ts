@@ -1,5 +1,5 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import { createSupabaseSyncAdapter } from './supabase-sync.adapter';
 
@@ -15,19 +15,41 @@ interface PostgrestErrorLike {
   message: string;
 }
 
-function createFakeClient(error: PostgrestErrorLike | null = null) {
+interface FakeSession {
+  user: { id: string };
+}
+
+type AuthChangeHandler = (event: string, session: FakeSession | null) => void;
+
+function createFakeClient(
+  error: PostgrestErrorLike | null = null,
+  pullRows: unknown[] = [],
+) {
   const calls: RecordedCall[] = [];
+  const authHandlers: AuthChangeHandler[] = [];
+  let session: FakeSession | null = { user: { id: 'user-1' } };
 
   const client = {
     auth: {
       getSession: async () => ({
-        data: { session: { user: { id: 'user-1' } } },
+        data: { session },
         error: null,
       }),
       signInAnonymously: async () => ({ data: { user: { id: 'user-1' } }, error: null }),
+      onAuthStateChange: (handler: AuthChangeHandler) => {
+        authHandlers.push(handler);
+        return { data: { subscription: { unsubscribe: () => undefined } } };
+      },
     },
     from(table: string) {
+      const chain = {
+        eq: () => chain,
+        gt: () => chain,
+        order: async () => ({ data: pullRows, error }),
+      };
+
       return {
+        select: () => chain,
         upsert: (rows: unknown, options: unknown) => {
           calls.push({ table, method: 'upsert', args: [rows, options] });
           return Promise.resolve({ data: null, error });
@@ -42,7 +64,16 @@ function createFakeClient(error: PostgrestErrorLike | null = null) {
     },
   };
 
-  return { client: client as unknown as SupabaseClient, calls };
+  return {
+    client: client as unknown as SupabaseClient,
+    calls,
+    emitAuthChange(next: FakeSession | null) {
+      session = next;
+      for (const handler of authHandlers) {
+        handler('SIGNED_IN', next);
+      }
+    },
+  };
 }
 
 describe('supabase sync adapter · telemetría', () => {
@@ -129,5 +160,61 @@ describe('supabase sync adapter · telemetría', () => {
     await expect(
       adapter.pushEvents([{ id: 'event-3', eventType: 'session_start', occurredAt: T1 }]),
     ).rejects.toThrow('No se pudo subir la telemetría: permiso denegado');
+  });
+});
+
+describe('supabase sync adapter · favoritos', () => {
+  it('valida las filas del pull y omite las inválidas (R-04)', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+    const { client } = createFakeClient(null, [
+      {
+        show_id: 1,
+        snapshot: { name: 'Buena', genres: ['Drama'], rating: 8.1 },
+        added_at: T1,
+        updated_at: T1,
+        deleted_at: null,
+      },
+      { show_id: 'roto', snapshot: null, added_at: T1, updated_at: T1 },
+      {
+        show_id: 2,
+        snapshot: { name: 42, genres: 'no-es-array' },
+        added_at: T1,
+        updated_at: T1,
+      },
+    ]);
+    const adapter = createSupabaseSyncAdapter(client);
+
+    const favorites = await adapter.pullFavorites(T1);
+
+    expect(favorites).toEqual([
+      {
+        showId: 1,
+        snapshot: {
+          name: 'Buena',
+          genres: ['Drama'],
+          imageMedium: undefined,
+          premiered: undefined,
+          rating: 8.1,
+        },
+        addedAt: T1,
+        updatedAt: T1,
+        deletedAt: undefined,
+      },
+    ]);
+    expect(warn).toHaveBeenCalledTimes(2);
+    warn.mockRestore();
+  });
+
+  it('revalida el userId cacheado cuando cambia la sesión (R-14)', async () => {
+    const { client, emitAuthChange } = createFakeClient();
+    const adapter = createSupabaseSyncAdapter(client);
+
+    expect(await adapter.ensureSession()).toBe('user-1');
+
+    emitAuthChange({ user: { id: 'user-2' } });
+    expect(await adapter.ensureSession()).toBe('user-2');
+
+    emitAuthChange(null);
+    expect(await adapter.ensureSession()).toBe('user-1');
   });
 });

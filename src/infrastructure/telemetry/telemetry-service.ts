@@ -49,7 +49,9 @@ export function createTelemetryService(options: TelemetryServiceOptions): Teleme
 
         const occurredAt = now();
         const sanitized = sanitizePayload(payload);
-        const country = preferences.country;
+        // INFO-02: el país solo acompaña al evento que lo motivó (gps_used);
+        // el resto de eventos viaja sin ubicación.
+        const country = eventType === 'gps_used' ? preferences.country : null;
 
         const event: UsageEvent = {
           id: uuid(),

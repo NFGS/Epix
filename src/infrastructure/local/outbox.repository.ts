@@ -1,4 +1,9 @@
-import type { NewOutboxOperation, OutboxOperation, OutboxRepository } from '@/domain/ports/outbox-repository';
+import type {
+  NewOutboxOperation,
+  OutboxEntity,
+  OutboxOperation,
+  OutboxRepository,
+} from '@/domain/ports/outbox-repository';
 
 import type { EpixDatabase } from './db';
 
@@ -45,6 +50,10 @@ export function createOutboxRepository(
         lastAttemptAt: new Date().toISOString(),
         status: attempts >= MAX_OUTBOX_ATTEMPTS ? 'failed' : 'pending',
       });
+    },
+
+    async purgeByEntity(entity: OutboxEntity): Promise<void> {
+      await db.outbox.where('entity').equals(entity).delete();
     },
   };
 }

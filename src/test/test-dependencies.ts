@@ -1,3 +1,4 @@
+import type { ResolveCountryFn } from '@/application/ports/location';
 import { createEpixDatabase } from '@/infrastructure/local/db';
 import { createFavoritesRepository } from '@/infrastructure/local/favorites.repository';
 import { createHistoryRepository } from '@/infrastructure/local/history.repository';
@@ -46,6 +47,7 @@ export function createTestDependencies(overrides: Partial<Dependencies> = {}): T
       void telemetry.track(event, payload);
     },
   });
+  const resolveCountry: ResolveCountryFn = async () => ({ country: 'CO', source: 'gps' });
 
   return {
     db,
@@ -60,6 +62,7 @@ export function createTestDependencies(overrides: Partial<Dependencies> = {}): T
     telemetry,
     adapter,
     engine,
+    resolveCountry,
     ...overrides,
   };
 }

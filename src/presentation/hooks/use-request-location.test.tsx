@@ -2,14 +2,14 @@ import { act, renderHook, waitFor } from '@testing-library/react';
 import type { ReactNode } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 
-import type { ResolvedCountry } from '@/application/use-cases/resolve-country';
+import type { ResolveCountryFn } from '@/application/ports/location';
 import { GeoError } from '@/infrastructure/geo/geolocation';
 import { ReverseGeocodeError } from '@/infrastructure/geo/reverse-geocode';
 import { DependenciesContext } from '@/presentation/hooks/dependencies-context';
 import { I18nProvider } from '@/shared/i18n/I18nProvider';
 import { createTestDependencies, type TestDependencies } from '@/test/test-dependencies';
 
-import { useRequestLocation, type UseRequestLocationOptions } from './use-request-location';
+import { useRequestLocation } from './use-request-location';
 
 function createWrapper(dependencies: TestDependencies) {
   return function Wrapper({ children }: { children: ReactNode }) {
@@ -21,8 +21,8 @@ function createWrapper(dependencies: TestDependencies) {
   };
 }
 
-function renderRequestLocation(dependencies: TestDependencies, options: UseRequestLocationOptions) {
-  return renderHook(() => useRequestLocation(options), {
+function renderRequestLocation(dependencies: TestDependencies) {
+  return renderHook(() => useRequestLocation(), {
     wrapper: createWrapper(dependencies),
   });
 }
@@ -30,11 +30,8 @@ function renderRequestLocation(dependencies: TestDependencies, options: UseReque
 describe('useRequestLocation', () => {
   it('persiste el país con origen gps cuando la detección tiene éxito', async () => {
     const dependencies = createTestDependencies();
-    const resolveCountryFn = vi.fn(async (): Promise<ResolvedCountry> => ({
-      country: 'CO',
-      source: 'gps',
-    }));
-    const { result } = renderRequestLocation(dependencies, { resolveCountryFn });
+    const resolveCountry = vi.fn(async () => ({ country: 'CO', source: 'gps' as const }));
+    const { result } = renderRequestLocation({ ...dependencies, resolveCountry });
 
     act(() => {
       result.current.requestLocation();
@@ -50,14 +47,15 @@ describe('useRequestLocation', () => {
       const record = await dependencies.db.preferences.get('app');
       expect(record).toMatchObject({ country: 'CO', countrySource: 'gps' });
     });
+    expect(resolveCountry).toHaveBeenCalledTimes(1);
   });
 
   it('expone el mensaje de permiso denegado sin tocar las preferencias', async () => {
     const dependencies = createTestDependencies();
-    const resolveCountryFn = vi.fn(async () => {
+    const resolveCountry: ResolveCountryFn = async () => {
       throw new GeoError('denied');
-    });
-    const { result } = renderRequestLocation(dependencies, { resolveCountryFn });
+    };
+    const { result } = renderRequestLocation({ ...dependencies, resolveCountry });
 
     act(() => {
       result.current.requestLocation();
@@ -73,10 +71,10 @@ describe('useRequestLocation', () => {
 
   it('traduce el error de red de la geocodificación a un mensaje accionable', async () => {
     const dependencies = createTestDependencies();
-    const resolveCountryFn = vi.fn(async () => {
+    const resolveCountry: ResolveCountryFn = async () => {
       throw new ReverseGeocodeError('network');
-    });
-    const { result } = renderRequestLocation(dependencies, { resolveCountryFn });
+    };
+    const { result } = renderRequestLocation({ ...dependencies, resolveCountry });
 
     act(() => {
       result.current.requestLocation();
@@ -89,16 +87,33 @@ describe('useRequestLocation', () => {
     expect(result.current.message).toContain('Elige tu país manualmente en Agenda.');
   });
 
+  it('marca como desconocido un error sin código tipado', async () => {
+    const dependencies = createTestDependencies();
+    const resolveCountry: ResolveCountryFn = async () => {
+      throw new Error('algo raro');
+    };
+    const { result } = renderRequestLocation({ ...dependencies, resolveCountry });
+
+    act(() => {
+      result.current.requestLocation();
+    });
+
+    await waitFor(() => {
+      expect(result.current.status).toBe('error');
+    });
+    expect(result.current.errorCode).toBe('unknown');
+  });
+
   it('ignora una segunda solicitud mientras la primera sigue en curso', async () => {
     const dependencies = createTestDependencies();
-    let succeed: ((value: ResolvedCountry) => void) | null = null;
-    const resolveCountryFn = vi.fn(
+    let succeed: ((value: { country: string; source: 'gps' }) => void) | null = null;
+    const resolveCountry = vi.fn(
       () =>
-        new Promise<ResolvedCountry>((resolve) => {
+        new Promise<{ country: string; source: 'gps' }>((resolve) => {
           succeed = resolve;
         }),
     );
-    const { result } = renderRequestLocation(dependencies, { resolveCountryFn });
+    const { result } = renderRequestLocation({ ...dependencies, resolveCountry });
 
     act(() => {
       result.current.requestLocation();
@@ -106,7 +121,7 @@ describe('useRequestLocation', () => {
     });
 
     expect(result.current.status).toBe('requesting');
-    expect(resolveCountryFn).toHaveBeenCalledTimes(1);
+    expect(resolveCountry).toHaveBeenCalledTimes(1);
 
     await act(async () => {
       succeed?.({ country: 'CO', source: 'gps' });

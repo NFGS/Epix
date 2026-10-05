@@ -61,7 +61,8 @@ create table public.usage_events (
   occurred_at timestamptz not null,
   timezone   text,
   country    char(2),
-  coords     point,                       -- SOLO con consentimiento de ubicación + telemetría
+  coords     point,                       -- RESERVADA: el cliente nunca la escribe (INFO-03);
+                                          -- solo se usaría con consentimiento explícito de ubicación + telemetría
   app_version text,
   payload    jsonb
 );

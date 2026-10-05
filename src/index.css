@@ -14,6 +14,9 @@
 
   --ease-standard: cubic-bezier(0.2, 0, 0, 1);
   --default-transition-duration: 150ms;
+
+  /* Scrim único para overlays modales (R-10). */
+  --color-scrim: rgb(0 0 0 / 0.6);
 }
 
 :root {

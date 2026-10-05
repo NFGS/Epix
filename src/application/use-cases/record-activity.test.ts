@@ -4,12 +4,13 @@ import type { HistoryEntry } from '@/domain/entities/history-entry';
 import type { HistoryRepository } from '@/domain/ports/history-repository';
 import type {
   NewOutboxOperation,
+  OutboxEntity,
   OutboxOperation,
   OutboxRepository,
 } from '@/domain/ports/outbox-repository';
 
 import { clearHistory } from './clear-history';
-import { recordSearch } from './record-search';
+import { MAX_HISTORY_QUERY_LENGTH, recordSearch } from './record-search';
 import { recordView } from './record-view';
 
 const NOW = '2026-10-05T14:32:00.000Z';
@@ -39,6 +40,7 @@ function createFakeHistory() {
 
 function createFakeOutbox() {
   const enqueued: NewOutboxOperation[] = [];
+  const purged: OutboxEntity[] = [];
 
   const outbox: OutboxRepository = {
     enqueue: async (operation) => {
@@ -53,9 +55,12 @@ function createFakeOutbox() {
     listPending: async () => [],
     markSent: async () => undefined,
     markFailed: async () => undefined,
+    purgeByEntity: async (entity) => {
+      purged.push(entity);
+    },
   };
 
-  return { outbox, enqueued };
+  return { outbox, enqueued, purged };
 }
 
 const clockDeps = { now: () => NOW, uuid: () => 'uuid-1', timezone: () => TZ };
@@ -102,13 +107,31 @@ describe('casos de uso de actividad', () => {
     expect(enqueued[0]).toMatchObject({ entity: 'history', operation: 'push' });
   });
 
-  it('clearHistory vacía lo local y encola el borrado remoto', async () => {
-    const { history, cleared } = createFakeHistory();
-    const { outbox, enqueued } = createFakeOutbox();
+  it('recordSearch recorta la consulta a 120 caracteres antes de persistir (INFO-01)', async () => {
+    const { history, searches } = createFakeHistory();
+    const { outbox } = createFakeOutbox();
+    const longQuery = 'x'.repeat(MAX_HISTORY_QUERY_LENGTH + 40);
 
-    await clearHistory({ history, outbox, now: () => NOW, uuid: () => 'uuid-clear' });
+    await recordSearch({ history, outbox, ...clockDeps }, { query: longQuery, resultCount: 1 });
+
+    expect(searches[0]?.query).toBe('x'.repeat(MAX_HISTORY_QUERY_LENGTH));
+    expect(searches[0]?.query).toHaveLength(MAX_HISTORY_QUERY_LENGTH);
+  });
+
+  it('clearHistory purga el outbox de historial y encola el borrado remoto', async () => {
+    const { history, cleared } = createFakeHistory();
+    const { outbox, enqueued, purged } = createFakeOutbox();
+
+    await clearHistory({
+      history,
+      outbox,
+      hasRemote: true,
+      now: () => NOW,
+      uuid: () => 'uuid-clear',
+    });
 
     expect(cleared).toHaveLength(1);
+    expect(purged).toEqual(['history']);
     expect(enqueued[0]).toMatchObject({
       entity: 'history',
       operation: 'clear',
@@ -116,5 +139,21 @@ describe('casos de uso de actividad', () => {
       payload: null,
       opId: 'uuid-clear',
     });
+  });
+
+  it('clearHistory sin nube purga el outbox y no encola nada', async () => {
+    const { history } = createFakeHistory();
+    const { outbox, enqueued, purged } = createFakeOutbox();
+
+    await clearHistory({
+      history,
+      outbox,
+      hasRemote: false,
+      now: () => NOW,
+      uuid: () => 'uuid-clear',
+    });
+
+    expect(purged).toEqual(['history']);
+    expect(enqueued).toEqual([]);
   });
 });
