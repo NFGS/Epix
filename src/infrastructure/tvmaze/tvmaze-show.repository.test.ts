@@ -75,4 +75,43 @@ describe('TvmazeShowRepository', () => {
 
     await expect(repository.getById(1)).rejects.toThrow('boom');
   });
+
+  it('consulta el próximo episodio embebido y lo mapea', async () => {
+    const { client, get } = createClient();
+    get.mockResolvedValueOnce({
+      ...showDto,
+      _embedded: {
+        nextepisode: { id: 9, name: 'Finale', season: 3, number: 8, airdate: '2026-10-05' },
+      },
+    });
+
+    const repository = createTvmazeShowRepository(client);
+
+    await expect(repository.getNextEpisode(42)).resolves.toEqual({
+      id: 9,
+      name: 'Finale',
+      season: 3,
+      number: 8,
+      airdate: '2026-10-05',
+    });
+    expect(get).toHaveBeenCalledWith('/shows/42?embed=nextepisode', expect.anything());
+  });
+
+  it('devuelve null cuando la serie no tiene próximo episodio', async () => {
+    const { client, get } = createClient();
+    get.mockResolvedValueOnce({ ...showDto, _embedded: {} });
+
+    const repository = createTvmazeShowRepository(client);
+
+    await expect(repository.getNextEpisode(1)).resolves.toBeNull();
+  });
+
+  it('devuelve null si la serie no existe en TVmaze', async () => {
+    const { client, get } = createClient();
+    get.mockRejectedValueOnce(new TvmazeNotFoundError());
+
+    const repository = createTvmazeShowRepository(client);
+
+    await expect(repository.getNextEpisode(999)).resolves.toBeNull();
+  });
 });

@@ -5,6 +5,7 @@ import {
   tvmazeScheduleItemSchema,
   tvmazeSearchResponseSchema,
   tvmazeShowSchema,
+  tvmazeShowWithNextEpisodeSchema,
 } from './schemas';
 
 const baseShow = {
@@ -51,9 +52,9 @@ describe('schemas TVmaze', () => {
   });
 
   it('acepta episodios y agenda con show embebido y hora nullable', () => {
-    expect(tvmazeEpisodeSchema.safeParse({ id: 5, name: 'Pilot', season: 1, number: 1 }).success).toBe(
-      true,
-    );
+    expect(
+      tvmazeEpisodeSchema.safeParse({ id: 5, name: 'Pilot', season: 1, number: 1 }).success,
+    ).toBe(true);
 
     const parsed = tvmazeScheduleItemSchema.safeParse({
       id: 9,
@@ -66,5 +67,17 @@ describe('schemas TVmaze', () => {
     });
 
     expect(parsed.success).toBe(true);
+  });
+
+  it('acepta el show con próximo episodio embebido o sin él', () => {
+    const withNext = tvmazeShowWithNextEpisodeSchema.safeParse({
+      ...baseShow,
+      _embedded: { nextepisode: { id: 9, name: 'Finale', season: 3, number: 8 } },
+    });
+    const withoutNext = tvmazeShowWithNextEpisodeSchema.safeParse(baseShow);
+
+    expect(withNext.success).toBe(true);
+    expect(withNext.success && withNext.data._embedded?.nextepisode?.id).toBe(9);
+    expect(withoutNext.success).toBe(true);
   });
 });

@@ -18,6 +18,7 @@ function createRepositories(searchResults: Awaited<ReturnType<ShowRepository['se
     search,
     getById: vi.fn(async () => null),
     getEpisodes: vi.fn(async () => []),
+    getNextEpisode: vi.fn(async () => null),
   };
   const schedule: ScheduleRepository = {
     getByCountryAndDate: vi.fn(async () => []),

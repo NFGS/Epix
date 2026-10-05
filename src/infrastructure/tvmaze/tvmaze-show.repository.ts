@@ -3,7 +3,12 @@ import type { ShowRepository } from '@/domain/ports/show-repository';
 
 import { createTvmazeClient, TvmazeNotFoundError, type TvmazeClient } from './client';
 import { mapEpisode, mapShow } from './mappers';
-import { tvmazeEpisodeListSchema, tvmazeSearchResponseSchema, tvmazeShowSchema } from './schemas';
+import {
+  tvmazeEpisodeListSchema,
+  tvmazeSearchResponseSchema,
+  tvmazeShowSchema,
+  tvmazeShowWithNextEpisodeSchema,
+} from './schemas';
 
 export function createTvmazeShowRepository(
   client: TvmazeClient = createTvmazeClient(),
@@ -34,6 +39,23 @@ export function createTvmazeShowRepository(
     async getEpisodes(showId: number): Promise<Episode[]> {
       const dtos = await client.get(`/shows/${showId}/episodes`, tvmazeEpisodeListSchema);
       return dtos.map(mapEpisode);
+    },
+
+    async getNextEpisode(showId: number): Promise<Episode | null> {
+      try {
+        const dto = await client.get(
+          `/shows/${showId}?embed=nextepisode`,
+          tvmazeShowWithNextEpisodeSchema,
+        );
+        const next = dto._embedded?.nextepisode ?? null;
+        return next === null ? null : mapEpisode(next);
+      } catch (error) {
+        if (error instanceof TvmazeNotFoundError) {
+          return null;
+        }
+
+        throw error;
+      }
     },
   };
 }

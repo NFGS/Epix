@@ -170,6 +170,15 @@ export function LocationIcon({ className }: IconProps) {
   );
 }
 
+export function BellIcon({ className }: IconProps) {
+  return (
+    <svg {...iconProps(className)}>
+      <path d="M18 9a6 6 0 1 0-12 0c0 5-2 6-2 6h16s-2-1-2-6" />
+      <path d="M10.3 19a2 2 0 0 0 3.4 0" />
+    </svg>
+  );
+}
+
 export function CloudOffIcon({ className }: IconProps) {
   return (
     <svg {...iconProps(className)}>

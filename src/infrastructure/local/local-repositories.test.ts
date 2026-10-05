@@ -5,6 +5,7 @@ import type { FavoriteShow } from '@/domain/entities/favorite';
 import { createEpixDatabase, type EpixDatabase } from './db';
 import { createFavoritesRepository } from './favorites.repository';
 import { createHistoryRepository } from './history.repository';
+import { createNotifiedRepository } from './notified.repository';
 import { createOutboxRepository } from './outbox.repository';
 import { createSyncMetaRepository } from './sync-meta.repository';
 
@@ -168,6 +169,18 @@ describe('repositorios locales (Dexie)', () => {
 
     expect(await outbox.listPending()).toEqual([]);
     expect((await db.outbox.get(operation.id))?.status).toBe('failed');
+  });
+
+  it('registra y consulta recordatorios notificados por clave', async () => {
+    const notified = createNotifiedRepository(db);
+
+    expect(await notified.isNotified('1:5')).toBe(false);
+
+    await notified.markNotified({ key: '1:5', showId: 1, episodeId: 5, notifiedAt: T1 });
+
+    expect(await notified.isNotified('1:5')).toBe(true);
+    expect(await notified.isNotified('1:6')).toBe(false);
+    expect(await db.notified.get('1:5')).toMatchObject({ showId: 1, episodeId: 5 });
   });
 
   it('persiste cursores y usuario en syncMeta', async () => {

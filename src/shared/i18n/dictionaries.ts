@@ -25,6 +25,12 @@ export const es = {
     today: 'Hoy',
     yesterday: 'Ayer',
   },
+  notificationsContent: {
+    episodeTodayTitle: 'Nuevo episodio hoy',
+    episodeTodayBody: '{show} — {code}',
+    testTitle: 'Epix funciona: así se verán tus recordatorios',
+    testBody: 'Toca para abrir tus favoritos.',
+  },
   location: {
     section: 'Ubicación',
     currentCountry: 'País actual',
@@ -159,6 +165,25 @@ export const es = {
         'TVmaze no publica clasificación por edad: Epix la estima a partir de los géneros de cada serie y puede no coincidir con la oficial.',
       notifications: 'Notificaciones',
       notificationsHint: 'Recordatorios de nuevos episodios',
+      notificationsEnabledNote:
+        'Recibirás un aviso cuando una serie favorita estrene episodio ese mismo día.',
+      notificationsDenied:
+        'El navegador bloqueó las notificaciones. Actívalas en la configuración del sitio y recarga la página.',
+      notificationsDismissed:
+        'El permiso quedó pendiente. Vuelve a activar el interruptor para intentarlo de nuevo.',
+      notificationsUnsupported:
+        'Este navegador no soporta notificaciones locales. Instala Epix desde Chrome o Edge para usarlas.',
+      notificationsTest: 'Enviar notificación de prueba',
+      notificationsTestSent: 'Notificación de prueba enviada.',
+      notificationsTestError: 'No pudimos enviar la notificación. Revisa el permiso del navegador.',
+      notificationsCheck: 'Revisar nuevos episodios',
+      notificationsChecking: 'Revisando…',
+      notificationsCheckSent: 'Enviamos {count} recordatorio(s) de nuevos episodios.',
+      notificationsCheckEmpty: 'Sin novedades: ninguna favorita estrena episodio hoy.',
+      notificationsCheckDisabled: 'Activa las notificaciones para recibir recordatorios.',
+      notificationsCheckDenied: 'Sin permiso del navegador no podemos enviar recordatorios.',
+      notificationsCheckUnsupported: 'Este navegador no soporta notificaciones.',
+      notificationsCheckError: 'No pudimos revisar los episodios. Inténtalo de nuevo.',
       telemetry: 'Telemetría',
       telemetryHint: 'Ayuda anónima para mejorar Epix',
       dataSync: 'Datos y sincronización',
@@ -208,6 +233,12 @@ export const en: Dictionary = {
     cancel: 'Cancel',
     today: 'Today',
     yesterday: 'Yesterday',
+  },
+  notificationsContent: {
+    episodeTodayTitle: 'New episode today',
+    episodeTodayBody: '{show} — {code}',
+    testTitle: 'Epix works: this is how your reminders will look',
+    testBody: 'Tap to open your favorites.',
   },
   location: {
     section: 'Location',
@@ -341,6 +372,24 @@ export const en: Dictionary = {
         "TVmaze does not publish age ratings: Epix estimates them from each show's genres and they may not match the official rating.",
       notifications: 'Notifications',
       notificationsHint: 'New episode reminders',
+      notificationsEnabledNote:
+        "You'll get an alert when a favorite show airs an episode that same day.",
+      notificationsDenied:
+        'The browser blocked notifications. Enable them in the site settings and reload the page.',
+      notificationsDismissed: 'Permission is still pending. Toggle it again to retry.',
+      notificationsUnsupported:
+        'This browser does not support local notifications. Install Epix from Chrome or Edge to use them.',
+      notificationsTest: 'Send test notification',
+      notificationsTestSent: 'Test notification sent.',
+      notificationsTestError: "We couldn't send the notification. Check the browser permission.",
+      notificationsCheck: 'Check for new episodes',
+      notificationsChecking: 'Checking…',
+      notificationsCheckSent: 'We sent {count} new episode reminder(s).',
+      notificationsCheckEmpty: 'All quiet: no favorite show airs an episode today.',
+      notificationsCheckDisabled: 'Enable notifications to receive reminders.',
+      notificationsCheckDenied: "Without the browser's permission we cannot send reminders.",
+      notificationsCheckUnsupported: 'This browser does not support notifications.',
+      notificationsCheckError: "We couldn't check the episodes. Try again.",
       telemetry: 'Telemetry',
       telemetryHint: 'Anonymous help to improve Epix',
       dataSync: 'Data & sync',

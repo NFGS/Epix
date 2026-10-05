@@ -41,6 +41,16 @@ export const tvmazeEpisodeSchema = z.object({
   airdate: z.string().nullable().optional(),
 });
 
+/** `/shows/:id?embed=nextepisode`: show con el próximo episodio embebido (o nada). */
+export const tvmazeShowWithNextEpisodeSchema = tvmazeShowSchema.extend({
+  _embedded: z
+    .object({
+      nextepisode: tvmazeEpisodeSchema.nullable().optional(),
+    })
+    .nullable()
+    .optional(),
+});
+
 export const tvmazeScheduleItemSchema = z.object({
   id: z.number().int(),
   name: z.string(),
@@ -58,4 +68,5 @@ export const tvmazeScheduleResponseSchema = z.array(tvmazeScheduleItemSchema);
 export type TvmazeShowDto = z.infer<typeof tvmazeShowSchema>;
 export type TvmazeSearchResultDto = z.infer<typeof tvmazeSearchResultSchema>;
 export type TvmazeEpisodeDto = z.infer<typeof tvmazeEpisodeSchema>;
+export type TvmazeShowWithNextEpisodeDto = z.infer<typeof tvmazeShowWithNextEpisodeSchema>;
 export type TvmazeScheduleItemDto = z.infer<typeof tvmazeScheduleItemSchema>;

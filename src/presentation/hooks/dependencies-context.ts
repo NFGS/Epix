@@ -3,6 +3,8 @@ import { createContext, useContext } from 'react';
 import type { SyncAdapter } from '@/application/ports/sync-adapter';
 import type { FavoritesRepository } from '@/domain/ports/favorites-repository';
 import type { HistoryRepository } from '@/domain/ports/history-repository';
+import type { NotificationsPort } from '@/domain/ports/notifications';
+import type { NotifiedRepository } from '@/domain/ports/notified-repository';
 import type { OutboxRepository } from '@/domain/ports/outbox-repository';
 import type { SyncMetaRepository } from '@/domain/ports/sync-meta-repository';
 import type { EpixDatabase } from '@/infrastructure/local/db';
@@ -17,6 +19,8 @@ export interface Dependencies {
   outbox: OutboxRepository;
   preferences: PreferencesRepositoryHandle;
   syncMeta: SyncMetaRepository;
+  notified: NotifiedRepository;
+  notifications: NotificationsPort;
   adapter: SyncAdapter | null;
   engine: SyncEngine;
 }

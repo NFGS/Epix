@@ -1,9 +1,11 @@
 import { createEpixDatabase } from '@/infrastructure/local/db';
 import { createFavoritesRepository } from '@/infrastructure/local/favorites.repository';
 import { createHistoryRepository } from '@/infrastructure/local/history.repository';
+import { createNotifiedRepository } from '@/infrastructure/local/notified.repository';
 import { createOutboxRepository } from '@/infrastructure/local/outbox.repository';
 import { createPreferencesRepository } from '@/infrastructure/local/preferences.repository';
 import { createSyncMetaRepository } from '@/infrastructure/local/sync-meta.repository';
+import { createNotificationClient } from '@/infrastructure/notifications/notifications';
 import { createSyncEngine } from '@/infrastructure/sync/sync-engine';
 import type { Dependencies } from '@/presentation/hooks/dependencies-context';
 
@@ -20,6 +22,8 @@ export function createTestDependencies(overrides: Partial<Dependencies> = {}): T
   const outbox = createOutboxRepository(db);
   const preferences = createPreferencesRepository(db);
   const syncMeta = createSyncMetaRepository(db);
+  const notified = createNotifiedRepository(db);
+  const notifications = createNotificationClient({ api: null, getRegistration: null });
   const adapter = null;
   const engine = createSyncEngine({
     outbox,
@@ -29,5 +33,17 @@ export function createTestDependencies(overrides: Partial<Dependencies> = {}): T
     adapter,
   });
 
-  return { db, favorites, history, outbox, preferences, syncMeta, adapter, engine, ...overrides };
+  return {
+    db,
+    favorites,
+    history,
+    outbox,
+    preferences,
+    syncMeta,
+    notified,
+    notifications,
+    adapter,
+    engine,
+    ...overrides,
+  };
 }

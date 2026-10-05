@@ -1,13 +1,19 @@
 import { useLiveQuery } from 'dexie-react-hooks';
+import { useState } from 'react';
 
 import { TVMAZE_GENRES } from '@/domain/content-rating';
 import { DEFAULT_PREFERENCES, type AgeRating } from '@/domain/entities/preferences';
+import type { NotificationPermissionState } from '@/domain/ports/notifications';
 import type { SyncEngineState } from '@/infrastructure/sync/sync-engine';
 import { AgeRatingSelector } from '@/presentation/components/AgeRatingSelector';
 import { GenreChips } from '@/presentation/components/GenreChips';
 import { Spinner } from '@/presentation/components/Spinner';
-import { LocationIcon, RefreshIcon } from '@/presentation/components/icons';
+import { BellIcon, LocationIcon, RefreshIcon } from '@/presentation/components/icons';
 import { useDependencies } from '@/presentation/hooks/dependencies-context';
+import {
+  useEpisodeReminders,
+  type EpisodeRemindersOutcome,
+} from '@/presentation/hooks/use-episode-reminders';
 import { usePreferences, useUpdatePreferences } from '@/presentation/hooks/use-preferences';
 import { useRequestLocation } from '@/presentation/hooks/use-request-location';
 import { useScheduleCountry } from '@/presentation/hooks/use-schedule-country';
@@ -255,6 +261,177 @@ function LocationSection() {
   );
 }
 
+function reminderOutcomeLabel(outcome: EpisodeRemindersOutcome, t: Dictionary): string {
+  switch (outcome.status) {
+    case 'sent':
+      return formatTemplate(t.screens.profile.notificationsCheckSent, { count: outcome.count });
+    case 'empty':
+      return t.screens.profile.notificationsCheckEmpty;
+    case 'disabled':
+      return t.screens.profile.notificationsCheckDisabled;
+    case 'denied':
+      return t.screens.profile.notificationsCheckDenied;
+    case 'unsupported':
+      return t.screens.profile.notificationsCheckUnsupported;
+    case 'error':
+      return t.screens.profile.notificationsCheckError;
+  }
+}
+
+function NotificationsSection() {
+  const { t } = useI18n();
+  const { notifications } = useDependencies();
+  const preferences = usePreferences();
+  const updatePreferences = useUpdatePreferences();
+  const { status, result, checkNow } = useEpisodeReminders();
+  const [permission, setPermission] = useState<NotificationPermissionState>(() =>
+    notifications.getPermissionState(),
+  );
+  const [pendingPermission, setPendingPermission] = useState(false);
+  const [testStatus, setTestStatus] = useState<'idle' | 'sent' | 'error'>('idle');
+
+  const enabled = preferences?.notificationsEnabled ?? false;
+  const canNotify = permission === 'granted' && enabled;
+  const isChecking = status === 'running';
+
+  const handleToggle = async () => {
+    setTestStatus('idle');
+
+    if (enabled) {
+      await updatePreferences({ notificationsEnabled: false });
+      return;
+    }
+
+    const next = await notifications.requestPermission();
+    setPermission(next);
+
+    if (next === 'granted') {
+      setPendingPermission(false);
+      await updatePreferences({ notificationsEnabled: true });
+      return;
+    }
+
+    setPendingPermission(true);
+  };
+
+  const handleTest = async () => {
+    try {
+      await notifications.showLocalNotification({
+        title: t.notificationsContent.testTitle,
+        body: t.notificationsContent.testBody,
+        url: '/favorites',
+        tag: 'epix-test',
+      });
+      setTestStatus('sent');
+    } catch {
+      setTestStatus('error');
+    }
+  };
+
+  const message =
+    permission === 'unsupported'
+      ? t.screens.profile.notificationsUnsupported
+      : permission === 'denied'
+        ? t.screens.profile.notificationsDenied
+        : pendingPermission
+          ? t.screens.profile.notificationsDismissed
+          : enabled
+            ? t.screens.profile.notificationsEnabledNote
+            : null;
+
+  return (
+    <section className="space-y-3 rounded-xl border border-border bg-surface p-4">
+      <div className="flex items-center justify-between gap-3">
+        <div>
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-muted">
+            {t.screens.profile.notifications}
+          </h2>
+          <p className="text-xs text-muted">{t.screens.profile.notificationsHint}</p>
+        </div>
+
+        <button
+          type="button"
+          role="switch"
+          aria-checked={enabled}
+          aria-label={t.screens.profile.notifications}
+          onClick={() => void handleToggle()}
+          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+        >
+          <span
+            className={[
+              'relative h-6 w-11 rounded-full transition-colors duration-150',
+              enabled ? 'bg-accent' : 'bg-surface-2',
+            ].join(' ')}
+          >
+            <span
+              className={[
+                'absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow-sm transition-transform duration-150',
+                enabled ? 'translate-x-5' : '',
+              ].join(' ')}
+            />
+          </span>
+        </button>
+      </div>
+
+      {message !== null && (
+        <p
+          role="status"
+          aria-live="polite"
+          className={[
+            'text-xs leading-relaxed',
+            permission === 'denied' || permission === 'unsupported' ? 'text-danger' : 'text-muted',
+          ].join(' ')}
+        >
+          {message}
+        </p>
+      )}
+
+      <div className="flex flex-wrap gap-2">
+        <button
+          type="button"
+          disabled={!canNotify}
+          onClick={() => void handleTest()}
+          className="inline-flex min-h-11 items-center gap-2 rounded-full bg-surface-2 px-4 text-xs font-bold uppercase tracking-[1.4px] text-fg transition-colors duration-150 hover:bg-surface disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          <BellIcon className="h-4 w-4" />
+          {t.screens.profile.notificationsTest}
+        </button>
+
+        <button
+          type="button"
+          disabled={!canNotify || isChecking}
+          aria-busy={isChecking}
+          onClick={() => void checkNow()}
+          className="inline-flex min-h-11 items-center gap-2 rounded-full bg-surface-2 px-4 text-xs font-bold uppercase tracking-[1.4px] text-fg transition-colors duration-150 hover:bg-surface disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          {isChecking ? <Spinner /> : <RefreshIcon className="h-4 w-4" />}
+          {isChecking
+            ? t.screens.profile.notificationsChecking
+            : t.screens.profile.notificationsCheck}
+        </button>
+      </div>
+
+      {testStatus !== 'idle' && (
+        <p
+          role="status"
+          aria-live="polite"
+          className={['text-xs', testStatus === 'sent' ? 'text-success' : 'text-danger'].join(' ')}
+        >
+          {testStatus === 'sent'
+            ? t.screens.profile.notificationsTestSent
+            : t.screens.profile.notificationsTestError}
+        </p>
+      )}
+
+      {result !== null && (
+        <p role="status" aria-live="polite" className="text-xs text-muted">
+          {reminderOutcomeLabel(result, t)}
+        </p>
+      )}
+    </section>
+  );
+}
+
 export function ProfileScreen() {
   const { t, language, setLanguage } = useI18n();
   const { preference, setPreference } = useTheme();
@@ -327,12 +504,9 @@ export function ProfileScreen() {
 
       <LocationSection />
 
+      <NotificationsSection />
+
       <section className="divide-y divide-border rounded-xl border border-border bg-surface px-4">
-        <UpcomingControl
-          label={t.screens.profile.notifications}
-          hint={t.screens.profile.notificationsHint}
-          comingSoonLabel={t.common.comingSoon}
-        />
         <UpcomingControl
           label={t.screens.profile.telemetry}
           hint={t.screens.profile.telemetryHint}

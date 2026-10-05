@@ -12,6 +12,7 @@ function createRepository(): ShowRepository {
     search: vi.fn(async () => [girls]),
     getById: vi.fn(async () => girls),
     getEpisodes: vi.fn(async () => []),
+    getNextEpisode: vi.fn(async () => null),
   };
 }
 

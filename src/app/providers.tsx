@@ -4,9 +4,11 @@ import { BrowserRouter } from 'react-router-dom';
 import { createFavoritesRepository } from '@/infrastructure/local/favorites.repository';
 import { createEpixDatabase } from '@/infrastructure/local/db';
 import { createHistoryRepository } from '@/infrastructure/local/history.repository';
+import { createNotifiedRepository } from '@/infrastructure/local/notified.repository';
 import { createOutboxRepository } from '@/infrastructure/local/outbox.repository';
 import { createPreferencesRepository } from '@/infrastructure/local/preferences.repository';
 import { createSyncMetaRepository } from '@/infrastructure/local/sync-meta.repository';
+import { createNotificationClient } from '@/infrastructure/notifications/notifications';
 import {
   createLazySupabaseSyncAdapter,
   hasSupabaseConfig,
@@ -21,6 +23,9 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import { ThemeProvider } from '@/presentation/hooks/ThemeProvider';
 
+import { EpisodeReminderBootstrap } from './EpisodeReminderBootstrap';
+import { ServiceWorkerBridge } from './ServiceWorkerBridge';
+
 function createDependencies(): Dependencies {
   const db = createEpixDatabase();
   const favorites = createFavoritesRepository(db);
@@ -28,6 +33,8 @@ function createDependencies(): Dependencies {
   const outbox = createOutboxRepository(db);
   const preferences = createPreferencesRepository(db);
   const syncMeta = createSyncMetaRepository(db);
+  const notified = createNotifiedRepository(db);
+  const notifications = createNotificationClient();
   const adapter = hasSupabaseConfig() ? createLazySupabaseSyncAdapter() : null;
   const engine = createSyncEngine({
     outbox,
@@ -37,7 +44,18 @@ function createDependencies(): Dependencies {
     adapter,
   });
 
-  return { db, favorites, history, outbox, preferences, syncMeta, adapter, engine };
+  return {
+    db,
+    favorites,
+    history,
+    outbox,
+    preferences,
+    syncMeta,
+    notified,
+    notifications,
+    adapter,
+    engine,
+  };
 }
 
 export function AppProviders({ children }: { children: ReactNode }) {
@@ -83,7 +101,11 @@ export function AppProviders({ children }: { children: ReactNode }) {
         <DependenciesContext.Provider value={dependencies}>
           <ThemeProvider>
             <I18nProvider>
-              <BrowserRouter>{children}</BrowserRouter>
+              <BrowserRouter>
+                <ServiceWorkerBridge />
+                <EpisodeReminderBootstrap />
+                {children}
+              </BrowserRouter>
             </I18nProvider>
           </ThemeProvider>
         </DependenciesContext.Provider>

@@ -21,6 +21,7 @@ function createRepositories(): Repositories {
         throw new Error('repositorio de series no usado en la Agenda');
       }),
       getEpisodes: vi.fn(async () => []),
+      getNextEpisode: vi.fn(async () => null),
     },
     schedule: {
       getByCountryAndDate: vi.fn(async (): Promise<ScheduleEntry[]> => []),
