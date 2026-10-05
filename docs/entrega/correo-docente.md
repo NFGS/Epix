@@ -26,6 +26,9 @@ La página incluye:
 **Repositorio de código (GitHub):**
 https://github.com/NFGS/Epix
 
+**Aplicación desplegada (demo en vivo):**
+https://epix-xi.vercel.app
+
 **Evidencias incluidas:**
 - Colección Postman de la API TVmaze: `docs/postman/Epix-TVmaze.postman_collection.json`
 - Especificación y requisitos trazables: `SPEC.md`, `docs/requisitos.md`

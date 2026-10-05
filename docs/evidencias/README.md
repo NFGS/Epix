@@ -19,6 +19,8 @@ Capturas generadas con Chromium real (Playwright) contra el build de producción
 | `10-diagrama-arquitectura.png` | Diagrama Archify: arquitectura offline-first del cliente |
 | `11-diagrama-sync.png` | Diagrama Archify: secuencia de favorito offline → sincronización |
 | `lighthouse-inicio.json` | Informe Lighthouse (Inicio): rendimiento 88 · accesibilidad 100 · buenas prácticas 100 |
+| `12-produccion-inicio.png` | Producción real ([epix-xi.vercel.app](https://epix-xi.vercel.app)): inicio con SW activo |
+| `13-produccion-deeplink.png` | Deep link directo en producción (`/shows/169`) renderizando con datos reales de TVmaze |
 
 > La revisión visual de los dos diagramas (legibilidad en desktop y móvil) fue realizada sobre
 > estas capturas: tipografía legible, sin recortes ni cruces problemáticos; no requirieron reparación.
@@ -29,6 +31,7 @@ Capturas generadas con Chromium real (Playwright) contra el build de producción
 pnpm build && pnpm preview --port 4173     # servidor de producción
 # requiere playwright-core + Chromium (usa el del sistema o ~/.cache/ms-playwright)
 node docs/evidencias/capturar.mjs
+node docs/evidencias/verify-prod.mjs   # verifica la URL de producción (HTTP, SW, deep links)
 ```
 
 ## Calidad automatizada (completada)

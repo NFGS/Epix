@@ -1,0 +1,16 @@
+# Material que NO debe subirse al deploy de Vercel
+# (el CLI respeta .gitignore, pero esto lo hace explícito)
+
+# Material de clase (video >100 MB)
+Memory/
+
+# Workspace local de archify (los diagramas finales viven en docs/diagramas/)
+.archify/
+
+# Build local (Vercel construye en la nube)
+dist/
+node_modules/
+
+# OpenCode (local)
+.opencode/
+opencode.json

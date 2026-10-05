@@ -44,6 +44,12 @@ pnpm lint        # análisis estático
 pnpm typecheck   # verificación de tipos
 ```
 
+## 🌐 Producción
+
+- **App desplegada:** [https://epix-xi.vercel.app](https://epix-xi.vercel.app) (Vercel)
+- Build: `pnpm build` (salida `dist/`) · SPA rewrites y headers de caché en [`vercel.json`](./vercel.json)
+- Modo actual: **«Solo local»** (sin Supabase). Al configurar `VITE_SUPABASE_*` se requiere un nuevo deploy.
+
 ## 📚 Documentación
 
 | Documento | Contenido |
