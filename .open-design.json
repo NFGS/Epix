@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "designSystem": {
+    "slug": "spotify",
+    "path": "design-systems/spotify"
+  },
+  "skill": null,
+  "boundAt": "2026-10-05T14:05:00Z",
+  "notes": "Base: Spotify (content-first darkness, geometría pill/círculo, tipografía bold/regular). Disciplina editorial: Runway (títulos comprimidos, labels uppercase, UI invisible). Override de marca: acento violeta Epix #6C4CF1 en lugar del verde. Adaptación documentada en docs/design/DESIGN.md."
+}
