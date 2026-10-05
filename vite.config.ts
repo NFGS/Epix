@@ -4,7 +4,7 @@ import { fileURLToPath, URL } from 'node:url';
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
-import { defineConfig } from 'vitest/config';
+import { configDefaults, defineConfig } from 'vitest/config';
 
 const packageJson = JSON.parse(
   readFileSync(new URL('./package.json', import.meta.url), 'utf8'),
@@ -61,5 +61,6 @@ export default defineConfig({
     setupFiles: ['./src/test/setup.ts', './src/test/setup-indexeddb.ts'],
     css: false,
     coverage: { enabled: false },
+    exclude: [...configDefaults.exclude, 'e2e/**'],
   },
 });
