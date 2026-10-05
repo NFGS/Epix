@@ -26,9 +26,9 @@ export function BottomNav() {
   return (
     <nav
       aria-label={t.common.mainNavigation}
-      className="fixed inset-x-0 bottom-0 z-20 border-t border-border bg-surface safe-bottom"
+      className="fixed inset-x-0 bottom-0 z-20 border-t border-border bg-surface/85 backdrop-blur-md safe-bottom"
     >
-      <ul className="mx-auto flex w-full max-w-3xl items-stretch">
+      <ul className="mx-auto flex h-[60px] w-full max-w-3xl items-stretch">
         {items.map(({ to, label, icon: Icon, end }) => (
           <li key={to} className="flex-1">
             <NavLink
@@ -36,13 +36,17 @@ export function BottomNav() {
               end={end}
               className={({ isActive }) =>
                 [
-                  'flex min-h-14 flex-col items-center justify-center gap-0.5 px-1 py-2 text-[11px] font-medium transition-colors',
-                  isActive ? 'text-brand-600 dark:text-brand-400' : 'text-muted hover:text-text',
+                  'flex min-h-11 flex-col items-center justify-center gap-0.5 px-1 py-1 text-[11px] font-medium transition-colors duration-150',
+                  isActive ? 'text-fg' : 'text-muted hover:text-fg',
                 ].join(' ')
               }
             >
-              <Icon className="h-6 w-6" />
-              <span>{label}</span>
+              {({ isActive }) => (
+                <>
+                  <Icon className={isActive ? 'h-6 w-6 text-accent-text' : 'h-6 w-6'} />
+                  <span>{label}</span>
+                </>
+              )}
             </NavLink>
           </li>
         ))}

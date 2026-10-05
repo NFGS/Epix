@@ -2,6 +2,7 @@ export interface Show {
   id: number;
   name: string;
   year?: number;
+  status?: string;
   genres: string[];
   rating?: number;
   imageUrl?: string;

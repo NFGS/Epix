@@ -7,10 +7,12 @@ export function FavoritesScreen() {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-xl font-bold">{t.screens.favorites.title}</h1>
+      <h1 className="text-[28px] font-extrabold leading-[1.05] tracking-[-0.02em]">
+        {t.screens.favorites.title}
+      </h1>
 
       <EmptyState
-        icon={<HeartIcon className="h-6 w-6" />}
+        icon={<HeartIcon className="h-7 w-7" />}
         title={t.screens.favorites.emptyTitle}
         description={t.screens.favorites.emptyDescription}
       />

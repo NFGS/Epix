@@ -57,7 +57,9 @@ export function ProfileScreen() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-xl font-bold">{t.screens.profile.title}</h1>
+      <h1 className="text-[28px] font-extrabold leading-[1.05] tracking-[-0.02em]">
+        {t.screens.profile.title}
+      </h1>
 
       <section className="space-y-3 rounded-xl border border-border bg-surface p-4">
         <h2 className="text-sm font-semibold uppercase tracking-wide text-muted">
@@ -76,10 +78,10 @@ export function ProfileScreen() {
                   setPreference(option.value);
                 }}
                 className={[
-                  'min-h-11 rounded-lg border px-2 text-sm font-medium transition-colors',
+                  'min-h-11 rounded-full border px-2 text-sm font-medium transition-colors duration-150',
                   preference === option.value
-                    ? 'border-brand-500 bg-brand-500 text-white'
-                    : 'border-border bg-surface-2 text-muted hover:text-text',
+                    ? 'border-accent bg-accent text-white'
+                    : 'border-border bg-surface-2 text-muted hover:text-fg',
                 ].join(' ')}
               >
                 {t.screens.profile[option.labelKey]}
@@ -104,10 +106,10 @@ export function ProfileScreen() {
                   setLanguage(option.value);
                 }}
                 className={[
-                  'min-h-11 rounded-lg border px-2 text-sm font-medium transition-colors',
+                  'min-h-11 rounded-full border px-2 text-sm font-medium transition-colors duration-150',
                   language === option.value
-                    ? 'border-brand-500 bg-brand-500 text-white'
-                    : 'border-border bg-surface-2 text-muted hover:text-text',
+                    ? 'border-accent bg-accent text-white'
+                    : 'border-border bg-surface-2 text-muted hover:text-fg',
                 ].join(' ')}
               >
                 {option.label}

@@ -18,7 +18,7 @@ export function SearchInput({ value, onChange, label, placeholder, clearLabel }:
       <label htmlFor={inputId} className="sr-only">
         {label}
       </label>
-      <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted">
+      <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-muted">
         <SearchIcon className="h-5 w-5" />
       </span>
       <input
@@ -30,7 +30,7 @@ export function SearchInput({ value, onChange, label, placeholder, clearLabel }:
         }}
         placeholder={placeholder}
         autoComplete="off"
-        className="h-12 w-full rounded-xl border border-border bg-surface pl-10 pr-12 text-sm text-text placeholder:text-muted focus:border-brand-500 focus:outline-none"
+        className="h-12 w-full rounded-full border border-transparent bg-surface-2 pl-11 pr-14 text-base text-fg placeholder:text-muted transition-colors duration-150 focus:border-accent focus:outline-none focus:ring-4 focus:ring-accent-soft"
       />
       {value.length > 0 && (
         <button
@@ -39,19 +39,21 @@ export function SearchInput({ value, onChange, label, placeholder, clearLabel }:
           onClick={() => {
             onChange('');
           }}
-          className="absolute right-1.5 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full text-muted transition-colors hover:bg-surface-2 hover:text-text"
+          className="absolute right-1 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full"
         >
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            className="h-4 w-4"
-            aria-hidden="true"
-          >
-            <path d="M6 6l12 12M18 6 6 18" />
-          </svg>
+          <span className="flex h-8 w-8 items-center justify-center rounded-full bg-surface text-muted transition-colors duration-150 hover:text-fg">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.7"
+              strokeLinecap="round"
+              className="h-4 w-4"
+              aria-hidden="true"
+            >
+              <path d="M6 6l12 12M18 6 6 18" />
+            </svg>
+          </span>
         </button>
       )}
     </div>

@@ -7,10 +7,12 @@ export function HistoryScreen() {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-xl font-bold">{t.screens.history.title}</h1>
+      <h1 className="text-[28px] font-extrabold leading-[1.05] tracking-[-0.02em]">
+        {t.screens.history.title}
+      </h1>
 
       <EmptyState
-        icon={<ClockIcon className="h-6 w-6" />}
+        icon={<ClockIcon className="h-7 w-7" />}
         title={t.screens.history.emptyTitle}
         description={t.screens.history.emptyDescription}
       />

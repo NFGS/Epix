@@ -7,7 +7,7 @@ export function Spinner() {
     <span
       role="status"
       aria-label={t.common.loading}
-      className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-brand-500 border-t-transparent"
+      className="inline-block h-5 w-5 animate-spin rounded-full border-2 border-accent border-t-transparent"
     />
   );
 }
