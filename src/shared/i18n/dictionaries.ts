@@ -25,6 +25,31 @@ export const es = {
     today: 'Hoy',
     yesterday: 'Ayer',
   },
+  location: {
+    section: 'Ubicación',
+    currentCountry: 'País actual',
+    sourceGps: 'GPS',
+    sourceManual: 'Manual',
+    sourceAuto: 'Automático',
+    detectButton: 'Detectar con GPS',
+    detecting: 'Detectando…',
+    detected: 'Ubicación detectada: {country}',
+    bannerTitle: 'Activa tu ubicación para ver la programación de tu país',
+    bannerDescription:
+      'Con tu permiso, Epix usa el GPS una sola vez para conocer tu país. También puedes elegirlo manualmente en el selector.',
+    useButton: 'Usar mi ubicación',
+    gpsChip: 'Según tu ubicación · {country}',
+    chooseManually: 'Elegir país',
+    errorDenied: 'Permiso denegado. Elige tu país manualmente en Agenda.',
+    errorUnavailable: 'No pudimos obtener tu ubicación. Elige tu país manualmente en Agenda.',
+    errorTimeout: 'La detección tardó demasiado. Elige tu país manualmente en Agenda.',
+    errorUnsupported:
+      'Tu navegador no permite detectar la ubicación. Elige tu país manualmente en Agenda.',
+    errorNetwork:
+      'No pudimos conectar con el servicio de ubicación. Elige tu país manualmente en Agenda.',
+    errorLookup: 'No pudimos identificar tu país. Elige tu país manualmente en Agenda.',
+    errorUnknown: 'No pudimos detectar tu ubicación. Elige tu país manualmente en Agenda.',
+  },
   filters: {
     hiddenOne: '1 oculto por tus filtros',
     hiddenMany: '{count} ocultos por tus filtros',
@@ -183,6 +208,31 @@ export const en: Dictionary = {
     cancel: 'Cancel',
     today: 'Today',
     yesterday: 'Yesterday',
+  },
+  location: {
+    section: 'Location',
+    currentCountry: 'Current country',
+    sourceGps: 'GPS',
+    sourceManual: 'Manual',
+    sourceAuto: 'Automatic',
+    detectButton: 'Detect with GPS',
+    detecting: 'Detecting…',
+    detected: 'Location detected: {country}',
+    bannerTitle: "Turn on your location to see your country's schedule",
+    bannerDescription:
+      'With your permission, Epix uses GPS once to know your country. You can also pick it manually in the selector.',
+    useButton: 'Use my location',
+    gpsChip: 'Based on your location · {country}',
+    chooseManually: 'Choose country',
+    errorDenied: 'Permission denied. Choose your country manually in Schedule.',
+    errorUnavailable: "We couldn't get your location. Choose your country manually in Schedule.",
+    errorTimeout: 'Detection took too long. Choose your country manually in Schedule.',
+    errorUnsupported:
+      "Your browser doesn't support location. Choose your country manually in Schedule.",
+    errorNetwork:
+      "We couldn't reach the location service. Choose your country manually in Schedule.",
+    errorLookup: "We couldn't identify your country. Choose your country manually in Schedule.",
+    errorUnknown: "We couldn't detect your location. Choose your country manually in Schedule.",
   },
   filters: {
     hiddenOne: '1 hidden by your filters',

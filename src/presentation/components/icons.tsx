@@ -161,6 +161,15 @@ export function RefreshIcon({ className }: IconProps) {
   );
 }
 
+export function LocationIcon({ className }: IconProps) {
+  return (
+    <svg {...iconProps(className)}>
+      <path d="M12 21s-6.5-5.4-6.5-10.2a6.5 6.5 0 0 1 13 0C18.5 15.6 12 21 12 21Z" />
+      <circle cx="12" cy="10.5" r="2.5" />
+    </svg>
+  );
+}
+
 export function CloudOffIcon({ className }: IconProps) {
   return (
     <svg {...iconProps(className)}>

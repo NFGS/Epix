@@ -5,13 +5,17 @@ import { DEFAULT_PREFERENCES, type AgeRating } from '@/domain/entities/preferenc
 import type { SyncEngineState } from '@/infrastructure/sync/sync-engine';
 import { AgeRatingSelector } from '@/presentation/components/AgeRatingSelector';
 import { GenreChips } from '@/presentation/components/GenreChips';
-import { RefreshIcon } from '@/presentation/components/icons';
+import { Spinner } from '@/presentation/components/Spinner';
+import { LocationIcon, RefreshIcon } from '@/presentation/components/icons';
 import { useDependencies } from '@/presentation/hooks/dependencies-context';
 import { usePreferences, useUpdatePreferences } from '@/presentation/hooks/use-preferences';
+import { useRequestLocation } from '@/presentation/hooks/use-request-location';
+import { useScheduleCountry } from '@/presentation/hooks/use-schedule-country';
 import { useSyncStatus } from '@/presentation/hooks/use-sync-status';
 import type { Dictionary, Language } from '@/shared/i18n/dictionaries';
 import { useI18n } from '@/shared/i18n/i18n-context';
 import { formatDateTime, formatTemplate } from '@/shared/lib/format';
+import { SCHEDULE_COUNTRIES } from '@/shared/lib/locale';
 
 import type { ThemePreference } from '@/presentation/hooks/theme-context';
 import { useTheme } from '@/presentation/hooks/theme-context';
@@ -193,6 +197,64 @@ function ContentPreferencesSection() {
   );
 }
 
+function countryName(code: string): string {
+  return SCHEDULE_COUNTRIES.find((option) => option.code === code)?.name ?? code;
+}
+
+function LocationSection() {
+  const { t } = useI18n();
+  const { country, countrySource } = useScheduleCountry();
+  const location = useRequestLocation();
+  const isRequesting = location.status === 'requesting';
+
+  const sourceLabel =
+    countrySource === 'gps'
+      ? t.location.sourceGps
+      : countrySource === 'manual'
+        ? t.location.sourceManual
+        : t.location.sourceAuto;
+  const successCountry = location.detectedCountry ?? country;
+
+  return (
+    <section className="space-y-3 rounded-xl border border-border bg-surface p-4">
+      <h2 className="text-sm font-semibold uppercase tracking-wide text-muted">
+        {t.location.section}
+      </h2>
+
+      <div className="flex items-center justify-between gap-3">
+        <div>
+          <p className="text-sm font-medium">{t.location.currentCountry}</p>
+          <p className="text-xs text-muted">
+            {countryName(country)} · {sourceLabel}
+          </p>
+        </div>
+
+        <button
+          type="button"
+          onClick={location.requestLocation}
+          disabled={isRequesting}
+          aria-busy={isRequesting}
+          className="inline-flex min-h-11 items-center gap-2 rounded-full bg-accent px-4 text-xs font-bold uppercase tracking-[1.4px] text-white transition-colors duration-150 hover:bg-accent-hover disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          {isRequesting ? <Spinner /> : <LocationIcon className="h-4 w-4" />}
+          {isRequesting ? t.location.detecting : t.location.detectButton}
+        </button>
+      </div>
+
+      {location.status === 'success' && (
+        <p role="status" aria-live="polite" className="text-xs text-success">
+          {formatTemplate(t.location.detected, { country: countryName(successCountry) })}
+        </p>
+      )}
+      {location.status === 'error' && location.message !== null && (
+        <p role="status" aria-live="polite" className="text-xs text-danger">
+          {location.message}
+        </p>
+      )}
+    </section>
+  );
+}
+
 export function ProfileScreen() {
   const { t, language, setLanguage } = useI18n();
   const { preference, setPreference } = useTheme();
@@ -262,6 +324,8 @@ export function ProfileScreen() {
       </section>
 
       <ContentPreferencesSection />
+
+      <LocationSection />
 
       <section className="divide-y divide-border rounded-xl border border-border bg-surface px-4">
         <UpcomingControl

@@ -1,11 +1,13 @@
 import { EmptyState } from '@/presentation/components/EmptyState';
 import { ErrorState } from '@/presentation/components/ErrorState';
 import { HiddenResultsNote } from '@/presentation/components/HiddenResultsNote';
+import { GpsCountryChip, LocationBanner } from '@/presentation/components/LocationBanner';
 import { ScheduleItem } from '@/presentation/components/ScheduleItem';
 import { CalendarIcon, ChevronDownIcon, GlobeIcon } from '@/presentation/components/icons';
 import { useSchedule } from '@/presentation/hooks/queries/use-schedule';
 import { useSlowLoading } from '@/presentation/hooks/queries/use-slow-loading';
 import { useFilteredShows } from '@/presentation/hooks/use-filtered-shows';
+import { useRequestLocation } from '@/presentation/hooks/use-request-location';
 import { useScheduleCountry } from '@/presentation/hooks/use-schedule-country';
 import { todayIso } from '@/shared/lib/date';
 import { formatTemplate } from '@/shared/lib/format';
@@ -15,10 +17,32 @@ import { useI18n } from '@/shared/i18n/i18n-context';
 
 const ITEM_SKELETON_COUNT = 5;
 
+/** Nombre localizado para códigos GPS que no están en la lista curada. */
+function countryOptionName(code: string, locale: string): string {
+  const known = SCHEDULE_COUNTRIES.find((option) => option.code === code);
+  if (known !== undefined) {
+    return known.name;
+  }
+
+  try {
+    return new Intl.DisplayNames([locale], { type: 'region' }).of(code) ?? code;
+  } catch {
+    return code;
+  }
+}
+
 export function ScheduleScreen() {
   const { t, language } = useI18n();
-  const { country, setCountry } = useScheduleCountry();
+  const { country, countrySource, setCountry, setCountrySource } = useScheduleCountry();
+  const location = useRequestLocation();
   const date = todayIso();
+
+  const countryOptions = SCHEDULE_COUNTRIES.some((option) => option.code === country)
+    ? SCHEDULE_COUNTRIES
+    : [
+        ...SCHEDULE_COUNTRIES,
+        { code: country, name: countryOptionName(country, language === 'es' ? 'es-CO' : 'en-US') },
+      ];
 
   const { data, isPending, isFetching, isError, refetch } = useSchedule(country, date);
   const isLoading = isPending && isFetching;
@@ -46,12 +70,13 @@ export function ScheduleScreen() {
           aria-label={t.screens.schedule.countryLabel}
           onChange={(event) => {
             if (isScheduleCountryCode(event.target.value)) {
+              location.reset();
               setCountry(event.target.value);
             }
           }}
           className="h-12 w-full appearance-none rounded-full border border-transparent bg-surface-2 pl-11 pr-11 text-sm font-medium text-fg transition-colors duration-150 focus:border-accent focus:outline-none focus:ring-4 focus:ring-accent-soft"
         >
-          {SCHEDULE_COUNTRIES.map((option) => (
+          {countryOptions.map((option) => (
             <option key={option.code} value={option.code}>
               {option.name}
             </option>
@@ -59,6 +84,22 @@ export function ScheduleScreen() {
         </select>
         <ChevronDownIcon className="pointer-events-none absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted" />
       </div>
+
+      {countrySource === 'gps' ? (
+        <GpsCountryChip
+          country={country}
+          onChooseManually={() => {
+            location.reset();
+            setCountrySource('manual');
+          }}
+        />
+      ) : (
+        <LocationBanner
+          status={location.status}
+          message={location.message}
+          onRequest={location.requestLocation}
+        />
+      )}
 
       <p className="text-sm capitalize text-muted">
         {formatTemplate(t.screens.schedule.dayLabel, { date: dateLabel })}
