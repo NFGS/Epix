@@ -1,0 +1,91 @@
+@import 'tailwindcss';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+
+  --color-brand-50: #f2effe;
+  --color-brand-100: #e9e4fd;
+  --color-brand-200: #d5cdfb;
+  --color-brand-300: #b8a9f8;
+  --color-brand-400: #967ff3;
+  --color-brand-500: #6c4cf1;
+  --color-brand-600: #5b38e0;
+  --color-brand-700: #4c2bc4;
+  --color-brand-800: #3f25a0;
+  --color-brand-900: #35227f;
+  --color-brand-950: #20134f;
+
+  --color-accent-50: #fef8ec;
+  --color-accent-100: #fdecd0;
+  --color-accent-200: #fbd6a0;
+  --color-accent-300: #f8bb64;
+  --color-accent-400: #f7b84e;
+  --color-accent-500: #f5a524;
+  --color-accent-600: #d97f0e;
+  --color-accent-700: #b45f0a;
+  --color-accent-800: #8f4a0e;
+  --color-accent-900: #763d10;
+  --color-accent-950: #431f05;
+
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+
+  --shadow-card: 0 1px 2px rgb(16 12 40 / 0.06), 0 8px 24px -12px rgb(16 12 40 / 0.25);
+}
+
+:root {
+  color-scheme: light;
+  --bg: #f6f5fa;
+  --surface: #ffffff;
+  --surface-2: #efedf6;
+  --text: #1b1830;
+  --muted: #6b6683;
+  --border: #e4e1ee;
+}
+
+.dark {
+  color-scheme: dark;
+  --bg: #0e0d13;
+  --surface: #17161f;
+  --surface-2: #201e2b;
+  --text: #f4f3f8;
+  --muted: #a49fb8;
+  --border: #2d2a3a;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-text: var(--text);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100svh;
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-brand-500);
+    outline-offset: 2px;
+  }
+}
+
+@utility safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}

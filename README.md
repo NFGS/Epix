@@ -31,15 +31,17 @@ Aplicación web progresiva (PWA) instalable que permite:
 
 > 📐 Arquitectura, requisitos y decisiones: ver [`SPEC.md`](./SPEC.md) y [`docs/`](./docs/).
 
-## 🚀 Quickstart (a partir de la Fase 2)
+## 🚀 Quickstart
 
 ```bash
 pnpm install     # dependencias
-pnpm dev         # servidor de desarrollo
+pnpm dev         # servidor de desarrollo (http://localhost:5173)
 pnpm build       # build de producción (genera PWA)
+pnpm preview     # sirve el build (probamos SW/manifest)
 pnpm test:unit   # pruebas unitarias
-pnpm test:e2e    # pruebas end-to-end
+pnpm test:e2e    # pruebas end-to-end (disponible en fases siguientes)
 pnpm lint        # análisis estático
+pnpm typecheck   # verificación de tipos
 ```
 
 ## 📚 Documentación

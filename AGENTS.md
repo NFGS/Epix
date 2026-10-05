@@ -75,5 +75,5 @@ pnpm test:e2e    # Playwright
 
 - [x] Fase 0 — Documentación base (README, AGENTS, SPEC, requisitos, glosario, referencias).
 - [x] Fase 1 — Investigación + documentación Notion.
-- [ ] Fase 2 — Scaffolding, arquitectura y diseño base.
+- [x] Fase 2 — Scaffolding, arquitectura y diseño base (incremento 1: tokens, layout, navegación, componentes, PWA, tests).
 - [ ] Fase 3 — Incrementos funcionales (API, caché, favoritos, personalización, GPS, notificaciones, telemetría).
