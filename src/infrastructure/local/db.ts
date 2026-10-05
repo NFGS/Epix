@@ -2,21 +2,13 @@ import Dexie, { type Table } from 'dexie';
 
 import type { FavoriteShow } from '@/domain/entities/favorite';
 import type { HistoryEntry, SearchHistoryEntry } from '@/domain/entities/history-entry';
+import type { UserPreferences } from '@/domain/entities/preferences';
 import type { SyncStatus } from '@/domain/entities/sync-status';
 import type { OutboxOperation } from '@/domain/ports/outbox-repository';
 
-/** Preferencias únicas del dispositivo (se usa en el Incremento 4). */
-export interface PreferenceRecord {
+/** Preferencias únicas del dispositivo (fila `key: 'app'`). */
+export interface PreferenceRecord extends UserPreferences {
   key: 'app';
-  theme: 'light' | 'dark' | 'system';
-  language: 'es' | 'en';
-  favoriteGenres: string[];
-  maxAgeRating: string;
-  country?: string;
-  countrySource?: 'gps' | 'manual';
-  notificationsEnabled: boolean;
-  telemetryEnabled: boolean;
-  updatedAt: string;
   syncStatus: SyncStatus;
 }
 

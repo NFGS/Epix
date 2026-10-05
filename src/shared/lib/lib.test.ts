@@ -49,6 +49,7 @@ describe('groupByHour', () => {
     season: 1,
     number: 1,
     showId: 1,
+    genres: [],
   };
 
   it('agrupa por hora y deja las entradas sin hora al final', () => {

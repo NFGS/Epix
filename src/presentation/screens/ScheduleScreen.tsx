@@ -1,9 +1,11 @@
 import { EmptyState } from '@/presentation/components/EmptyState';
 import { ErrorState } from '@/presentation/components/ErrorState';
+import { HiddenResultsNote } from '@/presentation/components/HiddenResultsNote';
 import { ScheduleItem } from '@/presentation/components/ScheduleItem';
 import { CalendarIcon, ChevronDownIcon, GlobeIcon } from '@/presentation/components/icons';
 import { useSchedule } from '@/presentation/hooks/queries/use-schedule';
 import { useSlowLoading } from '@/presentation/hooks/queries/use-slow-loading';
+import { useFilteredShows } from '@/presentation/hooks/use-filtered-shows';
 import { useScheduleCountry } from '@/presentation/hooks/use-schedule-country';
 import { todayIso } from '@/shared/lib/date';
 import { formatTemplate } from '@/shared/lib/format';
@@ -22,7 +24,9 @@ export function ScheduleScreen() {
   const isLoading = isPending && isFetching;
   const isSlow = useSlowLoading(isLoading);
 
-  const groups = groupByHour(data ?? []);
+  const entries = data ?? [];
+  const { visible, hiddenCount } = useFilteredShows(entries);
+  const groups = groupByHour(visible);
   const dateLabel = new Intl.DateTimeFormat(language === 'es' ? 'es-CO' : 'en-US', {
     weekday: 'long',
     day: 'numeric',
@@ -60,6 +64,8 @@ export function ScheduleScreen() {
         {formatTemplate(t.screens.schedule.dayLabel, { date: dateLabel })}
       </p>
 
+      <HiddenResultsNote hiddenCount={hiddenCount} />
+
       {isLoading ? (
         <>
           <div className="space-y-2" aria-hidden="true">
@@ -79,11 +85,17 @@ export function ScheduleScreen() {
             void refetch();
           }}
         />
-      ) : groups.length === 0 ? (
+      ) : entries.length === 0 ? (
         <EmptyState
           icon={<CalendarIcon className="h-7 w-7" />}
           title={t.screens.schedule.emptyTitle}
           description={t.screens.schedule.emptyDescription}
+        />
+      ) : groups.length === 0 ? (
+        <EmptyState
+          icon={<CalendarIcon className="h-7 w-7" />}
+          title={t.filters.allHiddenTitle}
+          description={t.filters.allHiddenDescription}
         />
       ) : (
         <div className="space-y-5">

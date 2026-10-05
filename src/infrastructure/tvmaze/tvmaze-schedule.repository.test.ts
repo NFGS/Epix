@@ -46,6 +46,7 @@ describe('TvmazeScheduleRepository', () => {
         showId: 7,
         showName: 'Dark',
         showImageUrl: 'https://static.tvmaze.com/dark.jpg',
+        genres: ['Drama'],
         channel: 'Netflix',
       },
     ]);

@@ -5,11 +5,13 @@ import { recordSearch } from '@/application/use-cases/record-search';
 import { useDebouncedValue } from '@/presentation/hooks/queries/use-debounced-value';
 import { EmptyState } from '@/presentation/components/EmptyState';
 import { ErrorState } from '@/presentation/components/ErrorState';
+import { HiddenResultsNote } from '@/presentation/components/HiddenResultsNote';
 import { SearchInput } from '@/presentation/components/SearchInput';
 import { ShowCard } from '@/presentation/components/ShowCard';
 import { SkeletonCard } from '@/presentation/components/SkeletonCard';
 import { SearchIcon } from '@/presentation/components/icons';
 import { useDependencies } from '@/presentation/hooks/dependencies-context';
+import { useFilteredShows } from '@/presentation/hooks/use-filtered-shows';
 import { useShowSearch } from '@/presentation/hooks/queries/use-show-search';
 import { useSlowLoading } from '@/presentation/hooks/queries/use-slow-loading';
 import { currentTimezone, nowIso, randomId } from '@/shared/lib/clock';
@@ -31,6 +33,7 @@ export function SearchScreen() {
   const isSlow = useSlowLoading(isLoading);
 
   const shows = data ?? [];
+  const { visible, hiddenCount } = useFilteredShows(shows);
   const hasTyped = query.trim().length > 0;
   const isSettled = isQueryValid && !isLoading && !isError && data !== undefined;
   const recordedQueries = useRef<Set<string>>(new Set());
@@ -68,9 +71,9 @@ export function SearchScreen() {
       />
 
       <p aria-live="polite" className="min-h-5 text-sm text-muted">
-        {isQueryValid && !isLoading && !isError && shows.length > 0
-          ? `${shows.length} ${
-              shows.length === 1 ? t.screens.search.resultsOne : t.screens.search.resultsMany
+        {isQueryValid && !isLoading && !isError && visible.length > 0
+          ? `${visible.length} ${
+              visible.length === 1 ? t.screens.search.resultsOne : t.screens.search.resultsMany
             } «${normalizedQuery}»`
           : ''}
       </p>
@@ -93,9 +96,7 @@ export function SearchScreen() {
           <p role="status" className="sr-only">
             {t.common.loading}
           </p>
-          {isSlow && (
-            <p className="text-center text-xs text-muted">{t.common.slowLoading}</p>
-          )}
+          {isSlow && <p className="text-center text-xs text-muted">{t.common.slowLoading}</p>}
         </>
       ) : isError ? (
         <ErrorState
@@ -110,12 +111,24 @@ export function SearchScreen() {
           title={formatTemplate(t.screens.search.noResultsTitle, { query: normalizedQuery })}
           description={t.screens.search.noResultsDescription}
         />
+      ) : visible.length === 0 ? (
+        <>
+          <EmptyState
+            icon={<SearchIcon className="h-7 w-7" />}
+            title={t.filters.allHiddenTitle}
+            description={t.filters.allHiddenDescription}
+          />
+          <HiddenResultsNote hiddenCount={hiddenCount} />
+        </>
       ) : (
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-          {shows.map((show) => (
-            <ShowCard key={show.id} show={show} />
-          ))}
-        </div>
+        <>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+            {visible.map((show) => (
+              <ShowCard key={show.id} show={show} />
+            ))}
+          </div>
+          <HiddenResultsNote hiddenCount={hiddenCount} />
+        </>
       )}
     </div>
   );

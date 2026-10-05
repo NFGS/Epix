@@ -1,8 +1,13 @@
 import { useLiveQuery } from 'dexie-react-hooks';
 
+import { TVMAZE_GENRES } from '@/domain/content-rating';
+import { DEFAULT_PREFERENCES, type AgeRating } from '@/domain/entities/preferences';
 import type { SyncEngineState } from '@/infrastructure/sync/sync-engine';
+import { AgeRatingSelector } from '@/presentation/components/AgeRatingSelector';
+import { GenreChips } from '@/presentation/components/GenreChips';
 import { RefreshIcon } from '@/presentation/components/icons';
 import { useDependencies } from '@/presentation/hooks/dependencies-context';
+import { usePreferences, useUpdatePreferences } from '@/presentation/hooks/use-preferences';
 import { useSyncStatus } from '@/presentation/hooks/use-sync-status';
 import type { Dictionary, Language } from '@/shared/i18n/dictionaries';
 import { useI18n } from '@/shared/i18n/i18n-context';
@@ -54,9 +59,6 @@ const languageOptions: ReadonlyArray<{ value: Language; label: string }> = [
   { value: 'es', label: 'Español' },
   { value: 'en', label: 'English' },
 ];
-
-const demoGenres = ['Drama', 'Ciencia ficción', 'Comedia', 'Terror'] as const;
-const demoAgeRatings = ['TV-Y', 'TV-G', 'TV-PG', 'TV-14', 'TV-MA'] as const;
 
 const syncStatusStyles: Record<SyncEngineState, string> = {
   'local-only': 'bg-surface-2 text-muted',
@@ -134,6 +136,63 @@ function SyncSection() {
   );
 }
 
+function ContentPreferencesSection() {
+  const { t } = useI18n();
+  const preferences = usePreferences();
+  const updatePreferences = useUpdatePreferences();
+
+  const selectedGenres = preferences?.favoriteGenres ?? [];
+  const maxAgeRating = preferences?.maxAgeRating ?? DEFAULT_PREFERENCES.maxAgeRating;
+
+  const handleToggleGenre = (genre: string) => {
+    const nextGenres = selectedGenres.includes(genre)
+      ? selectedGenres.filter((selected) => selected !== genre)
+      : [...selectedGenres, genre];
+
+    void updatePreferences({ favoriteGenres: nextGenres });
+  };
+
+  const handleAgeChange = (rating: AgeRating) => {
+    void updatePreferences({ maxAgeRating: rating });
+  };
+
+  const handleReset = () => {
+    void updatePreferences({ ...DEFAULT_PREFERENCES });
+  };
+
+  return (
+    <section className="space-y-4 rounded-xl border border-border bg-surface p-4">
+      <h2 className="text-sm font-semibold uppercase tracking-wide text-muted">
+        {t.screens.profile.content}
+      </h2>
+
+      <GenreChips
+        genres={TVMAZE_GENRES}
+        selected={selectedGenres}
+        onToggle={handleToggleGenre}
+        legend={t.screens.profile.favoriteGenres}
+      />
+
+      <AgeRatingSelector
+        value={maxAgeRating}
+        onChange={handleAgeChange}
+        legend={t.screens.profile.maxAge}
+        descriptions={t.screens.profile.ageRatingHint}
+      />
+
+      <p className="text-xs leading-relaxed text-muted">{t.screens.profile.ageEstimationNote}</p>
+
+      <button
+        type="button"
+        onClick={handleReset}
+        className="min-h-11 rounded-full bg-surface-2 px-4 text-xs font-bold uppercase tracking-[1.4px] text-muted transition-colors duration-150 hover:text-fg"
+      >
+        {t.screens.profile.resetPreferences}
+      </button>
+    </section>
+  );
+}
+
 export function ProfileScreen() {
   const { t, language, setLanguage } = useI18n();
   const { preference, setPreference } = useTheme();
@@ -202,44 +261,7 @@ export function ProfileScreen() {
         </div>
       </section>
 
-      <section className="space-y-3 rounded-xl border border-border bg-surface p-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-muted">
-            {t.screens.profile.content}
-          </h2>
-          <span className="rounded-full bg-surface-2 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-muted">
-            {t.common.comingSoon}
-          </span>
-        </div>
-
-        <div className="space-y-2">
-          <p className="text-sm font-medium">{t.screens.profile.favoriteGenres}</p>
-          <ul className="flex flex-wrap gap-2">
-            {demoGenres.map((genre) => (
-              <li
-                key={genre}
-                className="rounded-full border border-border bg-surface-2 px-3 py-1 text-xs text-muted"
-              >
-                {genre}
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <div className="space-y-2">
-          <p className="text-sm font-medium">{t.screens.profile.maxAge}</p>
-          <ul className="flex flex-wrap gap-2">
-            {demoAgeRatings.map((rating) => (
-              <li
-                key={rating}
-                className="rounded-full border border-border bg-surface-2 px-3 py-1 text-xs text-muted"
-              >
-                {rating}
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
+      <ContentPreferencesSection />
 
       <section className="divide-y divide-border rounded-xl border border-border bg-surface px-4">
         <UpcomingControl

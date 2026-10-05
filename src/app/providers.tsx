@@ -5,16 +5,14 @@ import { createFavoritesRepository } from '@/infrastructure/local/favorites.repo
 import { createEpixDatabase } from '@/infrastructure/local/db';
 import { createHistoryRepository } from '@/infrastructure/local/history.repository';
 import { createOutboxRepository } from '@/infrastructure/local/outbox.repository';
+import { createPreferencesRepository } from '@/infrastructure/local/preferences.repository';
 import { createSyncMetaRepository } from '@/infrastructure/local/sync-meta.repository';
 import {
   createLazySupabaseSyncAdapter,
   hasSupabaseConfig,
 } from '@/infrastructure/supabase/create-sync-adapter';
 import { createSyncEngine } from '@/infrastructure/sync/sync-engine';
-import {
-  DependenciesContext,
-  type Dependencies,
-} from '@/presentation/hooks/dependencies-context';
+import { DependenciesContext, type Dependencies } from '@/presentation/hooks/dependencies-context';
 import { createTvmazeScheduleRepository } from '@/infrastructure/tvmaze/tvmaze-schedule.repository';
 import { createTvmazeShowRepository } from '@/infrastructure/tvmaze/tvmaze-show.repository';
 import { RepositoriesContext, type Repositories } from '@/presentation/hooks/repositories-context';
@@ -28,6 +26,7 @@ function createDependencies(): Dependencies {
   const favorites = createFavoritesRepository(db);
   const history = createHistoryRepository(db);
   const outbox = createOutboxRepository(db);
+  const preferences = createPreferencesRepository(db);
   const syncMeta = createSyncMetaRepository(db);
   const adapter = hasSupabaseConfig() ? createLazySupabaseSyncAdapter() : null;
   const engine = createSyncEngine({
@@ -38,7 +37,7 @@ function createDependencies(): Dependencies {
     adapter,
   });
 
-  return { db, favorites, history, outbox, syncMeta, adapter, engine };
+  return { db, favorites, history, outbox, preferences, syncMeta, adapter, engine };
 }
 
 export function AppProviders({ children }: { children: ReactNode }) {
@@ -65,6 +64,7 @@ export function AppProviders({ children }: { children: ReactNode }) {
   const repositoriesValue = useMemo(() => repositories, [repositories]);
 
   useEffect(() => {
+    void dependencies.preferences.ensureSeeded();
     void dependencies.engine.syncNow();
 
     const handleOnline = () => {

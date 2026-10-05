@@ -2,12 +2,15 @@ import { Link } from 'react-router-dom';
 
 import { EmptyState } from '@/presentation/components/EmptyState';
 import { ErrorState } from '@/presentation/components/ErrorState';
+import { HiddenResultsNote } from '@/presentation/components/HiddenResultsNote';
 import { SchedulePosterCard } from '@/presentation/components/ScheduleItem';
 import { TvIcon } from '@/presentation/components/icons';
 import { useSchedule } from '@/presentation/hooks/queries/use-schedule';
 import { useSlowLoading } from '@/presentation/hooks/queries/use-slow-loading';
+import { useFilteredShows } from '@/presentation/hooks/use-filtered-shows';
+import { useScheduleCountry } from '@/presentation/hooks/use-schedule-country';
 import { formatTemplate } from '@/shared/lib/format';
-import { countryFromLocale, SCHEDULE_COUNTRIES } from '@/shared/lib/locale';
+import { SCHEDULE_COUNTRIES } from '@/shared/lib/locale';
 import { todayIso } from '@/shared/lib/date';
 import { useI18n } from '@/shared/i18n/i18n-context';
 
@@ -15,7 +18,7 @@ const POSTER_SKELETON_COUNT = 4;
 
 export function HomeScreen() {
   const { t } = useI18n();
-  const country = countryFromLocale();
+  const { country } = useScheduleCountry();
   const date = todayIso();
 
   const { data, isPending, isFetching, isError, refetch } = useSchedule(country, date);
@@ -23,6 +26,7 @@ export function HomeScreen() {
   const isSlow = useSlowLoading(isLoading);
 
   const entries = data ?? [];
+  const { visible, hiddenCount } = useFilteredShows(entries);
   const countryName = SCHEDULE_COUNTRIES.find(({ code }) => code === country)?.name ?? country;
 
   return (
@@ -66,12 +70,24 @@ export function HomeScreen() {
             title={t.screens.home.emptyTitle}
             description={t.screens.home.emptyDescription}
           />
+        ) : visible.length === 0 ? (
+          <>
+            <EmptyState
+              icon={<TvIcon className="h-7 w-7" />}
+              title={t.filters.allHiddenTitle}
+              description={t.filters.allHiddenDescription}
+            />
+            <HiddenResultsNote hiddenCount={hiddenCount} />
+          </>
         ) : (
-          <div className="-mx-4 flex gap-3 overflow-x-auto px-4 pb-1">
-            {entries.map((entry) => (
-              <SchedulePosterCard key={entry.episodeId} entry={entry} />
-            ))}
-          </div>
+          <>
+            <div className="-mx-4 flex gap-3 overflow-x-auto px-4 pb-1">
+              {visible.map((entry) => (
+                <SchedulePosterCard key={entry.episodeId} entry={entry} />
+              ))}
+            </div>
+            <HiddenResultsNote hiddenCount={hiddenCount} />
+          </>
         )}
 
         {isLoading && (

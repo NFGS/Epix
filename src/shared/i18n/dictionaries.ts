@@ -25,6 +25,14 @@ export const es = {
     today: 'Hoy',
     yesterday: 'Ayer',
   },
+  filters: {
+    hiddenOne: '1 oculto por tus filtros',
+    hiddenMany: '{count} ocultos por tus filtros',
+    adjust: 'Ajustar',
+    allHiddenTitle: 'Tus filtros ocultan todo',
+    allHiddenDescription:
+      'Ningún resultado cumple tus preferencias de contenido. Ajusta los filtros para verlos.',
+  },
   screens: {
     home: {
       title: 'Hoy en TV',
@@ -110,9 +118,20 @@ export const es = {
       themeDark: 'Oscuro',
       themeSystem: 'Sistema',
       language: 'Idioma',
-      content: 'Contenido',
+      content: 'Preferencias de contenido',
       favoriteGenres: 'Géneros favoritos',
+      resetPreferences: 'Restablecer preferencias',
       maxAge: 'Edad máxima',
+      ageRatingHint: {
+        'TV-Y': 'Público infantil',
+        'TV-Y7': 'Desde 7 años',
+        'TV-G': 'Público general',
+        'TV-PG': 'Supervisión de padres',
+        'TV-14': 'Mayores de 14',
+        'TV-MA': 'Solo adultos',
+      },
+      ageEstimationNote:
+        'TVmaze no publica clasificación por edad: Epix la estima a partir de los géneros de cada serie y puede no coincidir con la oficial.',
       notifications: 'Notificaciones',
       notificationsHint: 'Recordatorios de nuevos episodios',
       telemetry: 'Telemetría',
@@ -165,6 +184,14 @@ export const en: Dictionary = {
     today: 'Today',
     yesterday: 'Yesterday',
   },
+  filters: {
+    hiddenOne: '1 hidden by your filters',
+    hiddenMany: '{count} hidden by your filters',
+    adjust: 'Adjust',
+    allHiddenTitle: 'Your filters hide everything',
+    allHiddenDescription:
+      'No result matches your content preferences. Adjust the filters to see them.',
+  },
   screens: {
     home: {
       title: 'On TV today',
@@ -204,8 +231,7 @@ export const en: Dictionary = {
       notFoundDescription:
         'The link may be broken or the show may no longer be available on TVmaze.',
       backToSearch: 'Back to search',
-      errorDescription:
-        "We couldn't load this show's detail. Check your connection and try again.",
+      errorDescription: "We couldn't load this show's detail. Check your connection and try again.",
       addFavorite: 'Add to favorites',
       removeFavorite: 'Remove from favorites',
     },
@@ -249,9 +275,20 @@ export const en: Dictionary = {
       themeDark: 'Dark',
       themeSystem: 'System',
       language: 'Language',
-      content: 'Content',
+      content: 'Content preferences',
       favoriteGenres: 'Favorite genres',
+      resetPreferences: 'Reset preferences',
       maxAge: 'Maximum age rating',
+      ageRatingHint: {
+        'TV-Y': 'All children',
+        'TV-Y7': 'Children 7+',
+        'TV-G': 'General audience',
+        'TV-PG': 'Parental guidance',
+        'TV-14': 'Parents strongly cautioned',
+        'TV-MA': 'Mature audience',
+      },
+      ageEstimationNote:
+        "TVmaze does not publish age ratings: Epix estimates them from each show's genres and they may not match the official rating.",
       notifications: 'Notifications',
       notificationsHint: 'New episode reminders',
       telemetry: 'Telemetry',

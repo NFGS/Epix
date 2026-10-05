@@ -2,11 +2,7 @@ import type { ScheduleEntry } from '@/domain/entities/schedule-entry';
 import type { Episode, Show } from '@/domain/entities/show';
 import { stripHtml } from '@/shared/lib/strip-html';
 
-import type {
-  TvmazeEpisodeDto,
-  TvmazeScheduleItemDto,
-  TvmazeShowDto,
-} from './schemas';
+import type { TvmazeEpisodeDto, TvmazeScheduleItemDto, TvmazeShowDto } from './schemas';
 
 const MIN_VALID_YEAR = 1900;
 
@@ -55,6 +51,7 @@ export function mapScheduleEntry(dto: TvmazeScheduleItemDto): ScheduleEntry {
     showId: dto.show.id,
     showName: dto.show.name,
     showImageUrl: dto.show.image?.medium ?? dto.show.image?.original ?? undefined,
+    genres: dto.show.genres,
     channel: dto.show.network?.name ?? dto.show.webChannel?.name ?? undefined,
   };
 }

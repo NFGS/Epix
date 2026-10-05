@@ -8,5 +8,6 @@ export interface ScheduleEntry {
   showId: number;
   showName: string;
   showImageUrl?: string;
+  genres: string[];
   channel?: string;
 }

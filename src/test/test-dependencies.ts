@@ -2,6 +2,7 @@ import { createEpixDatabase } from '@/infrastructure/local/db';
 import { createFavoritesRepository } from '@/infrastructure/local/favorites.repository';
 import { createHistoryRepository } from '@/infrastructure/local/history.repository';
 import { createOutboxRepository } from '@/infrastructure/local/outbox.repository';
+import { createPreferencesRepository } from '@/infrastructure/local/preferences.repository';
 import { createSyncMetaRepository } from '@/infrastructure/local/sync-meta.repository';
 import { createSyncEngine } from '@/infrastructure/sync/sync-engine';
 import type { Dependencies } from '@/presentation/hooks/dependencies-context';
@@ -17,6 +18,7 @@ export function createTestDependencies(overrides: Partial<Dependencies> = {}): T
   const favorites = createFavoritesRepository(db);
   const history = createHistoryRepository(db);
   const outbox = createOutboxRepository(db);
+  const preferences = createPreferencesRepository(db);
   const syncMeta = createSyncMetaRepository(db);
   const adapter = null;
   const engine = createSyncEngine({
@@ -27,5 +29,5 @@ export function createTestDependencies(overrides: Partial<Dependencies> = {}): T
     adapter,
   });
 
-  return { db, favorites, history, outbox, syncMeta, adapter, engine, ...overrides };
+  return { db, favorites, history, outbox, preferences, syncMeta, adapter, engine, ...overrides };
 }
