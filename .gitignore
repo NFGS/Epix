@@ -1,0 +1,42 @@
+# Dependencias
+node_modules/
+.pnpm-store/
+
+# Build
+dist/
+dist-ssr/
+build/
+*.local
+
+# Entorno (JAMÁS subir secretos)
+.env
+.env.*
+!.env.example
+
+# Tests y cobertura
+coverage/
+playwright-report/
+test-results/
+blob-report/
+
+# Editor / SO
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Deploy
+.vercel/
+.netlify/
+
+# OpenCode (local)
+.opencode/
+
+# Material de clase (pesado, no versionar: video >100 MB)
+Memory/

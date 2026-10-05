@@ -1,0 +1,298 @@
+{
+  "info": {
+    "_postman_id": "e9a1b2c3-d4e5-4f60-8a7b-9c0d1e2f3a4b",
+    "name": "Epix — TVmaze API",
+    "description": "Colección de evidencias del consumo de la API pública de TVmaze para el proyecto Epix.\n\n- Base URL: https://api.tvmaze.com\n- Sin API key (la API es pública).\n- Licencia de datos: CC BY-SA 4.0 (atribución a TVmaze obligatoria).\n- Rate limit: ≥ 20 llamadas/10 s por IP → manejar HTTP 429 con backoff.\n\nEjecutar en orden: colección → carpeta 'Consumo de la aplicación'.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://api.tvmaze.com"
+    },
+    {
+      "key": "query",
+      "value": "girls"
+    },
+    {
+      "key": "showId",
+      "value": "1"
+    },
+    {
+      "key": "country",
+      "value": "CO"
+    },
+    {
+      "key": "date",
+      "value": "2026-10-05"
+    }
+  ],
+  "item": [
+    {
+      "name": "Consumo de la aplicación",
+      "description": "Peticiones que ejecuta la PWA Epix para cada requisito funcional.",
+      "item": [
+        {
+          "name": "RF-01 Buscar series",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Estado 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Responde en menos de 2 s', () => pm.expect(pm.response.responseTime).to.be.below(2000));",
+                  "pm.test('Es un arreglo de resultados', () => pm.expect(pm.response.json()).to.be.an('array'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/search/shows?q={{query}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "search",
+                "shows"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "{{query}}",
+                  "description": "Término de búsqueda (fuzzy, tolera pequeñas erratas)"
+                }
+              ]
+            },
+            "description": "Búsqueda principal de la pantalla Buscar (RF-01, CA-01.1)."
+          }
+        },
+        {
+          "name": "RF-02 Detalle de serie con elenco y episodios",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/shows/{{showId}}?embed[]=episodes&embed[]=cast",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "shows",
+                "{{showId}}"
+              ],
+              "query": [
+                {
+                  "key": "embed[]",
+                  "value": "episodes"
+                },
+                {
+                  "key": "embed[]",
+                  "value": "cast"
+                }
+              ]
+            },
+            "description": "Detalle de la serie con episodios y elenco embebidos (RF-02, CA-02.1)."
+          }
+        },
+        {
+          "name": "RF-03 Agenda por país y fecha",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/schedule?country={{country}}&date={{date}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "schedule"
+              ],
+              "query": [
+                {
+                  "key": "country",
+                  "value": "{{country}}",
+                  "description": "Código ISO 3166-1 (GB para Reino Unido, no UK)"
+                },
+                {
+                  "key": "date",
+                  "value": "{{date}}",
+                  "description": "Fecha ISO 8601 (YYYY-MM-DD)"
+                }
+              ]
+            },
+            "description": "Programación del país detectado por GPS o elegido manualmente (RF-03 + RF-09)."
+          }
+        },
+        {
+          "name": "RF-03b Agenda web/streaming",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/schedule/web?country={{country}}&date={{date}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "schedule",
+                "web"
+              ],
+              "query": [
+                {
+                  "key": "country",
+                  "value": "{{country}}"
+                },
+                {
+                  "key": "date",
+                  "value": "{{date}}"
+                }
+              ]
+            },
+            "description": "Episodios de canales web locales/globales (complemento de la agenda)."
+          }
+        },
+        {
+          "name": "RF-10 Próximo episodio de un favorito",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/shows/{{showId}}?embed=nextepisode",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "shows",
+                "{{showId}}"
+              ],
+              "query": [
+                {
+                  "key": "embed",
+                  "value": "nextepisode",
+                  "description": "Datos del próximo episodio para el recordatorio (RF-10)"
+                }
+              ]
+            },
+            "description": "Fuente de datos para las notificaciones locales de nuevos episodios."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Exploración y respaldo",
+      "description": "Peticiones auxiliares de análisis (no las usa la app directamente).",
+      "item": [
+        {
+          "name": "Índice de series (paginado)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/shows?page=0",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "shows"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0"
+                }
+              ]
+            },
+            "description": "250 series por página; caché del servidor de 24 h. Útil para sincronización masiva."
+          }
+        },
+        {
+          "name": "Actualizaciones recientes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/updates/shows?since=day",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "updates",
+                "shows"
+              ],
+              "query": [
+                {
+                  "key": "since",
+                  "value": "day",
+                  "description": "day | week | month"
+                }
+              ]
+            },
+            "description": "Series modificadas en el último día; ideal para refrescar caché local."
+          }
+        },
+        {
+          "name": "Búsqueda de personas",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/search/people?q=lauren",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "search",
+                "people"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "lauren"
+                }
+              ]
+            },
+            "description": "Búsqueda de personas (extensible a futuras funciones de Epix)."
+          }
+        },
+        {
+          "name": "Detalle de error esperado (404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('La API responde 404 para recursos inexistentes', () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/shows/999999999",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "shows",
+                "999999999"
+              ]
+            },
+            "description": "Evidencia del manejo de errores: TVmaze responde 404 y la PWA muestra un estado de error con reintento."
+          }
+        }
+      ]
+    }
+  ]
+}
