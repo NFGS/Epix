@@ -10,7 +10,7 @@ Buen día, docente Hernán Henao.
 Le comparto los avances del proyecto **Epix** (aplicación PWA de series y TV con la API de TVmaze).
 
 **Documentación en Notion (publicada en web):**
-[ENLACE PÚBLICO DE NOTION]
+https://sunset-conga-11b.notion.site/Epix-Documentaci-n-del-Proyecto-3f07d55fd95e802a95b9ce5191f3ecc8
 
 La página incluye:
 1. Descripción de la API TVmaze (endpoints, rate limit, CORS, licencia CC BY-SA).
@@ -42,11 +42,11 @@ SENA — Centro de Comercio y Turismo, Armenia (Quindío)
 
 ## Instrucciones para el envío (para Fabián)
 
-1. Publicar la página raíz de Notion: abrir "Epix — Documentación del Proyecto" → menú `•••`
-   (arriba a la derecha) → **Publicar en la web** → copiar el enlace público
-   (activar "incluir subpáginas" para que el docente vea todo).
-2. Reemplazar `[ENLACE PÚBLICO DE NOTION]` con ese enlace.
-3. Enviar el correo desde tu cuenta institucional/personal a `hhenao@sena.edu.co`.
+1. Verificar en una ventana de incógnito que el enlace abre sin iniciar sesión:
+   https://sunset-conga-11b.notion.site/Epix-Documentaci-n-del-Proyecto-3f07d55fd95e802a95b9ce5191f3ecc8
+   - Si aún no es público: abrir la página "Epix — Documentación del Proyecto" → menú `•••` →
+     **Publicar en la web** → activar "incluir subpáginas" → copiar el enlace público.
+2. Enviar el correo (texto listo arriba) desde tu cuenta a `hhenao@sena.edu.co`.
 
 > Nota: el API de Notion no permite activar la publicación ni enviar correos de forma automática;
-> por eso este paso es manual. Todo el contenido ya queda listo en el workspace.
+> por eso la verificación y el envío son manuales. Todo el contenido ya está cargado en el workspace.
