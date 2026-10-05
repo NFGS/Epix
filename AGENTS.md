@@ -24,6 +24,7 @@ colección Postman como evidencia y documentación publicada en Notion.
 - **Nube**: Supabase (PostgreSQL + RLS + auth anónima) para telemetría y sincronización.
 - **Tests**: Vitest + Testing Library (unit) y Playwright (E2E, capturas).
 - **Calidad**: ESLint + Prettier. Gates obligatorios: `lint`, `typecheck`, `test:unit`, `build`.
+- **Diseño**: sistema propio en `docs/design/DESIGN.md` (Open Design: base *Spotify* × disciplina *Runway*, acento Epix `#6C4CF1`; ver `.open-design.json`).
 
 ## 🗂️ Arquitectura (Clean Architecture ligera)
 
@@ -78,4 +79,5 @@ pnpm test:e2e    # Playwright
 - [x] Fase 0 — Documentación base (README, AGENTS, SPEC, requisitos, glosario, referencias).
 - [x] Fase 1 — Investigación + documentación Notion.
 - [x] Fase 2 — Scaffolding, arquitectura y diseño base (incremento 1: tokens, layout, navegación, componentes, PWA, tests).
-- [ ] Fase 3 — Incrementos funcionales (API, caché, favoritos, personalización, GPS, notificaciones, telemetría).
+- [x] Fase 3 · Incrementos 2–3 — API TVmaze (Zod + caché Workbox) y persistencia offline-first (favoritos, historial, outbox y sync Supabase).
+- [ ] Fase 3 · Incrementos 4–7 — Personalización, GPS, notificaciones y telemetría.

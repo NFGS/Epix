@@ -40,3 +40,6 @@ pnpm-debug.log*
 
 # Material de clase (pesado, no versionar: video >100 MB)
 Memory/
+
+# Workspace local de archify (los diagramas finales viven en docs/diagramas/)
+.archify/
