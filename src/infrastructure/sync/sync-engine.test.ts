@@ -2,13 +2,14 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import type { SyncAdapter } from '@/application/ports/sync-adapter';
 import type { FavoriteShow } from '@/domain/entities/favorite';
+import type { UsageEvent } from '@/domain/entities/usage-event';
 import { createEpixDatabase, type EpixDatabase } from '@/infrastructure/local/db';
 import { createFavoritesRepository } from '@/infrastructure/local/favorites.repository';
 import { createHistoryRepository } from '@/infrastructure/local/history.repository';
 import { createOutboxRepository } from '@/infrastructure/local/outbox.repository';
 import { createSyncMetaRepository } from '@/infrastructure/local/sync-meta.repository';
 
-import { createSyncEngine, type SyncEngineStatus } from './sync-engine';
+import { createSyncEngine, type SyncEngineEvent, type SyncEngineStatus } from './sync-engine';
 
 const NOW = '2026-10-05T12:00:00.000Z';
 const T1 = '2026-10-05T10:00:00.000Z';
@@ -36,11 +37,16 @@ function createFakeAdapter(overrides: Partial<SyncAdapter> = {}): SyncAdapter {
     deleteFavorites: vi.fn(async () => undefined),
     pushHistory: vi.fn(async () => undefined),
     clearRemoteHistory: vi.fn(async () => undefined),
+    pushEvents: vi.fn(async () => undefined),
+    clearRemoteEvents: vi.fn(async () => undefined),
     ...overrides,
   };
 }
 
-function createHarness(adapter: SyncAdapter | null) {
+function createHarness(
+  adapter: SyncAdapter | null,
+  onSyncEvent?: (event: SyncEngineEvent, payload?: Record<string, unknown>) => void,
+) {
   const db = createEpixDatabase(`epix-sync-${crypto.randomUUID()}`);
   databases.push(db);
 
@@ -55,9 +61,21 @@ function createHarness(adapter: SyncAdapter | null) {
     meta,
     adapter,
     now: () => NOW,
+    ...(onSyncEvent === undefined ? {} : { onSyncEvent }),
   });
 
   return { db, outbox, repoFavorites, repoHistory, meta, engine };
+}
+
+function createUsageEvent(overrides: Partial<UsageEvent> = {}): UsageEvent {
+  return {
+    id: 'event-1',
+    eventType: 'session_start',
+    occurredAt: T1,
+    timezone: 'America/Bogota',
+    appVersion: '0.1.0',
+    ...overrides,
+  };
 }
 
 afterEach(async () => {
@@ -183,5 +201,89 @@ describe('sync engine', () => {
     expect(second).toBe(first);
     await first;
     expect(adapter.ensureSession).toHaveBeenCalledTimes(1);
+  });
+
+  it('empuja los eventos de telemetría al adaptador y los marca enviados', async () => {
+    const adapter = createFakeAdapter();
+    const harness = createHarness(adapter);
+    const event = createUsageEvent({ payload: { path: '/' } });
+
+    await harness.outbox.enqueue({
+      entity: 'telemetry',
+      operation: 'push',
+      entityId: event.id,
+      payload: event,
+      opId: event.id,
+      createdAt: T1,
+    });
+
+    await harness.engine.syncNow();
+
+    expect(adapter.pushEvents).toHaveBeenCalledWith([
+      expect.objectContaining({
+        id: 'event-1',
+        eventType: 'session_start',
+        timezone: 'America/Bogota',
+      }),
+    ]);
+    expect(await harness.outbox.listPending()).toEqual([]);
+    expect(harness.engine.getStatus().state).toBe('idle');
+  });
+
+  it('borra la telemetría remota con la operación clear', async () => {
+    const adapter = createFakeAdapter();
+    const harness = createHarness(adapter);
+
+    await harness.outbox.enqueue({
+      entity: 'telemetry',
+      operation: 'clear',
+      entityId: null,
+      payload: null,
+      createdAt: T1,
+    });
+
+    await harness.engine.syncNow();
+
+    expect(adapter.clearRemoteEvents).toHaveBeenCalledTimes(1);
+    expect(await harness.outbox.listPending()).toEqual([]);
+  });
+
+  it('no reporta sync_success si la corrida solo empujó telemetría (evita bucles)', async () => {
+    const adapter = createFakeAdapter();
+    const onSyncEvent = vi.fn();
+    const harness = createHarness(adapter, onSyncEvent);
+    const event = createUsageEvent();
+
+    await harness.outbox.enqueue({
+      entity: 'telemetry',
+      operation: 'push',
+      entityId: event.id,
+      payload: event,
+      opId: event.id,
+      createdAt: T1,
+    });
+
+    await harness.engine.syncNow();
+
+    expect(onSyncEvent).not.toHaveBeenCalled();
+  });
+
+  it('reporta sync_success cuando la corrida empujó datos funcionales', async () => {
+    const adapter = createFakeAdapter();
+    const onSyncEvent = vi.fn();
+    const harness = createHarness(adapter, onSyncEvent);
+
+    await harness.repoFavorites.add(createFavorite());
+    await harness.outbox.enqueue({
+      entity: 'favorite',
+      operation: 'upsert',
+      entityId: 5,
+      payload: createFavorite(),
+      createdAt: T1,
+    });
+
+    await harness.engine.syncNow();
+
+    expect(onSyncEvent).toHaveBeenCalledWith('sync_success', { pushed: 1 });
   });
 });

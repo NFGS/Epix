@@ -60,7 +60,7 @@ export function writeLastReminderRun(
 
 /** Dispara la corrida de recordatorios con los datos de la app y expone su estado. */
 export function useEpisodeReminders(): EpisodeRemindersHandle {
-  const { preferences, favorites, notified, notifications } = useDependencies();
+  const { preferences, favorites, notified, notifications, telemetry } = useDependencies();
   const { shows } = useRepositories();
   const { t } = useI18n();
   const [status, setStatus] = useState<'idle' | 'running' | 'done'>('idle');
@@ -75,6 +75,7 @@ export function useEpisodeReminders(): EpisodeRemindersHandle {
         shows,
         notified,
         notifications,
+        telemetry,
         labels: {
           title: t.notificationsContent.episodeTodayTitle,
           bodyTemplate: t.notificationsContent.episodeTodayBody,
@@ -89,7 +90,7 @@ export function useEpisodeReminders(): EpisodeRemindersHandle {
     } finally {
       setStatus('done');
     }
-  }, [preferences, favorites, shows, notified, notifications, t]);
+  }, [preferences, favorites, shows, notified, notifications, telemetry, t]);
 
   return { status, result, checkNow };
 }

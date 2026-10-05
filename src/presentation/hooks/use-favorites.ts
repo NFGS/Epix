@@ -40,7 +40,7 @@ export function useToggleFavorite(show: Show | null) {
 
     setIsPending(true);
     try {
-      await toggleFavorite(
+      const isNowFavorite = await toggleFavorite(
         {
           favorites: deps.favorites,
           outbox: deps.outbox,
@@ -49,6 +49,9 @@ export function useToggleFavorite(show: Show | null) {
         },
         show,
       );
+      void deps.telemetry.track(isNowFavorite ? 'favorite_add' : 'favorite_remove', {
+        showId: show.id,
+      });
     } finally {
       setIsPending(false);
     }

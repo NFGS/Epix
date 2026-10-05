@@ -3,6 +3,7 @@ import type { UserPreferences } from '@/domain/entities/preferences';
 import type { Episode } from '@/domain/entities/show';
 import type { NotificationsPort, NotificationPermissionState } from '@/domain/ports/notifications';
 import type { NotifiedRepository } from '@/domain/ports/notified-repository';
+import type { TelemetryPort } from '@/domain/ports/telemetry';
 import { formatTemplate } from '@/shared/lib/format';
 
 import {
@@ -26,6 +27,8 @@ export interface RunEpisodeRemindersDeps {
   notified: NotifiedRepository;
   notifications: Pick<NotificationsPort, 'getPermissionState' | 'showLocalNotification'>;
   labels: EpisodeReminderLabels;
+  /** Telemetría opcional: registra `notification_shown` si el usuario la aceptó. */
+  telemetry?: TelemetryPort;
   now?: () => Date;
   maxPerRun?: number;
 }
@@ -93,6 +96,11 @@ export async function runEpisodeReminders(
       showId: reminder.showId,
       episodeId: reminder.episode.id,
       notifiedAt: now.toISOString(),
+    });
+
+    void deps.telemetry?.track('notification_shown', {
+      showId: reminder.showId,
+      episodeId: reminder.episode.id,
     });
   }
 

@@ -233,8 +233,7 @@ export function ShowDetailScreen() {
   const episodesQuery = useShowEpisodes(showId);
 
   const isShowLoading = isValidId && showQuery.isPending && showQuery.isFetching;
-  const isEpisodesLoading =
-    isValidId && episodesQuery.isPending && episodesQuery.isFetching;
+  const isEpisodesLoading = isValidId && episodesQuery.isPending && episodesQuery.isFetching;
 
   const show = showQuery.data ?? null;
   const recordedShowIds = useRef<Set<number>>(new Set());
@@ -255,6 +254,7 @@ export function ShowDetailScreen() {
       },
       { showId: show.id, showName: show.name },
     );
+    void deps.telemetry.track('show_open', { showId: show.id });
   }, [deps, show]);
 
   if (!isValidId || (!isShowLoading && !showQuery.isError && show === null)) {

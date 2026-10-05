@@ -4,6 +4,7 @@ import type { FavoriteShow } from '@/domain/entities/favorite';
 import type { HistoryEntry, SearchHistoryEntry } from '@/domain/entities/history-entry';
 import type { UserPreferences } from '@/domain/entities/preferences';
 import type { SyncStatus } from '@/domain/entities/sync-status';
+import type { UsageEvent } from '@/domain/entities/usage-event';
 import type { NotifiedEpisode } from '@/domain/ports/notified-repository';
 import type { OutboxOperation } from '@/domain/ports/outbox-repository';
 
@@ -30,6 +31,7 @@ export class EpixDatabase extends Dexie {
   outbox!: Table<OutboxOperation, number>;
   syncMeta!: Table<SyncMetaRecord, string>;
   notified!: Table<NotifiedEpisode, string>;
+  usageEvents!: Table<UsageEvent, string>;
 
   constructor(name = 'epix') {
     super(name);
@@ -44,6 +46,10 @@ export class EpixDatabase extends Dexie {
     // v2 (Incremento 6): recordatorios enviados; las tablas previas se conservan.
     this.version(2).stores({
       notified: 'key, showId, episodeId, notifiedAt',
+    });
+    // v3 (Incremento 7): telemetría local con poda; las tablas previas se conservan.
+    this.version(3).stores({
+      usageEvents: 'id, occurredAt',
     });
   }
 }

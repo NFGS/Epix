@@ -187,3 +187,21 @@ export function CloudOffIcon({ className }: IconProps) {
     </svg>
   );
 }
+
+export function FilterIcon({ className }: IconProps) {
+  return (
+    <svg {...iconProps(className)}>
+      <path d="M4 5h16" />
+      <path d="M7 12h10" />
+      <path d="M10 19h4" />
+    </svg>
+  );
+}
+
+export function ActivityIcon({ className }: IconProps) {
+  return (
+    <svg {...iconProps(className)}>
+      <path d="M3 12h4l2.5-6 4 12 2.5-6h5" />
+    </svg>
+  );
+}

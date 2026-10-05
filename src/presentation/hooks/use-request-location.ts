@@ -14,6 +14,7 @@ import {
 import type { Dictionary } from '@/shared/i18n/dictionaries';
 import { useI18n } from '@/shared/i18n/i18n-context';
 
+import { useDependencies } from './dependencies-context';
 import { useUpdatePreferences } from './use-preferences';
 
 export type LocationRequestStatus = 'idle' | 'requesting' | 'success' | 'error';
@@ -79,6 +80,7 @@ export function useRequestLocation(
   options: UseRequestLocationOptions = {},
 ): UseRequestLocationResult {
   const { t } = useI18n();
+  const { telemetry } = useDependencies();
   const updatePreferences = useUpdatePreferences();
   const [status, setStatus] = useState<LocationRequestStatus>('idle');
   const [errorCode, setErrorCode] = useState<LocationErrorCode | null>(null);
@@ -100,6 +102,7 @@ export function useRequestLocation(
         setDetectedCountry(country);
         await updatePreferences({ country, countrySource: 'gps' });
         setStatus('success');
+        void telemetry.track('gps_used', { country });
       })
       .catch((error: unknown) => {
         setErrorCode(toLocationErrorCode(error));
@@ -108,7 +111,7 @@ export function useRequestLocation(
       .finally(() => {
         requestInFlight.current = false;
       });
-  }, [resolveCountryFn, updatePreferences]);
+  }, [resolveCountryFn, updatePreferences, telemetry]);
 
   const reset = useCallback(() => {
     setStatus('idle');

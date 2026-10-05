@@ -19,6 +19,15 @@ function createLegacyV1Database(name: string): Dexie {
   return legacy;
 }
 
+/** Réplica del esquema v2 (Incremento 6) para probar la migración a v3. */
+function createLegacyV2Database(name: string): Dexie {
+  const legacy = createLegacyV1Database(name);
+  legacy.version(2).stores({
+    notified: 'key, showId, episodeId, notifiedAt',
+  });
+  return legacy;
+}
+
 describe('EpixDatabase · migración v1 → v2', () => {
   let db: EpixDatabase | null = null;
 
@@ -65,5 +74,37 @@ describe('EpixDatabase · migración v1 → v2', () => {
 
     await db.notified.put({ key: '1:5', showId: 1, episodeId: 5, notifiedAt: T1 });
     expect(await db.notified.get('1:5')).toMatchObject({ showId: 1, episodeId: 5 });
+  });
+
+  it('agrega usageEvents en v3 sin perder las tablas de v1/v2', async () => {
+    const name = `epix-migration-v3-${crypto.randomUUID()}`;
+
+    const legacy = createLegacyV2Database(name);
+    await legacy.open();
+    await legacy.table('favorites').put({
+      showId: 9,
+      name: 'Severance',
+      genres: ['Drama'],
+      addedAt: T1,
+      updatedAt: T1,
+      syncStatus: 'pending',
+    });
+    await legacy.table('notified').put({ key: '9:12', showId: 9, episodeId: 12, notifiedAt: T1 });
+    legacy.close();
+
+    db = createEpixDatabase(name);
+    await db.open();
+
+    expect((await db.favorites.get(9))?.name).toBe('Severance');
+    expect(await db.notified.get('9:12')).toMatchObject({ episodeId: 12 });
+
+    await db.usageEvents.put({
+      id: 'event-1',
+      eventType: 'session_start',
+      occurredAt: T1,
+      timezone: 'America/Bogota',
+      appVersion: '0.1.0',
+    });
+    expect(await db.usageEvents.get('event-1')).toMatchObject({ eventType: 'session_start' });
   });
 });

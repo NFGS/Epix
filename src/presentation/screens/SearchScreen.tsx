@@ -54,6 +54,10 @@ export function SearchScreen() {
       },
       { query: normalizedQuery, resultCount: data.length },
     );
+    void deps.telemetry.track('search', {
+      query: normalizedQuery,
+      results: data.length,
+    });
   }, [deps, isSettled, normalizedQuery, data]);
 
   return (

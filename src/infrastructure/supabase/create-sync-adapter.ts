@@ -36,5 +36,7 @@ export function createLazySupabaseSyncAdapter(): SyncAdapter {
     deleteFavorites: async (showIds) => (await load()).deleteFavorites(showIds),
     pushHistory: async (entries) => (await load()).pushHistory(entries),
     clearRemoteHistory: async () => (await load()).clearRemoteHistory(),
+    pushEvents: async (events) => (await load()).pushEvents(events),
+    clearRemoteEvents: async () => (await load()).clearRemoteEvents(),
   };
 }

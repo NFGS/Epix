@@ -1,7 +1,13 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 
-import type { RemoteFavorite, RemoteHistoryEntry, SyncAdapter } from '@/application/ports/sync-adapter';
+import type {
+  RemoteFavorite,
+  RemoteHistoryEntry,
+  RemoteUsageEvent,
+  SyncAdapter,
+} from '@/application/ports/sync-adapter';
 import type { FavoriteSnapshot } from '@/domain/entities/favorite';
+import type { UsageEventPayload } from '@/domain/entities/usage-event';
 
 import { getSupabaseClient } from './client';
 
@@ -26,6 +32,17 @@ interface FavoriteDeleteRow {
   show_id: number;
   snapshot: FavoriteSnapshot | null;
   added_at: string;
+}
+
+interface UsageEventRow {
+  id: string;
+  user_id: string;
+  event_type: string;
+  occurred_at: string;
+  timezone: string | null;
+  country: string | null;
+  app_version: string | null;
+  payload: UsageEventPayload | null;
 }
 
 interface AuthErrorLike {
@@ -186,6 +203,36 @@ export function createSupabaseSyncAdapter(client: SupabaseClient): SyncAdapter {
       const uid = await getUserId();
       const { error } = await client.from('watch_history').delete().eq('user_id', uid);
       assertNoError(error, 'No se pudo limpiar el historial remoto');
+    },
+
+    async pushEvents(events: RemoteUsageEvent[]): Promise<void> {
+      if (events.length === 0) {
+        return;
+      }
+
+      const uid = await getUserId();
+      const rows: UsageEventRow[] = events.map((event) => ({
+        id: event.id,
+        user_id: uid,
+        event_type: event.eventType,
+        occurred_at: event.occurredAt,
+        timezone: event.timezone ?? null,
+        country: event.country ?? null,
+        app_version: event.appVersion ?? null,
+        payload: event.payload ?? null,
+      }));
+
+      const { error } = await client
+        .from('usage_events')
+        .upsert(rows, { onConflict: 'id', ignoreDuplicates: true });
+
+      assertNoError(error, 'No se pudo subir la telemetría');
+    },
+
+    async clearRemoteEvents(): Promise<void> {
+      const uid = await getUserId();
+      const { error } = await client.from('usage_events').delete().eq('user_id', uid);
+      assertNoError(error, 'No se pudo borrar la telemetría remota');
     },
   };
 }

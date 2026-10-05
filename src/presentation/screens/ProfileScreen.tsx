@@ -1,5 +1,6 @@
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 import { TVMAZE_GENRES } from '@/domain/content-rating';
 import { DEFAULT_PREFERENCES, type AgeRating } from '@/domain/entities/preferences';
@@ -8,7 +9,7 @@ import type { SyncEngineState } from '@/infrastructure/sync/sync-engine';
 import { AgeRatingSelector } from '@/presentation/components/AgeRatingSelector';
 import { GenreChips } from '@/presentation/components/GenreChips';
 import { Spinner } from '@/presentation/components/Spinner';
-import { BellIcon, LocationIcon, RefreshIcon } from '@/presentation/components/icons';
+import { ActivityIcon, BellIcon, LocationIcon, RefreshIcon } from '@/presentation/components/icons';
 import { useDependencies } from '@/presentation/hooks/dependencies-context';
 import {
   useEpisodeReminders,
@@ -26,33 +27,70 @@ import { SCHEDULE_COUNTRIES } from '@/shared/lib/locale';
 import type { ThemePreference } from '@/presentation/hooks/theme-context';
 import { useTheme } from '@/presentation/hooks/theme-context';
 
-interface UpcomingControlProps {
+interface TelemetrySectionProps {
   label: string;
-  hint: string;
-  comingSoonLabel: string;
+  consent: string;
+  enabledNote: string;
+  disabledNote: string;
+  activityLabel: string;
 }
 
-function UpcomingControl({ label, hint, comingSoonLabel }: UpcomingControlProps) {
+function TelemetrySection({
+  label,
+  consent,
+  enabledNote,
+  disabledNote,
+  activityLabel,
+}: TelemetrySectionProps) {
+  const preferences = usePreferences();
+  const updatePreferences = useUpdatePreferences();
+  const enabled = preferences?.telemetryEnabled ?? false;
+
   return (
-    <div className="flex items-center justify-between gap-3 py-3">
-      <div>
-        <p className="text-sm font-medium">{label}</p>
-        <p className="text-xs text-muted">{hint}</p>
-      </div>
-      <div className="flex shrink-0 items-center gap-2">
-        <span className="rounded-full bg-surface-2 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-muted">
-          {comingSoonLabel}
-        </span>
+    <section className="space-y-3 rounded-xl border border-border bg-surface p-4">
+      <div className="flex items-center justify-between gap-3">
+        <div>
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-muted">{label}</h2>
+        </div>
+
         <button
           type="button"
           role="switch"
-          aria-checked={false}
+          aria-checked={enabled}
           aria-label={label}
-          disabled
-          className="relative h-6 w-11 cursor-not-allowed rounded-full bg-surface-2 opacity-70 after:absolute after:left-0.5 after:top-0.5 after:h-5 after:w-5 after:rounded-full after:bg-surface after:content-['']"
-        />
+          onClick={() => {
+            void updatePreferences({ telemetryEnabled: !enabled });
+          }}
+          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+        >
+          <span
+            className={[
+              'relative h-6 w-11 rounded-full transition-colors duration-150',
+              enabled ? 'bg-accent' : 'bg-surface-2',
+            ].join(' ')}
+          >
+            <span
+              className={[
+                'absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow-sm transition-transform duration-150',
+                enabled ? 'translate-x-5' : '',
+              ].join(' ')}
+            />
+          </span>
+        </button>
       </div>
-    </div>
+
+      <p className="text-xs leading-relaxed text-muted">{consent}</p>
+
+      <p className="text-xs leading-relaxed text-muted">{enabled ? enabledNote : disabledNote}</p>
+
+      <Link
+        to="/activity"
+        className="inline-flex min-h-11 items-center gap-2 rounded-full bg-surface-2 px-4 text-xs font-bold uppercase tracking-[1.4px] text-fg transition-colors duration-150 hover:text-accent-text"
+      >
+        <ActivityIcon className="h-4 w-4" />
+        {activityLabel}
+      </Link>
+    </section>
   );
 }
 
@@ -148,6 +186,7 @@ function SyncSection() {
 
 function ContentPreferencesSection() {
   const { t } = useI18n();
+  const { telemetry } = useDependencies();
   const preferences = usePreferences();
   const updatePreferences = useUpdatePreferences();
 
@@ -160,14 +199,17 @@ function ContentPreferencesSection() {
       : [...selectedGenres, genre];
 
     void updatePreferences({ favoriteGenres: nextGenres });
+    void telemetry.track('filter_change', { field: 'genres', value: nextGenres });
   };
 
   const handleAgeChange = (rating: AgeRating) => {
     void updatePreferences({ maxAgeRating: rating });
+    void telemetry.track('filter_change', { field: 'maxAgeRating', value: rating });
   };
 
   const handleReset = () => {
     void updatePreferences({ ...DEFAULT_PREFERENCES });
+    void telemetry.track('filter_change', { field: 'reset' });
   };
 
   return (
@@ -280,7 +322,7 @@ function reminderOutcomeLabel(outcome: EpisodeRemindersOutcome, t: Dictionary): 
 
 function NotificationsSection() {
   const { t } = useI18n();
-  const { notifications } = useDependencies();
+  const { notifications, telemetry } = useDependencies();
   const preferences = usePreferences();
   const updatePreferences = useUpdatePreferences();
   const { status, result, checkNow } = useEpisodeReminders();
@@ -304,6 +346,7 @@ function NotificationsSection() {
 
     const next = await notifications.requestPermission();
     setPermission(next);
+    void telemetry.track('notification_permission', { status: next });
 
     if (next === 'granted') {
       setPendingPermission(false);
@@ -435,6 +478,7 @@ function NotificationsSection() {
 export function ProfileScreen() {
   const { t, language, setLanguage } = useI18n();
   const { preference, setPreference } = useTheme();
+  const { telemetry } = useDependencies();
 
   return (
     <div className="space-y-6">
@@ -457,6 +501,10 @@ export function ProfileScreen() {
                 aria-pressed={preference === option.value}
                 onClick={() => {
                   setPreference(option.value);
+                  void telemetry.track('preference_change', {
+                    preference: 'theme',
+                    value: option.value,
+                  });
                 }}
                 className={[
                   'min-h-11 rounded-full border px-2 text-sm font-medium transition-colors duration-150',
@@ -485,6 +533,10 @@ export function ProfileScreen() {
                 aria-pressed={language === option.value}
                 onClick={() => {
                   setLanguage(option.value);
+                  void telemetry.track('preference_change', {
+                    preference: 'language',
+                    value: option.value,
+                  });
                 }}
                 className={[
                   'min-h-11 rounded-full border px-2 text-sm font-medium transition-colors duration-150',
@@ -506,13 +558,13 @@ export function ProfileScreen() {
 
       <NotificationsSection />
 
-      <section className="divide-y divide-border rounded-xl border border-border bg-surface px-4">
-        <UpcomingControl
-          label={t.screens.profile.telemetry}
-          hint={t.screens.profile.telemetryHint}
-          comingSoonLabel={t.common.comingSoon}
-        />
-      </section>
+      <TelemetrySection
+        label={t.screens.profile.telemetry}
+        consent={t.screens.profile.telemetryConsent}
+        enabledNote={t.screens.profile.telemetryEnabledNote}
+        disabledNote={t.screens.profile.telemetryDisabledNote}
+        activityLabel={t.screens.profile.telemetryActivity}
+      />
 
       <SyncSection />
     </div>

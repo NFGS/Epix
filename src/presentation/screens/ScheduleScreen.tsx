@@ -6,6 +6,7 @@ import { ScheduleItem } from '@/presentation/components/ScheduleItem';
 import { CalendarIcon, ChevronDownIcon, GlobeIcon } from '@/presentation/components/icons';
 import { useSchedule } from '@/presentation/hooks/queries/use-schedule';
 import { useSlowLoading } from '@/presentation/hooks/queries/use-slow-loading';
+import { useDependencies } from '@/presentation/hooks/dependencies-context';
 import { useFilteredShows } from '@/presentation/hooks/use-filtered-shows';
 import { useRequestLocation } from '@/presentation/hooks/use-request-location';
 import { useScheduleCountry } from '@/presentation/hooks/use-schedule-country';
@@ -33,6 +34,7 @@ function countryOptionName(code: string, locale: string): string {
 
 export function ScheduleScreen() {
   const { t, language } = useI18n();
+  const { telemetry } = useDependencies();
   const { country, countrySource, setCountry, setCountrySource } = useScheduleCountry();
   const location = useRequestLocation();
   const date = todayIso();
@@ -72,6 +74,10 @@ export function ScheduleScreen() {
             if (isScheduleCountryCode(event.target.value)) {
               location.reset();
               setCountry(event.target.value);
+              void telemetry.track('preference_change', {
+                preference: 'country',
+                value: event.target.value,
+              });
             }
           }}
           className="h-12 w-full appearance-none rounded-full border border-transparent bg-surface-2 pl-11 pr-11 text-sm font-medium text-fg transition-colors duration-150 focus:border-accent focus:outline-none focus:ring-4 focus:ring-accent-soft"

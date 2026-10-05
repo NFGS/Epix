@@ -161,3 +161,28 @@ describe('ProfileScreen · notificaciones (RF-10)', () => {
     expect(await screen.findByText('Notificación de prueba enviada.')).toBeInTheDocument();
   });
 });
+
+describe('ProfileScreen · telemetría (RF-11)', () => {
+  it('el interruptor persiste el consentimiento y enlaza a Mi actividad', async () => {
+    const user = userEvent.setup();
+    const dependencies = renderProfile();
+
+    const toggle = await screen.findByRole('switch', { name: 'Telemetría' });
+    await user.click(toggle);
+
+    await waitFor(async () => {
+      expect(toggle).toHaveAttribute('aria-checked', 'true');
+      expect((await dependencies.db.preferences.get('app'))?.telemetryEnabled).toBe(true);
+    });
+
+    expect(screen.getByRole('link', { name: /Mi actividad/ })).toHaveAttribute('href', '/activity');
+    expect(
+      screen.getByText(/registra la fecha y hora de uso, las opciones que usas/),
+    ).toBeInTheDocument();
+
+    await user.click(toggle);
+    await waitFor(async () => {
+      expect((await dependencies.db.preferences.get('app'))?.telemetryEnabled).toBe(false);
+    });
+  });
+});

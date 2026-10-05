@@ -5,8 +5,10 @@ import { createNotifiedRepository } from '@/infrastructure/local/notified.reposi
 import { createOutboxRepository } from '@/infrastructure/local/outbox.repository';
 import { createPreferencesRepository } from '@/infrastructure/local/preferences.repository';
 import { createSyncMetaRepository } from '@/infrastructure/local/sync-meta.repository';
+import { createUsageEventsRepository } from '@/infrastructure/local/usage-events.repository';
 import { createNotificationClient } from '@/infrastructure/notifications/notifications';
 import { createSyncEngine } from '@/infrastructure/sync/sync-engine';
+import { createTelemetryService } from '@/infrastructure/telemetry/telemetry-service';
 import type { Dependencies } from '@/presentation/hooks/dependencies-context';
 
 let databaseCounter = 0;
@@ -23,7 +25,16 @@ export function createTestDependencies(overrides: Partial<Dependencies> = {}): T
   const preferences = createPreferencesRepository(db);
   const syncMeta = createSyncMetaRepository(db);
   const notified = createNotifiedRepository(db);
+  const usageEvents = createUsageEventsRepository(db);
   const notifications = createNotificationClient({ api: null, getRegistration: null });
+  const telemetry = createTelemetryService({
+    eventsRepo: usageEvents,
+    outbox,
+    getPreferences: () => preferences.get(),
+    now: () => new Date().toISOString(),
+    timezone: () => 'America/Bogota',
+    appVersion: 'test',
+  });
   const adapter = null;
   const engine = createSyncEngine({
     outbox,
@@ -31,6 +42,9 @@ export function createTestDependencies(overrides: Partial<Dependencies> = {}): T
     repoHistory: history,
     meta: syncMeta,
     adapter,
+    onSyncEvent: (event, payload) => {
+      void telemetry.track(event, payload);
+    },
   });
 
   return {
@@ -42,6 +56,8 @@ export function createTestDependencies(overrides: Partial<Dependencies> = {}): T
     syncMeta,
     notified,
     notifications,
+    usageEvents,
+    telemetry,
     adapter,
     engine,
     ...overrides,

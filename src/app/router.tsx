@@ -1,6 +1,7 @@
 import { Route, Routes } from 'react-router-dom';
 
 import { AppLayout } from '@/presentation/layout/AppLayout';
+import { ActivityScreen } from '@/presentation/screens/ActivityScreen';
 import { FavoritesScreen } from '@/presentation/screens/FavoritesScreen';
 import { HistoryScreen } from '@/presentation/screens/HistoryScreen';
 import { HomeScreen } from '@/presentation/screens/HomeScreen';
@@ -20,6 +21,7 @@ export function AppRouter() {
         <Route path="/favorites" element={<FavoritesScreen />} />
         <Route path="/history" element={<HistoryScreen />} />
         <Route path="/profile" element={<ProfileScreen />} />
+        <Route path="/activity" element={<ActivityScreen />} />
         <Route path="/shows/:id" element={<ShowDetailScreen />} />
         <Route path="*" element={<NotFoundScreen />} />
       </Route>

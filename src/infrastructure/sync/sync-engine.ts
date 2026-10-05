@@ -1,4 +1,9 @@
-import type { RemoteFavorite, RemoteHistoryEntry, SyncAdapter } from '@/application/ports/sync-adapter';
+import type {
+  RemoteFavorite,
+  RemoteHistoryEntry,
+  RemoteUsageEvent,
+  SyncAdapter,
+} from '@/application/ports/sync-adapter';
 import { favoriteSnapshot, type FavoriteShow } from '@/domain/entities/favorite';
 import type { FavoritesRepository } from '@/domain/ports/favorites-repository';
 import type { HistoryRepository } from '@/domain/ports/history-repository';
@@ -15,6 +20,9 @@ export interface SyncEngineStatus {
   lastError?: string;
 }
 
+/** Transiciones del motor reportadas a telemetría (RF-11). */
+export type SyncEngineEvent = 'sync_success' | 'sync_error';
+
 export interface SyncEngine {
   getStatus(): SyncEngineStatus;
   subscribe(listener: () => void): () => void;
@@ -28,6 +36,12 @@ export interface SyncEngineDeps {
   meta: SyncMetaRepository;
   adapter: SyncAdapter | null;
   now?: () => string;
+  /**
+   * Observador de transiciones para telemetría. Se invoca solo cuando la
+   * corrida tocó operaciones que no son de telemetría: así el propio evento
+   * `sync_success`/`sync_error` nunca realimenta un bucle infinito de sync.
+   */
+  onSyncEvent?: (event: SyncEngineEvent, payload?: Record<string, unknown>) => void;
 }
 
 const EPOCH_ISO = new Date(0).toISOString();
@@ -61,6 +75,24 @@ function historyToRemote(operation: OutboxOperation): RemoteHistoryEntry {
   };
 }
 
+function telemetryToRemote(operation: OutboxOperation): RemoteUsageEvent {
+  if (operation.entity !== 'telemetry' || operation.operation !== 'push') {
+    throw new Error('La operación no es un push de telemetría.');
+  }
+
+  const { payload } = operation;
+
+  return {
+    id: payload.id,
+    eventType: payload.eventType,
+    occurredAt: payload.occurredAt,
+    timezone: payload.timezone,
+    country: payload.country,
+    appVersion: payload.appVersion,
+    payload: payload.payload,
+  };
+}
+
 export function createSyncEngine(deps: SyncEngineDeps): SyncEngine {
   const clock = deps.now ?? (() => new Date().toISOString());
   const listeners = new Set<() => void>();
@@ -90,6 +122,16 @@ export function createSyncEngine(deps: SyncEngineDeps): SyncEngine {
       return;
     }
 
+    if (operation.entity === 'telemetry') {
+      if (operation.operation === 'push') {
+        await adapter.pushEvents([telemetryToRemote(operation)]);
+        return;
+      }
+
+      await adapter.clearRemoteEvents();
+      return;
+    }
+
     if (operation.operation === 'push') {
       await adapter.pushHistory([historyToRemote(operation)]);
       return;
@@ -98,8 +140,18 @@ export function createSyncEngine(deps: SyncEngineDeps): SyncEngine {
     await adapter.clearRemoteHistory();
   }
 
-  async function pushPending(adapter: SyncAdapter): Promise<void> {
+  function report(event: SyncEngineEvent, payload?: Record<string, unknown>): void {
+    try {
+      deps.onSyncEvent?.(event, payload);
+    } catch {
+      // La observabilidad jamás interrumpe la sincronización.
+    }
+  }
+
+  /** Empuja el outbox en orden y cuenta las operaciones que no son de telemetría. */
+  async function pushPending(adapter: SyncAdapter): Promise<number> {
     const pending = await deps.outbox.listPending();
+    let pushedNonTelemetry = 0;
 
     for (const operation of pending) {
       if (operation.id === undefined) {
@@ -109,11 +161,23 @@ export function createSyncEngine(deps: SyncEngineDeps): SyncEngine {
       try {
         await applyOperation(adapter, operation);
         await deps.outbox.markSent(operation.id);
+
+        if (operation.entity !== 'telemetry') {
+          pushedNonTelemetry += 1;
+        }
       } catch (error) {
         await deps.outbox.markFailed(operation.id);
+
+        // Un fallo de telemetría no genera otro evento (evita bucles).
+        if (operation.entity !== 'telemetry') {
+          report('sync_error', { entity: operation.entity });
+        }
+
         throw error;
       }
     }
+
+    return pushedNonTelemetry;
   }
 
   async function pullFavorites(adapter: SyncAdapter): Promise<void> {
@@ -165,12 +229,18 @@ export function createSyncEngine(deps: SyncEngineDeps): SyncEngine {
       const userId = await adapter.ensureSession();
       await deps.meta.set('userId', userId);
 
-      await pushPending(adapter);
+      const pushedNonTelemetry = await pushPending(adapter);
       await pullFavorites(adapter);
 
       const lastSyncedAt = clock();
       await deps.meta.set('lastSyncAt', lastSyncedAt);
       setStatus({ state: 'idle', lastSyncedAt });
+
+      // Solo se reporta cuando la corrida tocó datos funcionales: si no, el
+      // propio evento de telemetría se reencolaría en cada sync (bucle).
+      if (pushedNonTelemetry > 0) {
+        report('sync_success', { pushed: pushedNonTelemetry });
+      }
     } catch (error) {
       setStatus({ state: 'error', lastError: errorMessage(error) });
     }

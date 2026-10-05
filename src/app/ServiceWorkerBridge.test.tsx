@@ -61,6 +61,27 @@ describe('ServiceWorkerBridge', () => {
     expect(screen.getByTestId('path')).toHaveTextContent('/shows/7');
   });
 
+  it('avisa el clic de la notificación antes de navegar (notification_open)', () => {
+    const { dispatch } = stubServiceWorker();
+    const onNotificationOpen = vi.fn();
+
+    render(
+      <MemoryRouter initialEntries={['/']}>
+        <ServiceWorkerBridge onNotificationOpen={onNotificationOpen} />
+        <Routes>
+          <Route path="*" element={<LocationProbe />} />
+        </Routes>
+      </MemoryRouter>,
+    );
+
+    act(() => {
+      dispatch({ type: 'navigate', url: '/shows/7' });
+    });
+
+    expect(onNotificationOpen).toHaveBeenCalledWith('/shows/7');
+    expect(screen.getByTestId('path')).toHaveTextContent('/shows/7');
+  });
+
   it('ignora mensajes con forma incorrecta o URLs externas', () => {
     const { dispatch } = stubServiceWorker();
     renderBridge();

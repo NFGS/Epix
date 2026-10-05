@@ -1,5 +1,6 @@
 import type { FavoriteShow } from '@/domain/entities/favorite';
 import type { HistoryEntry } from '@/domain/entities/history-entry';
+import type { UsageEvent } from '@/domain/entities/usage-event';
 
 export type OutboxStatus = 'pending' | 'sent' | 'failed';
 
@@ -40,11 +41,27 @@ export interface HistoryClearOperation extends OutboxBase {
   payload: null;
 }
 
+export interface TelemetryPushOperation extends OutboxBase {
+  entity: 'telemetry';
+  operation: 'push';
+  entityId: string;
+  payload: UsageEvent;
+}
+
+export interface TelemetryClearOperation extends OutboxBase {
+  entity: 'telemetry';
+  operation: 'clear';
+  entityId: null;
+  payload: null;
+}
+
 export type OutboxOperation =
   | FavoriteUpsertOperation
   | FavoriteDeleteOperation
   | HistoryPushOperation
-  | HistoryClearOperation;
+  | HistoryClearOperation
+  | TelemetryPushOperation
+  | TelemetryClearOperation;
 
 type NewOperation<T extends OutboxOperation> = Omit<
   T,
@@ -55,7 +72,9 @@ export type NewOutboxOperation =
   | NewOperation<FavoriteUpsertOperation>
   | NewOperation<FavoriteDeleteOperation>
   | NewOperation<HistoryPushOperation>
-  | NewOperation<HistoryClearOperation>;
+  | NewOperation<HistoryClearOperation>
+  | NewOperation<TelemetryPushOperation>
+  | NewOperation<TelemetryClearOperation>;
 
 export interface OutboxRepository {
   enqueue(operation: NewOutboxOperation): Promise<OutboxOperation>;

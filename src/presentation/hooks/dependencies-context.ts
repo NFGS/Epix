@@ -7,6 +7,8 @@ import type { NotificationsPort } from '@/domain/ports/notifications';
 import type { NotifiedRepository } from '@/domain/ports/notified-repository';
 import type { OutboxRepository } from '@/domain/ports/outbox-repository';
 import type { SyncMetaRepository } from '@/domain/ports/sync-meta-repository';
+import type { TelemetryPort } from '@/domain/ports/telemetry';
+import type { UsageEventsRepository } from '@/domain/ports/usage-events-repository';
 import type { EpixDatabase } from '@/infrastructure/local/db';
 import type { PreferencesRepositoryHandle } from '@/infrastructure/local/preferences.repository';
 import type { SyncEngine } from '@/infrastructure/sync/sync-engine';
@@ -21,6 +23,8 @@ export interface Dependencies {
   syncMeta: SyncMetaRepository;
   notified: NotifiedRepository;
   notifications: NotificationsPort;
+  usageEvents: UsageEventsRepository;
+  telemetry: TelemetryPort;
   adapter: SyncAdapter | null;
   engine: SyncEngine;
 }

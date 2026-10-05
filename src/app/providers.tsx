@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { BrowserRouter } from 'react-router-dom';
 
 import { createFavoritesRepository } from '@/infrastructure/local/favorites.repository';
@@ -8,12 +8,14 @@ import { createNotifiedRepository } from '@/infrastructure/local/notified.reposi
 import { createOutboxRepository } from '@/infrastructure/local/outbox.repository';
 import { createPreferencesRepository } from '@/infrastructure/local/preferences.repository';
 import { createSyncMetaRepository } from '@/infrastructure/local/sync-meta.repository';
+import { createUsageEventsRepository } from '@/infrastructure/local/usage-events.repository';
 import { createNotificationClient } from '@/infrastructure/notifications/notifications';
 import {
   createLazySupabaseSyncAdapter,
   hasSupabaseConfig,
 } from '@/infrastructure/supabase/create-sync-adapter';
 import { createSyncEngine } from '@/infrastructure/sync/sync-engine';
+import { createTelemetryService } from '@/infrastructure/telemetry/telemetry-service';
 import { DependenciesContext, type Dependencies } from '@/presentation/hooks/dependencies-context';
 import { createTvmazeScheduleRepository } from '@/infrastructure/tvmaze/tvmaze-schedule.repository';
 import { createTvmazeShowRepository } from '@/infrastructure/tvmaze/tvmaze-show.repository';
@@ -24,7 +26,9 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ThemeProvider } from '@/presentation/hooks/ThemeProvider';
 
 import { EpisodeReminderBootstrap } from './EpisodeReminderBootstrap';
+import { RouteTelemetry } from './RouteTelemetry';
 import { ServiceWorkerBridge } from './ServiceWorkerBridge';
+import { TelemetryBootstrap } from './TelemetryBootstrap';
 
 function createDependencies(): Dependencies {
   const db = createEpixDatabase();
@@ -34,7 +38,13 @@ function createDependencies(): Dependencies {
   const preferences = createPreferencesRepository(db);
   const syncMeta = createSyncMetaRepository(db);
   const notified = createNotifiedRepository(db);
+  const usageEvents = createUsageEventsRepository(db);
   const notifications = createNotificationClient();
+  const telemetry = createTelemetryService({
+    eventsRepo: usageEvents,
+    outbox,
+    getPreferences: () => preferences.get(),
+  });
   const adapter = hasSupabaseConfig() ? createLazySupabaseSyncAdapter() : null;
   const engine = createSyncEngine({
     outbox,
@@ -42,6 +52,9 @@ function createDependencies(): Dependencies {
     repoHistory: history,
     meta: syncMeta,
     adapter,
+    onSyncEvent: (event, payload) => {
+      void telemetry.track(event, payload);
+    },
   });
 
   return {
@@ -53,6 +66,8 @@ function createDependencies(): Dependencies {
     syncMeta,
     notified,
     notifications,
+    usageEvents,
+    telemetry,
     adapter,
     engine,
   };
@@ -81,6 +96,13 @@ export function AppProviders({ children }: { children: ReactNode }) {
   const [dependencies] = useState<Dependencies>(createDependencies);
   const repositoriesValue = useMemo(() => repositories, [repositories]);
 
+  const handleNotificationOpen = useCallback(
+    (url: string) => {
+      void dependencies.telemetry.track('notification_open', { url });
+    },
+    [dependencies],
+  );
+
   useEffect(() => {
     void dependencies.preferences.ensureSeeded();
     void dependencies.engine.syncNow();
@@ -102,7 +124,9 @@ export function AppProviders({ children }: { children: ReactNode }) {
           <ThemeProvider>
             <I18nProvider>
               <BrowserRouter>
-                <ServiceWorkerBridge />
+                <ServiceWorkerBridge onNotificationOpen={handleNotificationOpen} />
+                <TelemetryBootstrap telemetry={dependencies.telemetry} />
+                <RouteTelemetry telemetry={dependencies.telemetry} />
                 <EpisodeReminderBootstrap />
                 {children}
               </BrowserRouter>
