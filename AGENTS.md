@@ -79,5 +79,6 @@ pnpm test:e2e    # Playwright
 - [x] Fase 0 — Documentación base (README, AGENTS, SPEC, requisitos, glosario, referencias).
 - [x] Fase 1 — Investigación + documentación Notion.
 - [x] Fase 2 — Scaffolding, arquitectura y diseño base (incremento 1: tokens, layout, navegación, componentes, PWA, tests).
-- [x] Fase 3 · Incrementos 2–3 — API TVmaze (Zod + caché Workbox) y persistencia offline-first (favoritos, historial, outbox y sync Supabase).
-- [ ] Fase 3 · Incrementos 4–7 — Personalización, GPS, notificaciones y telemetría.
+- [x] Fase 3 · Incrementos 2–7 — API TVmaze + caché, offline-first con sync, personalización con filtros, GPS, notificaciones y telemetría.
+- [x] Calidad — 234 pruebas unitarias + 12 E2E (Playwright, API mockeada); Lighthouse 88/100/100; auditoría de seguridad sin hallazgos críticos.
+- [ ] Pendiente — activar Supabase real (`docs/entrega/guia-supabase.md`) y evidencias en Android físico (`docs/entrega/guia-verificacion-movil.md`).

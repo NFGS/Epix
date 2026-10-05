@@ -18,6 +18,7 @@ Capturas generadas con Chromium real (Playwright) contra el build de producción
 | `09-mi-actividad.png` | Telemetría opt-in: eventos con fecha/hora y búsquedas registradas (RF-11) |
 | `10-diagrama-arquitectura.png` | Diagrama Archify: arquitectura offline-first del cliente |
 | `11-diagrama-sync.png` | Diagrama Archify: secuencia de favorito offline → sincronización |
+| `lighthouse-inicio.json` | Informe Lighthouse (Inicio): rendimiento 88 · accesibilidad 100 · buenas prácticas 100 |
 
 > La revisión visual de los dos diagramas (legibilidad en desktop y móvil) fue realizada sobre
 > estas capturas: tipografía legible, sin recortes ni cruces problemáticos; no requirieron reparación.
@@ -30,8 +31,18 @@ pnpm build && pnpm preview --port 4173     # servidor de producción
 node docs/evidencias/capturar.mjs
 ```
 
-## Pendientes de evidencia (siguiente iteración)
+## Calidad automatizada (completada)
 
-- Suite E2E formal con `@playwright/test` (hoy: pruebas unitarias + verificación manual asistida).
-- Auditoría Lighthouse completa con informe PDF (se ejecutó la corrida automática; ver resumen en el historial del proyecto).
-- Captura de la app **instalada** en Android y de una **notificación** en el dispositivo real.
+- **E2E formal:** suite Playwright con 12 pruebas (navegación, búsqueda/detalle, favoritos/historial
+  persistentes, modo offline con service worker y personalización) — `pnpm test:e2e`, API mockeada.
+- **Auditoría de seguridad:** 0 hallazgos críticos/altos; endurecimientos aplicados (CSP, validación
+  de origen en SW, retención de outbox, LWW determinista, foco en diálogos).
+- **Accesibilidad:** Lighthouse 100 en Inicio.
+
+## Pendientes de evidencia (dispositivo físico)
+
+- Capturas en **Android físico** (instalación, notificación, GPS): seguir
+  [`docs/entrega/guia-verificacion-movil.md`](../entrega/guia-verificacion-movil.md) y guardar en
+  `capturas-android/`.
+- Sincronización multi-dispositivo: requiere cuentas reales (hoy cada dispositivo usa una identidad
+  anónima propia).

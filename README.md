@@ -39,7 +39,7 @@ pnpm dev         # servidor de desarrollo (http://localhost:5173)
 pnpm build       # build de producción (genera PWA)
 pnpm preview     # sirve el build (probamos SW/manifest)
 pnpm test:unit   # pruebas unitarias
-pnpm test:e2e    # pruebas end-to-end (disponible en fases siguientes)
+pnpm test:e2e    # pruebas end-to-end (Playwright, API mockeada)
 pnpm lint        # análisis estático
 pnpm typecheck   # verificación de tipos
 ```
