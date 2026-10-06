@@ -18,7 +18,8 @@ Capturas generadas con Chromium real (Playwright) contra el build de producción
 | `09-mi-actividad.png` | Telemetría opt-in: eventos con fecha/hora y búsquedas registradas (RF-11) |
 | `10-diagrama-arquitectura.png` | Diagrama Archify: arquitectura offline-first del cliente |
 | `11-diagrama-sync.png` | Diagrama Archify: secuencia de favorito offline → sincronización |
-| `lighthouse-inicio.json` | Informe Lighthouse (Inicio): rendimiento 88 · accesibilidad 100 · buenas prácticas 100 |
+| `lighthouse-inicio.json` | Informe Lighthouse (Inicio, local): rendimiento 88 · accesibilidad 100 · buenas prácticas 100 |
+| `lighthouse-produccion.json` | Informe Lighthouse de **producción** ([epix-xi.vercel.app](https://epix-xi.vercel.app)): rendimiento 86 · accesibilidad 100 · buenas prácticas 100, sin violaciones de CSP |
 | `12-produccion-inicio.png` | Producción real ([epix-xi.vercel.app](https://epix-xi.vercel.app)): inicio con SW activo |
 | `13-produccion-deeplink.png` | Deep link directo en producción (`/shows/169`) renderizando con datos reales de TVmaze |
 
