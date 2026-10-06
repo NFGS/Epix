@@ -14,9 +14,80 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/icons/pwa-192x192.png" />
     <title>Epix — Series y TV</title>
+    <style>
+      /* Shell estático: se pinta antes de cargar el JavaScript (mejora FCP/LCP en móvil).
+         React lo reemplaza al montar (createRoot vacía el contenedor). */
+      html {
+        background: #0e0d13;
+      }
+      .epix-splash {
+        min-height: 100dvh;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        align-items: flex-start;
+        padding: 88px 16px 0;
+        background: #0e0d13;
+      }
+      .epix-splash__brand {
+        margin: 0;
+        font:
+          800 28px/1.05 ui-sans-serif,
+          system-ui,
+          -apple-system,
+          'Segoe UI',
+          Roboto,
+          sans-serif;
+        letter-spacing: -0.02em;
+        color: #f2f1f6;
+      }
+      .epix-splash__skeleton {
+        width: 65%;
+        height: 220px;
+        border-radius: 12px;
+        background: #1e1d27;
+      }
+      .epix-splash__skeleton--short {
+        width: 40%;
+        height: 20px;
+        border-radius: 9999px;
+      }
+      @media (prefers-color-scheme: light) {
+        html,
+        .epix-splash {
+          background: #fafafc;
+        }
+        .epix-splash__brand {
+          color: #141218;
+        }
+        .epix-splash__skeleton {
+          background: #f1f0f5;
+        }
+      }
+      @media (prefers-reduced-motion: no-preference) {
+        .epix-splash__skeleton {
+          animation: epix-pulse 1.6s ease-in-out infinite;
+        }
+      }
+      @keyframes epix-pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.6;
+        }
+      }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div class="epix-splash" aria-hidden="true">
+        <p class="epix-splash__brand">Epix</p>
+        <div class="epix-splash__skeleton"></div>
+        <div class="epix-splash__skeleton epix-splash__skeleton--short"></div>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
