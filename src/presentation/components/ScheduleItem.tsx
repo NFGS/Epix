@@ -34,7 +34,10 @@ export function ScheduleItem({ entry, showTime = true }: ScheduleItemProps) {
           <img
             src={entry.showImageUrl}
             alt=""
+            width={44}
+            height={66}
             loading="lazy"
+            decoding="async"
             className="h-full w-full object-cover"
           />
         ) : (
@@ -64,8 +67,14 @@ export function ScheduleItem({ entry, showTime = true }: ScheduleItemProps) {
   );
 }
 
+interface SchedulePosterCardProps {
+  entry: ScheduleEntry;
+  /** Tarjeta destacada (primera visible): prioriza su imagen para el LCP. */
+  priority?: boolean;
+}
+
 /** Tarjeta de póster para la fila horizontal de «Hoy en TV». */
-export function SchedulePosterCard({ entry }: { entry: ScheduleEntry }) {
+export function SchedulePosterCard({ entry, priority = false }: SchedulePosterCardProps) {
   return (
     <Link
       to={`/shows/${entry.showId}`}
@@ -76,7 +85,11 @@ export function SchedulePosterCard({ entry }: { entry: ScheduleEntry }) {
           <img
             src={entry.showImageUrl}
             alt={entry.showName}
-            loading="lazy"
+            width={210}
+            height={315}
+            loading={priority ? 'eager' : 'lazy'}
+            fetchPriority={priority ? 'high' : undefined}
+            decoding="async"
             className="h-full w-full object-cover"
           />
         ) : (

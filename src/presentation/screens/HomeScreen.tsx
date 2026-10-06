@@ -82,8 +82,12 @@ export function HomeScreen() {
         ) : (
           <>
             <div className="-mx-4 flex gap-3 overflow-x-auto px-4 pb-1">
-              {visible.map((entry) => (
-                <SchedulePosterCard key={entry.episodeId} entry={entry} />
+              {visible.map((entry, index) => (
+                <SchedulePosterCard
+                  key={entry.episodeId}
+                  entry={entry}
+                  priority={index === 0}
+                />
               ))}
             </div>
             <HiddenResultsNote hiddenCount={hiddenCount} />

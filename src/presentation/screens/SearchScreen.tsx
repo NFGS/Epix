@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import { MIN_SEARCH_LENGTH } from '@/application/use-cases/search-shows';
 import { recordSearch } from '@/application/use-cases/record-search';
+import type { Show } from '@/domain/entities/show';
 import { useDebouncedValue } from '@/presentation/hooks/queries/use-debounced-value';
 import { EmptyState } from '@/presentation/components/EmptyState';
 import { ErrorState } from '@/presentation/components/ErrorState';
@@ -19,6 +20,49 @@ import { formatTemplate } from '@/shared/lib/format';
 import { useI18n } from '@/shared/i18n/i18n-context';
 
 const SKELETON_COUNT = 6;
+const RESULTS_PAGE_SIZE = 24;
+
+interface SearchResultsProps {
+  shows: Show[];
+  hiddenCount: number;
+}
+
+/**
+ * Resultados paginados en bloques de 24 para acotar el coste de render.
+ * Se remonta con cada consulta (vía `key`), reiniciando la paginación.
+ */
+function SearchResults({ shows, hiddenCount }: SearchResultsProps) {
+  const { t } = useI18n();
+  const [visibleCount, setVisibleCount] = useState(RESULTS_PAGE_SIZE);
+  const paginated = shows.slice(0, visibleCount);
+  const hasMore = paginated.length < shows.length;
+
+  return (
+    <>
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+        {paginated.map((show, index) => (
+          <ShowCard key={show.id} show={show} priority={index === 0} />
+        ))}
+      </div>
+
+      {hasMore && (
+        <div className="flex justify-center">
+          <button
+            type="button"
+            onClick={() => {
+              setVisibleCount((count) => count + RESULTS_PAGE_SIZE);
+            }}
+            className="inline-flex min-h-11 items-center rounded-full bg-surface-2 px-5 text-xs font-bold uppercase tracking-[1.4px] text-fg transition-colors duration-150 hover:bg-surface"
+          >
+            {t.screens.search.showMore}
+          </button>
+        </div>
+      )}
+
+      <HiddenResultsNote hiddenCount={hiddenCount} />
+    </>
+  );
+}
 
 export function SearchScreen() {
   const { t } = useI18n();
@@ -125,14 +169,7 @@ export function SearchScreen() {
           <HiddenResultsNote hiddenCount={hiddenCount} />
         </>
       ) : (
-        <>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-            {visible.map((show) => (
-              <ShowCard key={show.id} show={show} />
-            ))}
-          </div>
-          <HiddenResultsNote hiddenCount={hiddenCount} />
-        </>
+        <SearchResults key={normalizedQuery} shows={visible} hiddenCount={hiddenCount} />
       )}
     </div>
   );

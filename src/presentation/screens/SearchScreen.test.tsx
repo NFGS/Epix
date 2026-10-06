@@ -109,6 +109,30 @@ describe('SearchScreen', () => {
     });
   });
 
+  it('pagina los resultados: 24 al inicio y 48 tras «Mostrar más»', async () => {
+    const results = Array.from({ length: 60 }, (_, index) => ({
+      id: index + 1,
+      name: `Serie ${String(index + 1)}`,
+      genres: ['Drama'],
+      year: 2020,
+      rating: 7,
+    }));
+    const { repositories } = createRepositories(results);
+    const { container } = renderSearch(repositories, createTestDependencies());
+
+    fireEvent.change(screen.getByRole('searchbox'), { target: { value: 'serie' } });
+
+    expect(
+      await screen.findByText('60 resultados para «serie»', {}, { timeout: 3000 }),
+    ).toBeInTheDocument();
+
+    const cardCount = () => container.querySelectorAll('a[href^="/shows/"]').length;
+    expect(cardCount()).toBe(24);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Mostrar más' }));
+    expect(cardCount()).toBe(48);
+  });
+
   it('muestra ErrorState y «Reintentar» dispara refetch hasta recuperarse (R-07)', async () => {
     const search = vi
       .fn<ShowRepository['search']>()

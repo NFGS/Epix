@@ -52,6 +52,9 @@ jobs:
       - name: Build + PWA
         run: pnpm build
 
+      - name: Presupuesto de tamaño (bundle inicial)
+        run: pnpm size
+
       - name: Cache de navegadores Playwright
         uses: actions/cache@v4
         with:

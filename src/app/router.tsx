@@ -1,15 +1,56 @@
+import { lazy } from 'react';
 import { Route, Routes } from 'react-router-dom';
 
 import { AppLayout } from '@/presentation/layout/AppLayout';
-import { ActivityScreen } from '@/presentation/screens/ActivityScreen';
-import { FavoritesScreen } from '@/presentation/screens/FavoritesScreen';
-import { HistoryScreen } from '@/presentation/screens/HistoryScreen';
 import { HomeScreen } from '@/presentation/screens/HomeScreen';
-import { NotFoundScreen } from '@/presentation/screens/NotFoundScreen';
-import { ProfileScreen } from '@/presentation/screens/ProfileScreen';
-import { ScheduleScreen } from '@/presentation/screens/ScheduleScreen';
-import { SearchScreen } from '@/presentation/screens/SearchScreen';
-import { ShowDetailScreen } from '@/presentation/screens/ShowDetailScreen';
+
+const SearchScreen = lazy(() =>
+  import('@/presentation/screens/SearchScreen').then((module) => ({
+    default: module.SearchScreen,
+  })),
+);
+
+const ScheduleScreen = lazy(() =>
+  import('@/presentation/screens/ScheduleScreen').then((module) => ({
+    default: module.ScheduleScreen,
+  })),
+);
+
+const FavoritesScreen = lazy(() =>
+  import('@/presentation/screens/FavoritesScreen').then((module) => ({
+    default: module.FavoritesScreen,
+  })),
+);
+
+const HistoryScreen = lazy(() =>
+  import('@/presentation/screens/HistoryScreen').then((module) => ({
+    default: module.HistoryScreen,
+  })),
+);
+
+const ProfileScreen = lazy(() =>
+  import('@/presentation/screens/ProfileScreen').then((module) => ({
+    default: module.ProfileScreen,
+  })),
+);
+
+const ActivityScreen = lazy(() =>
+  import('@/presentation/screens/ActivityScreen').then((module) => ({
+    default: module.ActivityScreen,
+  })),
+);
+
+const ShowDetailScreen = lazy(() =>
+  import('@/presentation/screens/ShowDetailScreen').then((module) => ({
+    default: module.ShowDetailScreen,
+  })),
+);
+
+const NotFoundScreen = lazy(() =>
+  import('@/presentation/screens/NotFoundScreen').then((module) => ({
+    default: module.NotFoundScreen,
+  })),
+);
 
 export function AppRouter() {
   return (

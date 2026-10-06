@@ -1,8 +1,10 @@
+import { Suspense } from 'react';
 import { Outlet } from 'react-router-dom';
 
 import { AppHeader } from '@/presentation/components/AppHeader';
 import { BottomNav } from '@/presentation/components/BottomNav';
 import { OfflineBanner } from '@/presentation/components/OfflineBanner';
+import { RouteFallback } from '@/presentation/components/RouteFallback';
 import { useI18n } from '@/shared/i18n/i18n-context';
 
 export function AppLayout() {
@@ -13,7 +15,9 @@ export function AppLayout() {
       <AppHeader />
       <OfflineBanner />
       <main className="mx-auto w-full max-w-3xl flex-1 px-4 pb-28 pt-4">
-        <Outlet />
+        <Suspense fallback={<RouteFallback />}>
+          <Outlet />
+        </Suspense>
         <footer className="mt-10 text-center text-[11px] text-muted">
           {t.common.tvmazeAttribution} ·{' '}
           <a

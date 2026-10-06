@@ -11,9 +11,11 @@ interface ShowCardProps {
   show: Show;
   /** Acción superpuesta al póster (p. ej. quitar de favoritos). */
   action?: ReactNode;
+  /** Tarjeta destacada (primera visible): prioriza su imagen para el LCP. */
+  priority?: boolean;
 }
 
-export function ShowCard({ show, action }: ShowCardProps) {
+export function ShowCard({ show, action, priority = false }: ShowCardProps) {
   const meta = [show.year, show.genres[0]].filter((value) => value !== undefined).join(' · ');
   const hasAction = action !== undefined;
 
@@ -28,7 +30,11 @@ export function ShowCard({ show, action }: ShowCardProps) {
             <img
               src={show.imageUrl}
               alt={show.name}
-              loading="lazy"
+              width={210}
+              height={315}
+              loading={priority ? 'eager' : 'lazy'}
+              fetchPriority={priority ? 'high' : undefined}
+              decoding="async"
               className="h-full w-full object-cover transition-transform duration-150 ease-standard group-hover:scale-[1.03]"
             />
           ) : (

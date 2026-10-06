@@ -88,6 +88,7 @@ export const es = {
       noResultsDescription: 'Prueba con una palabra más corta o revisa la ortografía.',
       resultsOne: 'resultado para',
       resultsMany: 'resultados para',
+      showMore: 'Mostrar más',
       errorDescription: 'No pudimos consultar TVmaze. Revisa tu conexión e inténtalo de nuevo.',
     },
     detail: {
@@ -349,6 +350,7 @@ export const en: Dictionary = {
       noResultsDescription: 'Try a shorter word or check the spelling.',
       resultsOne: 'result for',
       resultsMany: 'results for',
+      showMore: 'Show more',
       errorDescription: "We couldn't query TVmaze. Check your connection and try again.",
     },
     detail: {

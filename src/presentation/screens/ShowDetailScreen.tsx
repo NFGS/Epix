@@ -98,7 +98,13 @@ function ShowHero({ show }: { show: Show }) {
   if (show.imageUrl !== undefined) {
     return (
       <section className="relative overflow-hidden rounded-2xl bg-surface-2">
-        <img src={show.imageUrl} alt="" className="h-80 w-full object-cover object-top" />
+        <img
+          src={show.imageUrl}
+          alt=""
+          fetchPriority="high"
+          decoding="async"
+          className="h-80 w-full object-cover object-top"
+        />
         <div className="absolute inset-0" style={{ background: HERO_SCRIM }} />
         <div className="absolute inset-x-0 bottom-0 p-4">
           <HeroInfo show={show} overlay />
