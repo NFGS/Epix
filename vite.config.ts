@@ -51,6 +51,9 @@ export default defineConfig({
       devOptions: { enabled: false },
     }),
   ],
+  build: {
+    sourcemap: true,
+  },
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
