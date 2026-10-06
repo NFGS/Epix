@@ -61,7 +61,19 @@ export default defineConfig({
     globals: true,
     setupFiles: ['./src/test/setup.ts', './src/test/setup-indexeddb.ts'],
     css: false,
-    coverage: { enabled: false },
+    coverage: {
+      enabled: false,
+      provider: 'v8',
+      reporter: ['text', 'json-summary'],
+      include: ['src/domain/**', 'src/application/**'],
+      exclude: ['**/*.test.ts', '**/*.test.tsx'],
+      thresholds: {
+        lines: 70,
+        functions: 70,
+        branches: 70,
+        statements: 70,
+      },
+    },
     exclude: [...configDefaults.exclude, 'e2e/**'],
   },
 });

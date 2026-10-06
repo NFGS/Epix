@@ -9,6 +9,7 @@ import type {
 } from '@/application/ports/sync-adapter';
 import type { FavoriteSnapshot } from '@/domain/entities/favorite';
 import type { UsageEventPayload } from '@/domain/entities/usage-event';
+import { logger } from '@/shared/lib/logger';
 
 import { getSupabaseClient } from './client';
 
@@ -128,7 +129,7 @@ export function createSupabaseSyncAdapter(client: SupabaseClient): SyncAdapter {
         const parsed = favoritePullRowSchema.safeParse(row);
 
         if (!parsed.success) {
-          console.warn(
+          logger.warn(
             'Epix: fila de favorito remoto omitida por datos inválidos.',
             parsed.error.message,
           );

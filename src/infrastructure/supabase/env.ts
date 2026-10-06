@@ -1,19 +1,11 @@
-export interface SupabaseEnv {
-  url: string;
-  anonKey: string;
-}
+import { appEnv, type SupabaseEnv } from '@/shared/lib/env';
+
+export type { SupabaseEnv };
 
 /**
- * Lee la configuración de Supabase desde `import.meta.env`.
- * Devuelve `null` si falta alguna variable (modo solo local).
+ * Configuración de Supabase resuelta por `shared/lib/env` (validada con Zod).
+ * Devuelve `null` si falta o es inválida: la app funciona en modo solo local.
  */
 export function readSupabaseEnv(): SupabaseEnv | null {
-  const url = import.meta.env.VITE_SUPABASE_URL?.trim();
-  const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY?.trim();
-
-  if (url === undefined || url === '' || anonKey === undefined || anonKey === '') {
-    return null;
-  }
-
-  return { url, anonKey };
+  return appEnv.supabase;
 }

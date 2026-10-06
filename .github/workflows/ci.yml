@@ -11,7 +11,7 @@ concurrency:
 
 jobs:
   quality:
-    name: Calidad (lint · tipos · unit · e2e)
+    name: Calidad (lint · tipos · cobertura · e2e)
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -35,11 +35,30 @@ jobs:
       - name: Typecheck
         run: pnpm typecheck
 
-      - name: Pruebas unitarias
-        run: pnpm test:unit
+      - name: Auditoría de dependencias
+        run: pnpm audit --audit-level=high
+
+      - name: Pruebas unitarias con cobertura (RNF-07)
+        run: pnpm exec vitest run --coverage
+
+      - name: Subir informe de cobertura
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage/
+          if-no-files-found: error
 
       - name: Build + PWA
         run: pnpm build
+
+      - name: Cache de navegadores Playwright
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-playwright-
 
       - name: Instalar Chromium (Playwright)
         run: pnpm exec playwright install --with-deps chromium
