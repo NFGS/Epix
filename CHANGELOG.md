@@ -1,0 +1,49 @@
+# Changelog
+
+Todos los cambios relevantes de este proyecto se documentan aquí.
+El formato sigue [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/)
+y el versionado [SemVer](https://semver.org/lang/es/).
+
+## [Unreleased]
+
+### Added
+- ADRs (MADR) de las decisiones arquitectónicas en `docs/adr/`.
+- Cobertura de pruebas con umbrales (domain/application ≥ 70 %).
+- Logger tipado y validación de variables de entorno con Zod.
+- CI ampliado: artefacto de cobertura, caché de Playwright, `pnpm audit`,
+  Dependabot y CodeQL.
+- Documentos de comunidad: CONTRIBUTING, SECURITY y CODE_OF_CONDUCT.
+
+## [1.0.0] - 2026-10-06
+
+### Added
+- PWA instalable (manifest + service worker) con React 19, Vite, TypeScript y
+  Tailwind CSS 4.
+- Consumo completo de la API pública de TVmaze (búsqueda, detalle, episodios y
+  agenda por país) con contratos Zod, timeouts, reintentos y backoff ante 429.
+- Caché de red Workbox: `NetworkFirst` para API y `CacheFirst` para imágenes.
+- Persistencia offline-first con Dexie/IndexedDB: favoritos, historial,
+  preferencias y cola *outbox* con resolución last-write-wins.
+- Sincronización con Supabase (PostgreSQL + RLS + sesiones anónimas) verificada
+  end-to-end en producción.
+- Personalización de interfaz (tema claro/oscuro/sistema, idioma es/en) y de
+  contenido (géneros favoritos y edad estimada por géneros).
+- GPS → país con consentimiento explícito, geocodificación inversa (Nominatim)
+  y alternativa manual.
+- Notificaciones locales de nuevos episodios con deep link a la serie.
+- Telemetría de uso opt-in con panel «Mi actividad» y borrado de datos.
+- Sistema de diseño propio (Open Design: base Spotify × disciplina Runway).
+- Evidencias: capturas, diagramas explorables (Archify) y colección Postman.
+
+### Security
+- CSP estricta como header HTTP en Vercel, `X-Content-Type-Options`,
+  `Referrer-Policy` y auditoría OWASP sin hallazgos críticos/altos.
+- Zod `jitless` para evitar `new Function` bajo CSP sin `'unsafe-eval'`.
+
+### Fixed
+- Correcciones de la revisión senior: purga del outbox al borrar datos, LWW
+  determinista, validación Zod del pull remoto, focus trap en diálogos y
+  validación de origen del service worker.
+
+[Unreleased]: https://github.com/NFGS/Epix/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/NFGS/Epix/releases/tag/v1.0.0

@@ -71,6 +71,7 @@ pnpm build       # build + PWA
 pnpm lint        # ESLint
 pnpm typecheck   # tsc --noEmit
 pnpm test:unit   # Vitest
+pnpm test:coverage # cobertura (umbral 70 % en domain/application)
 pnpm test:e2e    # Playwright
 ```
 
@@ -80,7 +81,8 @@ pnpm test:e2e    # Playwright
 - [x] Fase 1 — Investigación + documentación Notion.
 - [x] Fase 2 — Scaffolding, arquitectura y diseño base (incremento 1: tokens, layout, navegación, componentes, PWA, tests).
 - [x] Fase 3 · Incrementos 2–7 — API TVmaze + caché, offline-first con sync, personalización con filtros, GPS, notificaciones y telemetría.
-- [x] Calidad — 234 pruebas unitarias + 12 E2E (Playwright, API mockeada); Lighthouse 88/100/100; auditoría de seguridad sin hallazgos críticos.
+- [x] Calidad — 265 pruebas unitarias + 12 E2E (Playwright, API mockeada); cobertura domain/application 99 %; Lighthouse 88/100/100; auditoría de seguridad sin hallazgos críticos.
+- [x] Sprint 5.0 (fundaciones) — ADRs (MADR), cobertura con umbrales, logger tipado, validación de entorno con Zod, CI ampliado (Dependabot, CodeQL, auditoría, artefacto de cobertura) y documentos de comunidad (LICENSE, CHANGELOG, CONTRIBUTING, SECURITY, CODE_OF_CONDUCT).
 - [x] Despliegue — producción en [epix-xi.vercel.app](https://epix-xi.vercel.app) (Vercel; deep links, service worker y CSP verificados con navegador real).
 - [x] Nube — Supabase `epix-db` activo (migración + RLS + sesiones anónimas + env vars en Vercel); sincronización de favoritos y telemetría verificada en producción.
 - [ ] Pendiente — capturas en Android físico (`docs/entrega/guia-verificacion-movil.md`) y dominio propio (opcional).

@@ -41,6 +41,7 @@ pnpm dev         # servidor de desarrollo (http://localhost:5173)
 pnpm build       # build de producción (genera PWA)
 pnpm preview     # sirve el build (probamos SW/manifest)
 pnpm test:unit   # pruebas unitarias
+pnpm test:coverage # cobertura (domain/application ≥ 70 %)
 pnpm test:e2e    # pruebas end-to-end (Playwright, API mockeada)
 pnpm lint        # análisis estático
 pnpm typecheck   # verificación de tipos
@@ -62,6 +63,7 @@ pnpm typecheck   # verificación de tipos
 | [`docs/referencias.md`](./docs/referencias.md) | Referencias en formato APA 7 |
 | [`docs/investigacion/`](./docs/investigacion/) | Marco conceptual con fuentes |
 | [`docs/postman/`](./docs/postman/) | Colección Postman de TVmaze |
+| [`docs/adr/`](./docs/adr/) | Decisiones arquitectónicas en formato MADR |
 
 ## ⚖️ Licencias y atribución
 
