@@ -1,5 +1,7 @@
 # 🎬 Epix
 
+[![CI](https://github.com/NFGS/Epix/actions/workflows/ci.yml/badge.svg)](https://github.com/NFGS/Epix/actions/workflows/ci.yml)
+
 **PWA de series y televisión construida sobre la API pública de [TVmaze](https://www.tvmaze.com/api).**
 
 Proyecto académico del Tecnólogo en Análisis y Desarrollo de Software (SENA — Armenia, Quindío)
