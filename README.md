@@ -50,7 +50,7 @@ pnpm typecheck   # verificación de tipos
 
 - **App desplegada:** [https://epix-xi.vercel.app](https://epix-xi.vercel.app) (Vercel)
 - Build: `pnpm build` (salida `dist/`) · SPA rewrites y headers de caché en [`vercel.json`](./vercel.json)
-- Modo actual: **«Solo local»** (sin Supabase). Al configurar `VITE_SUPABASE_*` se requiere un nuevo deploy.
+- **Nube activa:** Supabase (`epix-db`) — favoritos, historial y telemetría sincronizan a PostgreSQL con RLS (sesiones anónimas).
 
 ## 📚 Documentación
 

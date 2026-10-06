@@ -22,6 +22,7 @@ Capturas generadas con Chromium real (Playwright) contra el build de producción
 | `lighthouse-produccion.json` | Informe Lighthouse de **producción** ([epix-xi.vercel.app](https://epix-xi.vercel.app)): rendimiento 86 · accesibilidad 100 · buenas prácticas 100, sin violaciones de CSP |
 | `12-produccion-inicio.png` | Producción real ([epix-xi.vercel.app](https://epix-xi.vercel.app)): inicio con SW activo |
 | `13-produccion-deeplink.png` | Deep link directo en producción (`/shows/169`) renderizando con datos reales de TVmaze |
+| `14-supabase-sincronizado.png` | Nube activa: favorito sincronizado a PostgreSQL y estado «Al día» en Perfil |
 
 > La revisión visual de los dos diagramas (legibilidad en desktop y móvil) fue realizada sobre
 > estas capturas: tipografía legible, sin recortes ni cruces problemáticos; no requirieron reparación.

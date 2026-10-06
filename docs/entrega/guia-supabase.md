@@ -1,5 +1,10 @@
 # Guía — Activar la nube real (Supabase) en Epix
 
+> **Estado: ✅ ACTIVADO (2026-10-06)** — proyecto `epix-db` (`qeadwdtzqgbdbrczhkuf`, región `us-east-1`):
+> migración + RLS (24 políticas) + sesiones anónimas + variables en Vercel, verificados end-to-end
+> desde producción (favorito «Breaking Bad» en `favorites`, 7 eventos en `usage_events`).
+> Esta guía queda como referencia para recrear la configuración desde cero.
+
 > **Cuándo:** cuando quieras sincronizar favoritos e historial entre dispositivos y guardar la
 > telemetría en una base de datos real. Sin estos pasos, Epix funciona 100 % local («Solo local»).
 > **Tiempo estimado:** 10 minutos. **Costo:** plan gratuito de Supabase.

@@ -82,4 +82,5 @@ pnpm test:e2e    # Playwright
 - [x] Fase 3 · Incrementos 2–7 — API TVmaze + caché, offline-first con sync, personalización con filtros, GPS, notificaciones y telemetría.
 - [x] Calidad — 234 pruebas unitarias + 12 E2E (Playwright, API mockeada); Lighthouse 88/100/100; auditoría de seguridad sin hallazgos críticos.
 - [x] Despliegue — producción en [epix-xi.vercel.app](https://epix-xi.vercel.app) (Vercel; deep links, service worker y CSP verificados con navegador real).
-- [ ] Pendiente — activar Supabase real (`docs/entrega/guia-supabase.md`) y evidencias en Android físico (`docs/entrega/guia-verificacion-movil.md`).
+- [x] Nube — Supabase `epix-db` activo (migración + RLS + sesiones anónimas + env vars en Vercel); sincronización de favoritos y telemetría verificada en producción.
+- [ ] Pendiente — capturas en Android físico (`docs/entrega/guia-verificacion-movil.md`) y dominio propio (opcional).
