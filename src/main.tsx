@@ -1,3 +1,5 @@
+import '@/shared/lib/zod-jitless';
+
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 
