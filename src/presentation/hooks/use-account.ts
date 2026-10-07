@@ -38,9 +38,11 @@ function toAccountState(user: AuthUser | null): AccountState {
     return { status: 'signed-out' };
   }
 
-  return user.email === null
+  const email = user.email?.trim() ?? '';
+
+  return email === ''
     ? { status: 'anonymous', userId: user.id }
-    : { status: 'linked', userId: user.id, email: user.email };
+    : { status: 'linked', userId: user.id, email };
 }
 
 /**

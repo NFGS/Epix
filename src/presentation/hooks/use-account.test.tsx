@@ -56,6 +56,16 @@ describe('useAccount · estados', () => {
     });
   });
 
+  it('trata un correo vacío como sesión anónima (Supabase puede devolver "")', async () => {
+    const fake = createFakeAuth();
+    vi.mocked(fake.auth.getUser).mockResolvedValue({ id: 'user-1', email: '' });
+    const { result } = renderAccount(createTestDependencies({ auth: fake.auth }));
+
+    await waitFor(() => {
+      expect(result.current.state).toEqual({ status: 'anonymous', userId: 'user-1' });
+    });
+  });
+
   it('resuelve una cuenta vinculada con su correo', async () => {
     const fake = createFakeAuth();
     vi.mocked(fake.auth.getUser).mockResolvedValue({ ...LINKED });

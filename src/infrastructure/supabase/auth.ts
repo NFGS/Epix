@@ -94,12 +94,19 @@ function assertNoError(error: SupabaseAuthErrorLike | null, context: string): vo
   }
 }
 
+function normalizeEmail(email: string | null | undefined): string | null {
+  const trimmed = email?.trim();
+  return trimmed ? trimmed : null;
+}
+
 function toAuthUser(user: { id: string; email?: string | null } | null | undefined): AuthUser {
   if (user === null || user === undefined) {
     throw new AuthError('unknown', 'Supabase no devolvió el usuario autenticado.');
   }
 
-  return { id: user.id, email: user.email ?? null };
+  // Los usuarios anónimos de Supabase pueden llegar con email '' (no null);
+  // normalizamos para que la UI los trate como anónimos y no como «vinculados».
+  return { id: user.id, email: normalizeEmail(user.email) };
 }
 
 /**
@@ -164,13 +171,13 @@ export function createSupabaseAuth(
       assertNoError(error, 'No se pudo leer la sesión');
 
       const user = data.session?.user ?? null;
-      return user === null ? null : { id: user.id, email: user.email ?? null };
+      return user === null ? null : toAuthUser(user);
     },
 
     onAuthStateChange(listener: (user: AuthUser | null) => void): () => void {
       const { data } = client.auth.onAuthStateChange((_event, session) => {
         const user = session?.user ?? null;
-        listener(user === null ? null : { id: user.id, email: user.email ?? null });
+        listener(user === null ? null : toAuthUser(user));
       });
 
       return () => {

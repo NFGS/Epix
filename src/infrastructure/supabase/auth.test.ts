@@ -287,6 +287,10 @@ describe('supabase auth · sesión', () => {
     const anonymousAuth = createSupabaseAuth(anonymous.client, { storage: createMemoryStorage() });
     expect(await anonymousAuth.getUser()).toEqual({ id: 'user-1', email: null });
 
+    const emptyEmail = createFakeClient({ session: { user: { id: 'user-1', email: '' } } });
+    const emptyEmailAuth = createSupabaseAuth(emptyEmail.client, { storage: createMemoryStorage() });
+    expect(await emptyEmailAuth.getUser()).toEqual({ id: 'user-1', email: null });
+
     const linked = createFakeClient({ session: { user: { id: 'user-2', email: 'a@b.co' } } });
     const linkedAuth = createSupabaseAuth(linked.client, { storage: createMemoryStorage() });
     expect(await linkedAuth.getUser()).toEqual({ id: 'user-2', email: 'a@b.co' });
