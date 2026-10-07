@@ -23,6 +23,8 @@ Capturas generadas con Chromium real (Playwright) contra el build de producción
 | `12-produccion-inicio.png` | Producción real ([epix-xi.vercel.app](https://epix-xi.vercel.app)): inicio con SW activo |
 | `13-produccion-deeplink.png` | Deep link directo en producción (`/shows/169`) renderizando con datos reales de TVmaze |
 | `14-supabase-sincronizado.png` | Nube activa: favorito sincronizado a PostgreSQL y estado «Al día» en Perfil |
+| `15-cuenta.png` | Cuenta (Sprint 5.2): flujo «Protege tu cuenta» con vinculación anónimo→permanente |
+| `16-perfil.png` | Perfil con la sección «Cuenta» y «Datos y sincronización» |
 
 > La revisión visual de los dos diagramas (legibilidad en desktop y móvil) fue realizada sobre
 > estas capturas: tipografía legible, sin recortes ni cruces problemáticos; no requirieron reparación.

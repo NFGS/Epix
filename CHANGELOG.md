@@ -13,6 +13,16 @@ y el versionado [SemVer](https://semver.org/lang/es/).
 - CI ampliado: artefacto de cobertura, caché de Playwright, `pnpm audit`,
   Dependabot y CodeQL.
 - Documentos de comunidad: CONTRIBUTING, SECURITY y CODE_OF_CONDUCT.
+- Cuentas reales: OTP por correo, vinculación anónimo→permanente (mismo `uid`),
+  sincronización multi-dispositivo con Realtime y sync multi-pestaña
+  (Web Locks + BroadcastChannel); pantalla «Cuenta» (ADR-0010).
+- Rendimiento: code splitting por ruta, shell estático de arranque, hints de
+  imagen LCP/CLS y presupuesto de tamaño (`size-limit`) en CI.
+
+### Fixed
+- El correo vacío (`''`) de los usuarios anónimos de Supabase se normaliza a
+  `null`: la pantalla «Cuenta» muestra el flujo de vinculación en vez de un
+  estado «vinculado» sin correo.
 
 ## [1.0.0] - 2026-10-06
 

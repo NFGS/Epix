@@ -59,6 +59,23 @@ pnpm dev        # o pnpm build && pnpm preview
    crea su propia identidad anónima; para compartir datos entre dispositivos haría falta iniciar
    sesión con la misma cuenta — evolución futura documentada en `docs/modelo-datos.md`).
 
+## Cuentas reales (OTP por correo) — Sprint 5.2
+
+Estado actual: pantalla «Cuenta» activa, Realtime habilitado en `favorites` y `site_url` configurada.
+
+**Requisito para enviar códigos reales:** con el proveedor de correo por defecto del plan gratuito,
+Supabase **no permite editar plantillas ni subir el límite de envíos** (2/hora). Para producción:
+
+1. Crea una cuenta en un proveedor SMTP transaccional (p. ej. Resend: 3.000 correos/mes gratis).
+2. En Supabase: **Authentication → Emails → SMTP Settings** → host, puerto, usuario y clave del proveedor.
+3. Con SMTP propio podrás editar las plantillas **Magic Link** y **Change Email** para incluir
+   `{{ .Token }}` (el código de 6 dígitos que pide la app) y ajustar `rate_limit_email_sent`.
+4. Prueba completa: Perfil → Cuenta → «Protege tu cuenta» → código → verificar (mismo `uid`, sin migrar datos);
+   en otro dispositivo → «Inicia sesión» con el mismo correo → favoritos e historial llegan con el pull.
+
+> Nota: mientras no haya SMTP propio, el flujo de código no puede completarse (el correo por defecto
+> no muestra el código). Todo lo demás (vinculación visible, Realtime, sync) está operativo.
+
 ## Problemas comunes
 
 | Síntoma | Causa probable | Solución |
