@@ -26,6 +26,10 @@ y el versionado [SemVer](https://semver.org/lang/es/).
 - El correo vacío (`''`) de los usuarios anónimos de Supabase se normaliza a
   `null`: la pantalla «Cuenta» muestra el flujo de vinculación en vez de un
   estado «vinculado» sin correo.
+- Auth: el campo de código solo aceptaba 6 dígitos mientras el proyecto emitía
+  de 8 (`mailer_otp_length`); ahora el proyecto emite 6 y el campo acepta
+  longitudes mayores. Los enlaces de correo establecen sesión
+  (`detectSessionInUrl`) y vuelven a `/account`.
 
 ## [1.0.0] - 2026-10-06
 

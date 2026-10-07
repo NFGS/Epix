@@ -1,39 +1,51 @@
 #!/usr/bin/env node
 /**
- * Configura el SMTP propio de Supabase para Epix (habilita códigos OTP reales
- * y sube el límite de envíos). Requiere en el entorno:
+ * Configura el SMTP propio de Supabase para Epix (habilita códigos OTP reales,
+ * plantillas con `{{ .Token }}` y el límite de envíos).
  *
- *   SUPABASE_ACCESS_TOKEN   token personal de Supabase (dashboard → Account → Access Tokens)
- *   RESEND_API_KEY          API key de Resend (re_...)   [o el SMTP de tu proveedor]
- *   SMTP_ADMIN_EMAIL        remitente/administrador, p. ej.:
- *                             - pruebas:  onboarding@resend.dev  (Resend solo entrega al correo dueño)
- *                             - producc.: no-reply@tudominio.com (requiere dominio verificado en Resend)
+ * Proveedores soportados (variables en ~/.config/secrets.env; nunca se imprimen):
+ *
+ *  A) Resend (por defecto si hay RESEND_API_KEY):
+ *       RESEND_API_KEY=re_...
+ *
+ *  B) Cualquier SMTP (Gmail, Brevo, …):
+ *       SMTP_HOST=smtp.gmail.com
+ *       SMTP_PORT=465
+ *       SMTP_USER=tucorreo@gmail.com
+ *       SMTP_PASS=contrasena-de-aplicacion
+ *
+ *  Comunes:
+ *   SUPABASE_ACCESS_TOKEN   token personal de Supabase
+ *   SMTP_ADMIN_EMAIL        remitente visible (p. ej. tucorreo@gmail.com)
  *   SMTP_SENDER_NAME        opcional (por defecto «Epix»)
  *   SUPABASE_PROJECT_REF    opcional (por defecto el proyecto epix-db)
  *
- * Uso:  node scripts/setup-smtp.mjs
- * (Los secretos se leen del entorno; nunca se imprimen.)
+ * Uso:
+ *   set -a; . ~/.config/secrets.env; set +a; node scripts/setup-smtp.mjs
  */
-const HOST = 'smtp.resend.com';
-const PORT = '465';
-const USER = 'resend';
-
 const ref = process.env.SUPABASE_PROJECT_REF ?? 'qeadwdtzqgbdbrczhkuf';
 const token = process.env.SUPABASE_ACCESS_TOKEN;
 const resendKey = process.env.RESEND_API_KEY;
 const adminEmail = process.env.SMTP_ADMIN_EMAIL;
 const senderName = process.env.SMTP_SENDER_NAME ?? 'Epix';
 
+const host = process.env.SMTP_HOST ?? (resendKey ? 'smtp.resend.com' : null);
+const port = process.env.SMTP_PORT ?? (resendKey ? '465' : null);
+const user = process.env.SMTP_USER ?? (resendKey ? 'resend' : null);
+const pass = process.env.SMTP_PASS ?? resendKey;
+
 const missing = [
   ['SUPABASE_ACCESS_TOKEN', token],
-  ['RESEND_API_KEY', resendKey],
   ['SMTP_ADMIN_EMAIL', adminEmail],
-].filter(([, value]) => !value);
+  ['SMTP_HOST o RESEND_API_KEY', host],
+  ['SMTP_PORT (si usas SMTP_HOST)', process.env.SMTP_HOST ? port : 'n/a'],
+  ['SMTP_USER (si usas SMTP_HOST)', process.env.SMTP_HOST ? user : 'n/a'],
+  ['SMTP_PASS o RESEND_API_KEY', pass],
+].filter(([, value]) => !value || value === '');
 
 if (missing.length > 0) {
   console.error('Faltan variables de entorno:', missing.map(([name]) => name).join(', '));
-  console.error('Ponlas en ~/.config/secrets.env (no se imprimen) y reintenta:');
-  console.error('  set -a; . ~/.config/secrets.env; set +a; node scripts/setup-smtp.mjs');
+  console.error('Añádelas a ~/.config/secrets.env (no se imprimen) y reintenta.');
   process.exit(1);
 }
 
@@ -46,10 +58,10 @@ const withToken = (title, intro) =>
 const payload = {
   smtp_admin_email: adminEmail,
   smtp_sender_name: senderName,
-  smtp_host: HOST,
-  smtp_port: PORT,
-  smtp_user: USER,
-  smtp_pass: resendKey,
+  smtp_host: host,
+  smtp_port: port,
+  smtp_user: user,
+  smtp_pass: pass,
   rate_limit_email_sent: 30,
   mailer_templates_magic_link_content: withToken(
     'Epix — Tu código de acceso',
@@ -83,6 +95,8 @@ const ok = {
   plantilla_email_change_con_codigo: /\.Token/.test(
     after.mailer_templates_email_change_content ?? '',
   ),
+  longitud_codigo: after.mailer_otp_length,
+  expiracion_segundos: after.mailer_otp_exp,
 };
 
 console.log('SMTP configurado ✓');

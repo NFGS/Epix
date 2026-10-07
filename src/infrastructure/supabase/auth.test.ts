@@ -77,7 +77,7 @@ function createFakeClient(options: FakeClientOptions = {}) {
           error: options.verifyOtpError ?? null,
         };
       },
-      updateUser: async (args: unknown) => {
+      updateUser: async (...args: unknown[]) => {
         calls.updateUser.push(args);
         return { data: { user: null }, error: options.updateUserError ?? null };
       },
@@ -115,7 +115,9 @@ describe('supabase auth · OTP por correo', () => {
 
     await auth.sendEmailOtp('ana@example.com');
 
-    expect(calls.signInWithOtp).toEqual([{ email: 'ana@example.com' }]);
+    expect(calls.signInWithOtp).toEqual([
+      { email: 'ana@example.com', options: { emailRedirectTo: 'http://localhost:3000/account' } },
+    ]);
   });
 
   it('clasifica el límite de envíos como rate-limited', async () => {
@@ -209,7 +211,9 @@ describe('supabase auth · vinculación same-uid', () => {
 
     await auth.linkEmail('ana@example.com');
 
-    expect(calls.updateUser).toEqual([{ email: 'ana@example.com' }]);
+    expect(calls.updateUser).toEqual([
+      [{ email: 'ana@example.com' }, { emailRedirectTo: 'http://localhost:3000/account' }],
+    ]);
   });
 
   it('clasifica un correo ya registrado como email-in-use', async () => {

@@ -252,7 +252,7 @@ function CredentialsCard({ mode, onLinked }: CredentialsCardProps) {
               inputMode="numeric"
               autoComplete="one-time-code"
               pattern="[0-9]*"
-              maxLength={6}
+              maxLength={10}
               value={token}
               disabled={isBusy}
               onChange={(event) => {

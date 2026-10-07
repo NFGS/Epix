@@ -61,7 +61,7 @@ describe('AccountScreen · estados de la cuenta', () => {
 
     expect(fake.auth.linkEmail).toHaveBeenCalledWith('ana@example.com');
 
-    const codeInput = await screen.findByLabelText('Código de 6 dígitos');
+    const codeInput = await screen.findByLabelText('Código de verificación');
     expect(codeInput).toHaveAttribute('inputmode', 'numeric');
     expect(codeInput).toHaveAttribute('autocomplete', 'one-time-code');
     expect(codeInput).toHaveFocus();
@@ -78,7 +78,7 @@ describe('AccountScreen · estados de la cuenta', () => {
 
     await user.type(await screen.findByLabelText('Correo electrónico'), 'ana@example.com');
     await user.click(screen.getByRole('button', { name: 'Enviar código' }));
-    await user.type(await screen.findByLabelText('Código de 6 dígitos'), '123456');
+    await user.type(await screen.findByLabelText('Código de verificación'), '12345678');
     await user.click(screen.getByRole('button', { name: 'Verificar' }));
 
     expect(await screen.findByText('Cuenta protegida')).toBeInTheDocument();
@@ -86,7 +86,7 @@ describe('AccountScreen · estados de la cuenta', () => {
     expect(
       screen.getByText('Tu cuenta quedó protegida. Ya puedes iniciar sesión en tus otros dispositivos.'),
     ).toBeInTheDocument();
-    expect(fake.auth.verifyEmailChange).toHaveBeenCalledWith('ana@example.com', '123456');
+    expect(fake.auth.verifyEmailChange).toHaveBeenCalledWith('ana@example.com', '12345678');
   });
 
   it('signed-out ofrece iniciar sesión con sendEmailOtp', async () => {
@@ -141,7 +141,7 @@ describe('AccountScreen · estados de la cuenta', () => {
 
     await user.type(await screen.findByLabelText('Correo electrónico'), 'ana@example.com');
     await user.click(screen.getByRole('button', { name: 'Enviar código' }));
-    await user.type(await screen.findByLabelText('Código de 6 dígitos'), '000000');
+    await user.type(await screen.findByLabelText('Código de verificación'), '000000');
     await user.click(screen.getByRole('button', { name: 'Verificar' }));
 
     const alert = await screen.findByRole('alert');
@@ -158,6 +158,6 @@ describe('AccountScreen · estados de la cuenta', () => {
     await user.click(await screen.findByRole('button', { name: 'Usar otro correo' }));
 
     expect(screen.getByLabelText('Correo electrónico')).toBeInTheDocument();
-    expect(screen.queryByLabelText('Código de 6 dígitos')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('Código de verificación')).not.toBeInTheDocument();
   });
 });

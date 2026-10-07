@@ -23,7 +23,10 @@ export function getSupabaseClient(): SupabaseClient | null {
           auth: {
             persistSession: true,
             autoRefreshToken: true,
-            detectSessionInUrl: false,
+            // Procesa los tokens de los enlaces de correo (magic link / cambio de
+            // correo) para que al tocar el enlace en el mismo dispositivo la sesión
+            // quede establecida y la app la detecte vía onAuthStateChange.
+            detectSessionInUrl: true,
           },
         });
 

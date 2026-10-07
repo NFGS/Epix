@@ -99,6 +99,11 @@ function normalizeEmail(email: string | null | undefined): string | null {
   return trimmed ? trimmed : null;
 }
 
+/** A dónde vuelve el usuario tras tocar un enlace de correo (códigos/enlaces). */
+function accountRedirectTo(): string | undefined {
+  return typeof window === 'undefined' ? undefined : `${window.location.origin}/account`;
+}
+
 function toAuthUser(user: { id: string; email?: string | null } | null | undefined): AuthUser {
   if (user === null || user === undefined) {
     throw new AuthError('unknown', 'Supabase no devolvió el usuario autenticado.');
@@ -124,7 +129,10 @@ export function createSupabaseAuth(
 
   return {
     async sendEmailOtp(email: string): Promise<void> {
-      const { error } = await client.auth.signInWithOtp({ email });
+      const { error } = await client.auth.signInWithOtp({
+        email,
+        options: { emailRedirectTo: accountRedirectTo() },
+      });
       assertNoError(error, 'No se pudo enviar el código');
     },
 
@@ -142,7 +150,10 @@ export function createSupabaseAuth(
     },
 
     async linkEmail(email: string): Promise<void> {
-      const { error } = await client.auth.updateUser({ email });
+      const { error } = await client.auth.updateUser(
+        { email },
+        { emailRedirectTo: accountRedirectTo() },
+      );
       assertNoError(error, 'No se pudo vincular el correo');
     },
 

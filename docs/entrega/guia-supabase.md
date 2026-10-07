@@ -82,6 +82,33 @@ Supabase **no permite editar plantillas ni subir el límite de envíos** (2/hora
    El script configura host/puerto/remitente, sube el límite a 30/hora, escribe las plantillas
    con `{{ .Token }}` y verifica el resultado. (Para pruebas sin dominio: usa
    `SMTP_ADMIN_EMAIL=onboarding@resend.dev`, que Resend solo entrega al correo dueño de la cuenta.)
+
+### Alternativas a coste 0 si no tienes dominio propio
+
+Resend sin dominio verificado solo entrega al correo **dueño de la cuenta**. Para enviar códigos
+a **cualquier** destinatario sin comprar dominio:
+
+- **Gmail (SMTP):** activa la verificación en 2 pasos de tu cuenta de Google → crea una
+  **«Contraseña de aplicación»** → añade a `~/.config/secrets.env`:
+  ```
+  SMTP_HOST=smtp.gmail.com
+  SMTP_PORT=465
+  SMTP_USER=tucorreo@gmail.com
+  SMTP_PASS=contrasena-de-aplicacion
+  SMTP_ADMIN_EMAIL=tucorreo@gmail.com
+  ```
+  y ejecuta el script (detecta el SMTP automáticamente). Gmail permite ≈ 500 correos/día.
+- **Brevo (SMTP):** plan gratis (300 correos/día) con verificación de **remitente individual**
+  (tu correo, sin dominio); usa sus credenciales SMTP con las mismas variables.
+
+### Cómo verificar un dominio en Resend (referencia futura)
+
+1. Resend → **Domains → Add Domain** → escribe tu dominio.
+2. Resend muestra los registros DNS exactos: **MX** y **TXT (SPF)** para el subdominio
+   `send.tudominio.com`, y **TXT (DKIM)**.
+3. Créalos en tu proveedor de DNS tal cual (nombre y valor).
+4. Pulsa **Verify** en Resend (la propagación DNS puede tardar minutos).
+5. Cambia `SMTP_ADMIN_EMAIL=no-reply@tudominio.com` y re-ejecuta el script.
 4. Prueba completa: Perfil → Cuenta → «Protege tu cuenta» → código → verificar (mismo `uid`, sin migrar datos);
    en otro dispositivo → «Inicia sesión» con el mismo correo → favoritos e historial llegan con el pull.
 
