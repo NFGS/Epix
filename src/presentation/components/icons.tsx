@@ -205,3 +205,22 @@ export function ActivityIcon({ className }: IconProps) {
     </svg>
   );
 }
+
+export function ShieldIcon({ className }: IconProps) {
+  return (
+    <svg {...iconProps(className)}>
+      <path d="M12 3 5 6v5.5c0 4.4 2.9 7.6 7 9.5 4.1-1.9 7-5.1 7-9.5V6Z" />
+      <path d="m9 12 2 2 4-4.5" />
+    </svg>
+  );
+}
+
+export function LogOutIcon({ className }: IconProps) {
+  return (
+    <svg {...iconProps(className)}>
+      <path d="M14 4h4a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1h-4" />
+      <path d="M10 8l-4 4 4 4" />
+      <path d="M6 12h9" />
+    </svg>
+  );
+}

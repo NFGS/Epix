@@ -29,6 +29,7 @@ function createFakeRepositories() {
   const favorites: FavoritesRepository = {
     list: async () =>
       [...store.values()].filter((favorite) => favorite.deletedAt === undefined),
+    listAll: async () => [...store.values()],
     listIds: async () =>
       [...store.values()]
         .filter((favorite) => favorite.deletedAt === undefined)
@@ -45,6 +46,9 @@ function createFakeRepositories() {
       if (favorite !== undefined) {
         store.set(showId, { ...favorite, deletedAt, updatedAt: deletedAt });
       }
+    },
+    clear: async () => {
+      store.clear();
     },
   };
 

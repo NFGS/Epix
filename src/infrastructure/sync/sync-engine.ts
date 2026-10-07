@@ -33,6 +33,11 @@ export interface SyncEngineDeps {
   adapter: SyncAdapter | null;
   now?: () => string;
   /**
+   * `true` cuando el usuario cerró sesión explícitamente en este dispositivo:
+   * el motor no crea una sesión anónima nueva (queda en `local-only`).
+   */
+  isPaused?: () => boolean;
+  /**
    * Observador de transiciones para telemetría. Se invoca solo cuando la
    * corrida tocó operaciones que no son de telemetría: así el propio evento
    * `sync_success`/`sync_error` nunca realimenta un bucle infinito de sync.
@@ -181,7 +186,9 @@ export function createSyncEngine(deps: SyncEngineDeps): SyncEngine {
     const remote = await adapter.pullFavorites(since);
 
     if (remote.length > 0) {
-      const local = await deps.repoFavorites.list();
+      // Lectura cruda: los tombstones locales deben participar del LWW o un
+      // remoto activo más viejo resucitaría un favorito recién quitado.
+      const local = await deps.repoFavorites.listAll();
       const localById = new Map(local.map((favorite) => [favorite.showId, favorite]));
       const merged = mergeFavorites(local, remote);
 
@@ -210,6 +217,11 @@ export function createSyncEngine(deps: SyncEngineDeps): SyncEngine {
     const adapter = deps.adapter;
 
     if (adapter === null) {
+      setStatus({ state: 'local-only' });
+      return;
+    }
+
+    if (deps.isPaused?.() === true) {
       setStatus({ state: 'local-only' });
       return;
     }

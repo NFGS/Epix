@@ -46,6 +46,7 @@ function createFakeAdapter(overrides: Partial<SyncAdapter> = {}): SyncAdapter {
 function createHarness(
   adapter: SyncAdapter | null,
   onSyncEvent?: (event: SyncEngineEvent, payload?: Record<string, unknown>) => void,
+  isPaused?: () => boolean,
 ) {
   const db = createEpixDatabase(`epix-sync-${crypto.randomUUID()}`);
   databases.push(db);
@@ -62,6 +63,7 @@ function createHarness(
     adapter,
     now: () => NOW,
     ...(onSyncEvent === undefined ? {} : { onSyncEvent }),
+    ...(isPaused === undefined ? {} : { isPaused }),
   });
 
   return { db, outbox, repoFavorites, repoHistory, meta, engine };
@@ -180,6 +182,29 @@ describe('sync engine', () => {
     expect(harness.engine.getStatus().state).toBe('idle');
   });
 
+  it('el pull no resucita un favorito quitado localmente (tombstone gana)', async () => {
+    const adapter = createFakeAdapter({
+      pullFavorites: vi.fn(async () => [
+        {
+          showId: 5,
+          snapshot: { name: 'Vieja', genres: ['Drama'] },
+          addedAt: T1,
+          updatedAt: T1,
+        },
+      ]),
+    });
+    const harness = createHarness(adapter);
+
+    await harness.repoFavorites.add(createFavorite({ updatedAt: T2 }));
+    await harness.repoFavorites.remove(5, T2);
+
+    await harness.engine.syncNow();
+
+    expect(await harness.repoFavorites.get(5)).toBeNull();
+    const raw = await harness.repoFavorites.listAll();
+    expect(raw.find((favorite) => favorite.showId === 5)?.deletedAt).toBe(T2);
+  });
+
   it('no sincroniza si el navegador está sin conexión', async () => {
     vi.spyOn(navigator, 'onLine', 'get').mockReturnValue(false);
     const adapter = createFakeAdapter();
@@ -188,6 +213,16 @@ describe('sync engine', () => {
     await harness.engine.syncNow();
 
     expect(harness.engine.getStatus().state).toBe('offline');
+    expect(adapter.ensureSession).not.toHaveBeenCalled();
+  });
+
+  it('queda en local-only sin crear sesión anónima tras un cierre explícito', async () => {
+    const adapter = createFakeAdapter();
+    const harness = createHarness(adapter, undefined, () => true);
+
+    await harness.engine.syncNow();
+
+    expect(harness.engine.getStatus().state).toBe('local-only');
     expect(adapter.ensureSession).not.toHaveBeenCalled();
   });
 

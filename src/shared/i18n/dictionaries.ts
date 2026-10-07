@@ -189,6 +189,51 @@ export const es = {
         offline_end: 'Conexión recuperada',
       },
     },
+    account: {
+      title: 'Cuenta',
+      unconfiguredTitle: 'La nube no está configurada',
+      unconfiguredDescription:
+        'Epix guarda todo en este dispositivo (modo local). Para proteger tu cuenta y sincronizar entre dispositivos, configura VITE_SUPABASE_URL y VITE_SUPABASE_ANON_KEY.',
+      anonymousTitle: 'Protege tu cuenta',
+      anonymousDescription:
+        'Tu sesión anónima vive en este navegador: si limpias sus datos, la pierdes. Vincula un correo y conserva favoritos, historial y ajustes en tus otros dispositivos.',
+      anonymousNote:
+        'La vinculación conserva el mismo identificador: no se migra nada y tus datos actuales no se mueven.',
+      multiDeviceNote:
+        'Vincula tu cuenta aquí primero; luego inicia sesión con tu correo en tus otros dispositivos.',
+      signedOutTitle: 'Inicia sesión',
+      signedOutDescription:
+        'Este dispositivo quedó limpio por seguridad. Entra con tu correo para recuperar tus favoritos, historial y ajustes de la nube.',
+      emailLabel: 'Correo electrónico',
+      emailPlaceholder: 'tucorreo@ejemplo.com',
+      sendCode: 'Enviar código',
+      sending: 'Enviando…',
+      codeTitle: 'Revisa tu correo',
+      codeSent: 'Enviamos un código de 6 dígitos a {email}.',
+      codeLabel: 'Código de 6 dígitos',
+      verify: 'Verificar',
+      verifying: 'Verificando…',
+      changeEmail: 'Usar otro correo',
+      linkedTitle: 'Cuenta protegida',
+      linkedDescription: 'Tus favoritos, historial y ajustes se sincronizan entre tus dispositivos.',
+      signedInAs: 'Sesión iniciada como {email}',
+      signOut: 'Cerrar sesión',
+      signOutTitle: '¿Cerrar sesión?',
+      signOutDescription:
+        'Se borrarán de este dispositivo tus favoritos, historial, actividad y datos pendientes de sincronizar. Tu cuenta en la nube no se toca: podrás recuperarla al volver a iniciar sesión. Conservamos tus preferencias de tema, idioma y filtros.',
+      syncNow: 'Sincronizar ahora',
+      linkedSuccess: 'Tu cuenta quedó protegida. Ya puedes iniciar sesión en tus otros dispositivos.',
+      signedOutSuccess: 'Cerraste sesión y borramos los datos de este dispositivo.',
+      errors: {
+        'invalid-email': 'Escribe un correo válido.',
+        'invalid-code': 'El código no es correcto. Revísalo e inténtalo de nuevo.',
+        'expired-code': 'El código expiró. Pide uno nuevo.',
+        'rate-limited': 'Pediste demasiados códigos. Espera unos minutos antes de reintentar.',
+        'email-in-use': 'Ese correo ya pertenece a otra cuenta de Epix.',
+        network: 'No pudimos conectar con la nube. Revisa tu conexión.',
+        unknown: 'No pudimos completar la operación. Inténtalo de nuevo.',
+      },
+    },
     profile: {
       title: 'Perfil',
       appearance: 'Apariencia',
@@ -251,6 +296,12 @@ export const es = {
       neverSynced: 'Aún no se ha sincronizado',
       supabaseNote:
         'Sin VITE_SUPABASE_URL y VITE_SUPABASE_ANON_KEY, Epix guarda todo en este dispositivo. Configúralas para sincronizar favoritos e historial entre dispositivos.',
+      account: 'Cuenta',
+      accountManage: 'Gestionar',
+      accountAnonymous: 'Anónima · solo este dispositivo',
+      accountSignedOut: 'Sin iniciar sesión',
+      accountUnconfigured: 'Sin configurar',
+      accountLinkedHint: 'Sincronizada entre dispositivos',
     },
     notFound: {
       title: 'Página no encontrada',
@@ -450,6 +501,51 @@ export const en: Dictionary = {
         offline_end: 'Back online',
       },
     },
+    account: {
+      title: 'Account',
+      unconfiguredTitle: 'The cloud is not set up',
+      unconfiguredDescription:
+        'Epix keeps everything on this device (local mode). To protect your account and sync across devices, set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.',
+      anonymousTitle: 'Protect your account',
+      anonymousDescription:
+        'Your anonymous session lives in this browser: if you clear its data, you lose it. Link an email and keep your favorites, history and settings on your other devices.',
+      anonymousNote:
+        'Linking keeps the same identifier: nothing is migrated and your current data does not move.',
+      multiDeviceNote:
+        'Link your account here first; then sign in with your email on your other devices.',
+      signedOutTitle: 'Sign in',
+      signedOutDescription:
+        'This device was wiped for safety. Sign in with your email to recover your favorites, history and settings from the cloud.',
+      emailLabel: 'Email address',
+      emailPlaceholder: 'you@example.com',
+      sendCode: 'Send code',
+      sending: 'Sending…',
+      codeTitle: 'Check your email',
+      codeSent: 'We sent a 6-digit code to {email}.',
+      codeLabel: '6-digit code',
+      verify: 'Verify',
+      verifying: 'Verifying…',
+      changeEmail: 'Use another email',
+      linkedTitle: 'Account protected',
+      linkedDescription: 'Your favorites, history and settings sync across your devices.',
+      signedInAs: 'Signed in as {email}',
+      signOut: 'Sign out',
+      signOutTitle: 'Sign out?',
+      signOutDescription:
+        'Your favorites, history, activity and pending sync data will be removed from this device. Your cloud account is untouched: you can recover it by signing in again. We keep your theme, language and filter preferences.',
+      syncNow: 'Sync now',
+      linkedSuccess: 'Your account is protected. You can now sign in on your other devices.',
+      signedOutSuccess: 'You signed out and this device was wiped.',
+      errors: {
+        'invalid-email': 'Enter a valid email address.',
+        'invalid-code': 'The code is not correct. Check it and try again.',
+        'expired-code': 'The code expired. Request a new one.',
+        'rate-limited': 'You requested too many codes. Wait a few minutes before retrying.',
+        'email-in-use': 'That email already belongs to another Epix account.',
+        network: "We couldn't reach the cloud. Check your connection.",
+        unknown: "We couldn't complete the operation. Try again.",
+      },
+    },
     profile: {
       title: 'Profile',
       appearance: 'Appearance',
@@ -511,6 +607,12 @@ export const en: Dictionary = {
       neverSynced: 'Not synced yet',
       supabaseNote:
         'Without VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY, Epix keeps everything on this device. Set them to sync favorites and history across devices.',
+      account: 'Account',
+      accountManage: 'Manage',
+      accountAnonymous: 'Anonymous · this device only',
+      accountSignedOut: 'Signed out',
+      accountUnconfigured: 'Not set up',
+      accountLinkedHint: 'Synced across devices',
     },
     notFound: {
       title: 'Page not found',

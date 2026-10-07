@@ -38,5 +38,28 @@ export function createLazySupabaseSyncAdapter(): SyncAdapter {
     clearRemoteHistory: async () => (await load()).clearRemoteHistory(),
     pushEvents: async (events) => (await load()).pushEvents(events),
     clearRemoteEvents: async () => (await load()).clearRemoteEvents(),
+    subscribeFavorites: (userId, onRow) => {
+      // La suscripción devuelve la baja de forma síncrona aunque el chunk cargue después.
+      let active = true;
+      let dispose: (() => void) | null = null;
+
+      void load().then((adapter) => {
+        if (!active) {
+          return;
+        }
+
+        dispose = adapter.subscribeFavorites?.(userId, onRow) ?? null;
+      });
+
+      return () => {
+        active = false;
+        dispose?.();
+      };
+    },
+    unsubscribeFavorites: () => {
+      void load().then((adapter) => {
+        adapter.unsubscribeFavorites?.();
+      });
+    },
   };
 }

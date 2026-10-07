@@ -13,10 +13,13 @@ import { createPreferencesRepository } from '@/infrastructure/local/preferences.
 import { createSyncMetaRepository } from '@/infrastructure/local/sync-meta.repository';
 import { createUsageEventsRepository } from '@/infrastructure/local/usage-events.repository';
 import { createNotificationClient } from '@/infrastructure/notifications/notifications';
+import { createLazySupabaseAuth } from '@/infrastructure/supabase/create-auth';
 import {
   createLazySupabaseSyncAdapter,
   hasSupabaseConfig,
 } from '@/infrastructure/supabase/create-sync-adapter';
+import { isSignedOutExplicitly } from '@/infrastructure/supabase/session-policy';
+import { createCrossTabSyncEngine } from '@/infrastructure/sync/cross-tab-sync';
 import { createSyncEngine } from '@/infrastructure/sync/sync-engine';
 import { createTelemetryService } from '@/infrastructure/telemetry/telemetry-service';
 import { DependenciesContext, type Dependencies } from '@/presentation/hooks/dependencies-context';
@@ -29,6 +32,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ThemeProvider } from '@/presentation/hooks/ThemeProvider';
 
 import { EpisodeReminderBootstrap } from './EpisodeReminderBootstrap';
+import { FavoritesRealtimeBootstrap } from './FavoritesRealtimeBootstrap';
 import { RouteTelemetry } from './RouteTelemetry';
 import { ServiceWorkerBridge } from './ServiceWorkerBridge';
 import { TelemetryBootstrap } from './TelemetryBootstrap';
@@ -49,15 +53,20 @@ function createDependencies(): Dependencies {
     getPreferences: () => preferences.get(),
   });
   const adapter = hasSupabaseConfig() ? createLazySupabaseSyncAdapter() : null;
-  const engine = createSyncEngine({
-    outbox,
-    repoFavorites: favorites,
-    repoHistory: history,
-    meta: syncMeta,
-    adapter,
-    onSyncEvent: (event, payload) => {
-      void telemetry.track(event, payload);
-    },
+  const auth = hasSupabaseConfig() ? createLazySupabaseAuth() : null;
+  const engine = createCrossTabSyncEngine({
+    engine: createSyncEngine({
+      outbox,
+      repoFavorites: favorites,
+      repoHistory: history,
+      meta: syncMeta,
+      adapter,
+      // Tras un cierre de sesión explícito no se crea una sesión anónima nueva.
+      isPaused: () => isSignedOutExplicitly(),
+      onSyncEvent: (event, payload) => {
+        void telemetry.track(event, payload);
+      },
+    }),
   });
 
   const resolveCountry = () =>
@@ -79,6 +88,7 @@ function createDependencies(): Dependencies {
     telemetry,
     adapter,
     engine,
+    auth,
     resolveCountry,
   };
 }
@@ -138,6 +148,7 @@ export function AppProviders({ children }: { children: ReactNode }) {
                 <TelemetryBootstrap telemetry={dependencies.telemetry} />
                 <RouteTelemetry telemetry={dependencies.telemetry} />
                 <EpisodeReminderBootstrap />
+                <FavoritesRealtimeBootstrap />
                 {children}
               </BrowserRouter>
             </I18nProvider>

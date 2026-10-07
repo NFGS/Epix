@@ -12,5 +12,9 @@ export function createSyncMetaRepository(db: EpixDatabase): SyncMetaRepository {
     async set(key: SyncMetaKey, value: string): Promise<void> {
       await db.syncMeta.put({ key, value });
     },
+
+    async clear(): Promise<void> {
+      await db.syncMeta.clear();
+    },
   };
 }

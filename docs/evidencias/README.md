@@ -47,7 +47,8 @@ node docs/evidencias/verify-prod.mjs   # verifica la URL de producción (HTTP, S
 ## Notas de rendimiento (LCP)
 
 - **Shell estático de arranque:** mejora principal — FCP 2.07 s → 0.94 s en producción (mantenido).
-- **Pre-calentado HTTP de la agenda (`warm.js`):** técnica validada (la petición posterior se sirvió desde caché HTTP, 0 bytes transferidos) pero **descartada**: bajo red throttled el LCP regresó de 3.17 s a 5.14 s por contención de ancho de banda con el bundle (medición comparada en `lighthouse-produccion.json` v5 vs v6). Alternativa futura con mejor relación coste/beneficio: **proxy en el edge** con cabeceras de caché propias o prerender del contenido de Inicio.
+- **Pre-calentado HTTP de la agenda (`warm.js`):** técnica validada (la petición posterior se sirvió desde caché HTTP, 0 bytes transferidos) pero **descartada**: medido bajo throttling, añadía contención de ancho de banda al arranque sin mejorar el resultado. Referencia: `lighthouse-produccion.json` (v5 vs v6 vs mediana v8).
+- **LCP honesto:** en móvil emulado la LCP oscila ~3.2–5.0 s según la agenda del día (RTT y peso del JSON de TVmaze + pósters) y la varianza de Lighthouse; el FCP se mantiene estable ~0.9 s con el shell estático. Palanca pendiente (backlog): proxy en el edge con caché propia o prerender del contenido de Inicio.
 
 ## Pendientes de evidencia (dispositivo físico)
 

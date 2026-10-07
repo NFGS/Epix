@@ -10,6 +10,10 @@ export function createFavoritesRepository(db: EpixDatabase): FavoritesRepository
       return favorites.filter((favorite) => favorite.deletedAt === undefined);
     },
 
+    async listAll(): Promise<FavoriteShow[]> {
+      return db.favorites.toArray();
+    },
+
     async listIds(): Promise<number[]> {
       const favorites = await db.favorites.toArray();
       return favorites
@@ -35,6 +39,10 @@ export function createFavoritesRepository(db: EpixDatabase): FavoritesRepository
         return;
       }
       await db.favorites.put({ ...favorite, deletedAt, updatedAt: deletedAt });
+    },
+
+    async clear(): Promise<void> {
+      await db.favorites.clear();
     },
   };
 }

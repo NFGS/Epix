@@ -40,6 +40,12 @@ const ActivityScreen = lazy(() =>
   })),
 );
 
+const AccountScreen = lazy(() =>
+  import('@/presentation/screens/AccountScreen').then((module) => ({
+    default: module.AccountScreen,
+  })),
+);
+
 const ShowDetailScreen = lazy(() =>
   import('@/presentation/screens/ShowDetailScreen').then((module) => ({
     default: module.ShowDetailScreen,
@@ -63,6 +69,7 @@ export function AppRouter() {
         <Route path="/history" element={<HistoryScreen />} />
         <Route path="/profile" element={<ProfileScreen />} />
         <Route path="/activity" element={<ActivityScreen />} />
+        <Route path="/account" element={<AccountScreen />} />
         <Route path="/shows/:id" element={<ShowDetailScreen />} />
         <Route path="*" element={<NotFoundScreen />} />
       </Route>

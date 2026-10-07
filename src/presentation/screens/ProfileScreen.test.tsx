@@ -8,6 +8,7 @@ import { DependenciesContext } from '@/presentation/hooks/dependencies-context';
 import { RepositoriesContext, type Repositories } from '@/presentation/hooks/repositories-context';
 import { ThemeProvider } from '@/presentation/hooks/ThemeProvider';
 import { I18nProvider } from '@/shared/i18n/I18nProvider';
+import { createFakeAuth } from '@/test/fake-auth';
 import { createTestDependencies, type TestDependencies } from '@/test/test-dependencies';
 
 import { ProfileScreen } from './ProfileScreen';
@@ -196,5 +197,23 @@ describe('ProfileScreen · telemetría (RF-11)', () => {
     await waitFor(async () => {
       expect((await dependencies.db.preferences.get('app'))?.telemetryEnabled).toBe(false);
     });
+  });
+});
+
+describe('ProfileScreen · cuenta (Sprint 5.2)', () => {
+  it('muestra el estado actual y enlaza a /account', async () => {
+    renderProfile();
+
+    expect(await screen.findByRole('heading', { name: 'Cuenta' })).toBeInTheDocument();
+    expect(screen.getByText('Sin configurar')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /Gestionar/ })).toHaveAttribute('href', '/account');
+  });
+
+  it('con cuenta vinculada muestra el correo', async () => {
+    const fake = createFakeAuth();
+    vi.mocked(fake.auth.getUser).mockResolvedValue({ id: 'user-1', email: 'ana@example.com' });
+    renderProfile(createTestDependencies({ auth: fake.auth }));
+
+    expect(await screen.findByText('ana@example.com')).toBeInTheDocument();
   });
 });

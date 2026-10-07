@@ -19,6 +19,19 @@ interface FakeSession {
   user: { id: string };
 }
 
+interface RealtimeHandler {
+  event: string;
+  filter: unknown;
+  callback: (payload: unknown) => void;
+}
+
+interface FakeChannel {
+  name: string;
+  handlers: RealtimeHandler[];
+  on(event: string, filter: unknown, callback: (payload: unknown) => void): FakeChannel;
+  subscribe(): FakeChannel;
+}
+
 type AuthChangeHandler = (event: string, session: FakeSession | null) => void;
 
 function createFakeClient(
@@ -27,6 +40,8 @@ function createFakeClient(
 ) {
   const calls: RecordedCall[] = [];
   const authHandlers: AuthChangeHandler[] = [];
+  const channels: FakeChannel[] = [];
+  const removeChannel = vi.fn(async () => 'ok');
   let session: FakeSession | null = { user: { id: 'user-1' } };
 
   const client = {
@@ -62,11 +77,29 @@ function createFakeClient(
         }),
       };
     },
+    channel(name: string): FakeChannel {
+      const channel: FakeChannel = {
+        name,
+        handlers: [],
+        on(event, filter, callback) {
+          channel.handlers.push({ event, filter, callback });
+          return channel;
+        },
+        subscribe() {
+          return channel;
+        },
+      };
+      channels.push(channel);
+      return channel;
+    },
+    removeChannel,
   };
 
   return {
     client: client as unknown as SupabaseClient,
     calls,
+    channels,
+    removeChannel,
     emitAuthChange(next: FakeSession | null) {
       session = next;
       for (const handler of authHandlers) {
@@ -216,5 +249,87 @@ describe('supabase sync adapter · favoritos', () => {
 
     emitAuthChange(null);
     expect(await adapter.ensureSession()).toBe('user-1');
+  });
+});
+
+describe('supabase sync adapter · Realtime de favoritos', () => {
+  it('abre un canal filtrado por usuario y reenvía las filas válidas', () => {
+    const { client, channels } = createFakeClient();
+    const adapter = createSupabaseSyncAdapter(client);
+    const onRow = vi.fn();
+
+    adapter.subscribeFavorites?.('user-1', onRow);
+
+    expect(channels).toHaveLength(1);
+    expect(channels[0]?.name).toBe('favorites:user-1');
+    expect(channels[0]?.handlers[0]).toMatchObject({
+      event: 'postgres_changes',
+      filter: { event: '*', schema: 'public', table: 'favorites', filter: 'user_id=eq.user-1' },
+    });
+
+    channels[0]?.handlers[0]?.callback({
+      eventType: 'UPDATE',
+      new: {
+        show_id: 5,
+        snapshot: { name: 'Nueva', genres: ['Drama'], rating: 8 },
+        added_at: T1,
+        updated_at: T1,
+        deleted_at: null,
+      },
+    });
+
+    expect(onRow).toHaveBeenCalledWith({
+      showId: 5,
+      snapshot: {
+        name: 'Nueva',
+        genres: ['Drama'],
+        imageMedium: undefined,
+        premiered: undefined,
+        rating: 8,
+      },
+      addedAt: T1,
+      updatedAt: T1,
+      deletedAt: undefined,
+    });
+  });
+
+  it('omite filas inválidas y eventos DELETE sin snapshot', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+    const { client, channels } = createFakeClient();
+    const adapter = createSupabaseSyncAdapter(client);
+    const onRow = vi.fn();
+
+    adapter.subscribeFavorites?.('user-1', onRow);
+    const callback = channels[0]?.handlers[0]?.callback;
+
+    callback?.({ eventType: 'UPDATE', new: { show_id: 'roto' } });
+    callback?.({ eventType: 'DELETE', new: {}, old: { show_id: 5 } });
+
+    expect(onRow).not.toHaveBeenCalled();
+    expect(warn).toHaveBeenCalledTimes(2);
+    warn.mockRestore();
+  });
+
+  it('la función devuelta por subscribe y unsubscribeFavorites quitan el canal', async () => {
+    const { client, removeChannel } = createFakeClient();
+    const adapter = createSupabaseSyncAdapter(client);
+
+    const dispose = adapter.subscribeFavorites?.('user-1', vi.fn());
+    dispose?.();
+    expect(removeChannel).toHaveBeenCalledTimes(1);
+
+    adapter.subscribeFavorites?.('user-1', vi.fn());
+    adapter.unsubscribeFavorites?.();
+    expect(removeChannel).toHaveBeenCalledTimes(2);
+  });
+
+  it('una suscripción nueva reemplaza la anterior', () => {
+    const { client, removeChannel } = createFakeClient();
+    const adapter = createSupabaseSyncAdapter(client);
+
+    adapter.subscribeFavorites?.('user-1', vi.fn());
+    adapter.subscribeFavorites?.('user-1', vi.fn());
+
+    expect(removeChannel).toHaveBeenCalledTimes(1);
   });
 });

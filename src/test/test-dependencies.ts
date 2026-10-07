@@ -62,6 +62,7 @@ export function createTestDependencies(overrides: Partial<Dependencies> = {}): T
     telemetry,
     adapter,
     engine,
+    auth: null,
     resolveCountry,
     ...overrides,
   };

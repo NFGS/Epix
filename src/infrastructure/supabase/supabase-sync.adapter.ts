@@ -12,7 +12,6 @@ import type { UsageEventPayload } from '@/domain/entities/usage-event';
 import { logger } from '@/shared/lib/logger';
 
 import { getSupabaseClient } from './client';
-
 interface FavoriteRow {
   user_id: string;
   show_id: number;
@@ -38,6 +37,25 @@ export const favoritePullRowSchema = z.object({
   updated_at: z.string().min(1),
   deleted_at: z.string().nullable().optional(),
 });
+
+type FavoritePullRow = z.infer<typeof favoritePullRowSchema>;
+
+/** Convierte una fila validada de `favorites` al contrato `RemoteFavorite`. */
+function toRemoteFavorite(row: FavoritePullRow): RemoteFavorite {
+  return {
+    showId: row.show_id,
+    snapshot: {
+      name: row.snapshot.name,
+      genres: row.snapshot.genres,
+      imageMedium: row.snapshot.imageMedium ?? undefined,
+      premiered: row.snapshot.premiered ?? undefined,
+      rating: row.snapshot.rating ?? undefined,
+    },
+    addedAt: row.added_at,
+    updatedAt: row.updated_at,
+    deletedAt: row.deleted_at ?? undefined,
+  };
+}
 
 interface FavoriteDeleteRow {
   show_id: number;
@@ -76,11 +94,61 @@ function assertNoError(error: AuthErrorLike | PostgrestErrorLike | null, context
  */
 export function createSupabaseSyncAdapter(client: SupabaseClient): SyncAdapter {
   let userId: string | null = null;
+  let favoritesChannel: ReturnType<SupabaseClient['channel']> | null = null;
 
   // R-14: si la sesión cambia (logout, refresh, otra pestaña), el caché se invalida.
   client.auth.onAuthStateChange((_event, session) => {
     userId = session?.user.id ?? null;
   });
+
+  function unsubscribeFavorites(): void {
+    if (favoritesChannel !== null) {
+      void client.removeChannel(favoritesChannel);
+      favoritesChannel = null;
+    }
+  }
+
+  function subscribeFavorites(
+    subscribedUserId: string,
+    onRow: (favorite: RemoteFavorite) => void,
+  ): () => void {
+    unsubscribeFavorites();
+
+    favoritesChannel = client
+      .channel(`favorites:${subscribedUserId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'favorites',
+          filter: `user_id=eq.${subscribedUserId}`,
+        },
+        (payload) => {
+          // Epix borra con tombstones (upsert con `deleted_at`), así que un
+          // DELETE real no trae snapshot completo: se ignora con aviso.
+          if (payload.eventType === 'DELETE') {
+            logger.warn('Epix: DELETE de Realtime sin snapshot; se ignora el evento.');
+            return;
+          }
+
+          const parsed = favoritePullRowSchema.safeParse(payload.new);
+
+          if (!parsed.success) {
+            logger.warn(
+              'Epix: fila de favorito por Realtime omitida por datos inválidos.',
+              parsed.error.message,
+            );
+            return;
+          }
+
+          onRow(toRemoteFavorite(parsed.data));
+        },
+      )
+      .subscribe();
+
+    return unsubscribeFavorites;
+  }
 
   async function getUserId(): Promise<string> {
     if (userId !== null) {
@@ -136,21 +204,7 @@ export function createSupabaseSyncAdapter(client: SupabaseClient): SyncAdapter {
           continue;
         }
 
-        const { show_id, snapshot, added_at, updated_at, deleted_at } = parsed.data;
-
-        favorites.push({
-          showId: show_id,
-          snapshot: {
-            name: snapshot.name,
-            genres: snapshot.genres,
-            imageMedium: snapshot.imageMedium ?? undefined,
-            premiered: snapshot.premiered ?? undefined,
-            rating: snapshot.rating ?? undefined,
-          },
-          addedAt: added_at,
-          updatedAt: updated_at,
-          deletedAt: deleted_at ?? undefined,
-        });
+        favorites.push(toRemoteFavorite(parsed.data));
       }
 
       return favorites;
@@ -274,6 +328,9 @@ export function createSupabaseSyncAdapter(client: SupabaseClient): SyncAdapter {
       const { error } = await client.from('usage_events').delete().eq('user_id', uid);
       assertNoError(error, 'No se pudo borrar la telemetría remota');
     },
+
+    subscribeFavorites,
+    unsubscribeFavorites,
   };
 }
 

@@ -45,4 +45,12 @@ export interface SyncAdapter {
   pushEvents(events: RemoteUsageEvent[]): Promise<void>;
   /** Borrado remoto de todas las filas propias (derecho al olvido, RNF-03). */
   clearRemoteEvents(): Promise<void>;
+  /**
+   * Realtime opcional (Supabase): notifica las filas propias que cambian en
+   * `public.favorites` para que otro dispositivo/pestaña las vea al instante.
+   * Devuelve la función para cancelar la suscripción.
+   */
+  subscribeFavorites?(userId: string, onRow: (favorite: RemoteFavorite) => void): () => void;
+  /** Cancela la suscripción de Realtime activa, si existe. */
+  unsubscribeFavorites?(): void;
 }

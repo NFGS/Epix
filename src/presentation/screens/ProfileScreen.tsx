@@ -9,8 +9,15 @@ import { AgeRatingSelector } from '@/presentation/components/AgeRatingSelector';
 import { GenreChips } from '@/presentation/components/GenreChips';
 import { Spinner } from '@/presentation/components/Spinner';
 import { Switch } from '@/presentation/components/Switch';
-import { ActivityIcon, BellIcon, LocationIcon, RefreshIcon } from '@/presentation/components/icons';
+import {
+  ActivityIcon,
+  BellIcon,
+  LocationIcon,
+  RefreshIcon,
+  UserIcon,
+} from '@/presentation/components/icons';
 import { useDependencies } from '@/presentation/hooks/dependencies-context';
+import { useAccount, type AccountState } from '@/presentation/hooks/use-account';
 import {
   useEpisodeReminders,
   type EpisodeRemindersOutcome,
@@ -113,6 +120,50 @@ function syncStatusLabel(state: SyncEngineState, t: Dictionary): string {
     case 'error':
       return t.screens.profile.syncError;
   }
+}
+
+function accountStateLabel(state: AccountState | null, t: Dictionary): string {
+  if (state === null) {
+    return t.common.loading;
+  }
+
+  switch (state.status) {
+    case 'unconfigured':
+      return t.screens.profile.accountUnconfigured;
+    case 'signed-out':
+      return t.screens.profile.accountSignedOut;
+    case 'anonymous':
+      return t.screens.profile.accountAnonymous;
+    case 'linked':
+      return t.screens.profile.accountLinkedHint;
+  }
+}
+
+function AccountSection() {
+  const { t } = useI18n();
+  const { state } = useAccount();
+
+  return (
+    <section className="space-y-3 rounded-xl border border-border bg-surface p-4">
+      <h2 className="text-sm font-semibold uppercase tracking-wide text-muted">
+        {t.screens.profile.account}
+      </h2>
+
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <p className="min-w-0 truncate text-sm text-muted">
+          {state?.status === 'linked' ? state.email : accountStateLabel(state, t)}
+        </p>
+
+        <Link
+          to="/account"
+          className="inline-flex min-h-11 items-center gap-2 rounded-full bg-surface-2 px-4 text-xs font-bold uppercase tracking-[1.4px] text-fg transition-colors duration-150 hover:text-accent-text"
+        >
+          <UserIcon className="h-4 w-4" />
+          {t.screens.profile.accountManage}
+        </Link>
+      </div>
+    </section>
+  );
 }
 
 function SyncSection() {
@@ -534,6 +585,8 @@ export function ProfileScreen() {
         disabledNote={t.screens.profile.telemetryDisabledNote}
         activityLabel={t.screens.profile.telemetryActivity}
       />
+
+      <AccountSection />
 
       <SyncSection />
     </div>
