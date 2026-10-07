@@ -68,3 +68,6 @@ jobs:
 
       - name: Pruebas E2E (API mockeada)
         run: pnpm exec playwright test
+
+      - name: Auditoría Lighthouse (accesibilidad y presupuestos)
+        run: pnpm test:lighthouse
