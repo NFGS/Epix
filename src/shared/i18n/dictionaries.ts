@@ -25,6 +25,11 @@ export const es = {
     today: 'Hoy',
     yesterday: 'Ayer',
   },
+  updatePrompt: {
+    message: 'Hay una nueva versión de Epix',
+    action: 'Actualizar',
+    close: 'Cerrar aviso',
+  },
   notificationsContent: {
     episodeTodayTitle: 'Nuevo episodio hoy',
     episodeTodayBody: '{show} — {code}',
@@ -224,6 +229,8 @@ export const es = {
       syncNow: 'Sincronizar ahora',
       linkedSuccess: 'Tu cuenta quedó protegida. Ya puedes iniciar sesión en tus otros dispositivos.',
       signedOutSuccess: 'Cerraste sesión y borramos los datos de este dispositivo.',
+      privacyNote: 'Consulta cómo Epix trata tus datos en la',
+      privacyLink: 'política de privacidad',
       errors: {
         'invalid-email': 'Escribe un correo válido.',
         'invalid-code': 'El código no es correcto. Revísalo e inténtalo de nuevo.',
@@ -302,6 +309,74 @@ export const es = {
       accountSignedOut: 'Sin iniciar sesión',
       accountUnconfigured: 'Sin configurar',
       accountLinkedHint: 'Sincronizada entre dispositivos',
+      privacy: 'Privacidad',
+      privacyHint: 'Qué datos guarda Epix y cómo borrarlos',
+      privacyOpen: 'Leer política',
+    },
+    privacy: {
+      title: 'Privacidad',
+      intro:
+        'Epix funciona sin cuentas obligatorias y, por defecto, guarda todo en tu dispositivo. Esta página resume qué datos existen, para qué se usan y cómo puedes revisarlos o borrarlos.',
+      device: {
+        title: 'Qué se guarda en tu dispositivo',
+        description:
+          'Epix guarda en el almacenamiento local del navegador (IndexedDB) lo necesario para funcionar, incluso sin conexión:',
+        items: [
+          'Favoritos y historial de series y búsquedas.',
+          'Preferencias de tema, idioma, géneros y edad máxima.',
+          'Cola de cambios pendientes de sincronizar y estado de la última sincronización.',
+          'Recordatorios ya notificados, para no repetir avisos.',
+          'Eventos de uso, solo si activaste la telemetría.',
+        ],
+        footer:
+          'Puedes borrarlo desde la propia app (por ejemplo, vaciando el historial) o limpiando los datos del sitio en el navegador.',
+      },
+      cloud: {
+        title: 'Qué viaja a la nube',
+        description:
+          'Si Epix está configurado con Supabase, tus favoritos, historial y eventos de telemetría se sincronizan con tu cuenta (anónima o vinculada) y quedan protegidos con Row Level Security: cada fila solo es accesible para su propia sesión. La sesión anónima no pide datos personales; al vincular un correo conservas el mismo identificador y nada se migra.',
+      },
+      telemetry: {
+        title: 'Telemetría (opcional)',
+        description:
+          'Desactivada por defecto. Con tu consentimiento, Epix registra la fecha y hora de uso, las pantallas visitadas, los términos que buscas, los filtros usados y los resultados de sincronización. No incluye datos personales ni ubicación precisa.',
+        deletion:
+          'Puedes revisar los eventos y borrarlos cuando quieras: el borrado alcanza también la copia de tu cuenta en la nube.',
+        activityLink: 'Revisar y borrar mi actividad',
+      },
+      gps: {
+        title: 'Ubicación (GPS)',
+        description:
+          'El GPS solo se usa cuando pulsas «Detectar con GPS», con el permiso explícito del navegador. Las coordenadas se usan al vuelo para identificar tu país y no se guardan; solo se conserva el país detectado, necesario para la agenda.',
+      },
+      notifications: {
+        title: 'Notificaciones',
+        description:
+          'Los recordatorios de nuevos episodios se generan en tu propio dispositivo a partir de tus favoritos: no hay servidores de push ni terceros implicados. Puedes desactivarlas cuando quieras desde Perfil.',
+      },
+      accounts: {
+        title: 'Cuentas',
+        description:
+          'Puedes usar Epix sin cuenta: cada dispositivo recibe una sesión anónima. Si vinculas un correo, te enviamos un código de un solo uso (OTP) para verificarlo y no usamos contraseñas. Al vincular conservas la misma identidad y tus datos actuales; cerrar sesión limpia este dispositivo, pero no tu cuenta en la nube.',
+      },
+      rights: {
+        title: 'Tus derechos',
+        description:
+          'Puedes ejercer el acceso, la rectificación y el borrado desde la propia app: revisa y borra tu actividad, vacía el historial y gestiona tu cuenta. Si necesitas eliminar tu cuenta por completo, escríbenos.',
+        activityLink: 'Borrar mi actividad',
+        accountLink: 'Gestionar mi cuenta',
+      },
+      contact: {
+        title: 'Contacto',
+        description:
+          'Para dudas de privacidad o para solicitar la eliminación de tu cuenta, escríbenos:',
+        email: 'nelson.fabian.gallego.s@gmail.com',
+      },
+      tvmaze: {
+        title: 'Datos e imágenes de TVmaze',
+        description:
+          'Los datos e imágenes de las series provienen de TVmaze y se usan bajo la licencia CC BY-SA. Epix muestra la atribución en el pie de la aplicación y enlaza a su web.',
+      },
     },
     notFound: {
       title: 'Página no encontrada',
@@ -338,6 +413,11 @@ export const en: Dictionary = {
     cancel: 'Cancel',
     today: 'Today',
     yesterday: 'Yesterday',
+  },
+  updatePrompt: {
+    message: 'A new version of Epix is available',
+    action: 'Update',
+    close: 'Dismiss notice',
   },
   notificationsContent: {
     episodeTodayTitle: 'New episode today',
@@ -536,6 +616,8 @@ export const en: Dictionary = {
       syncNow: 'Sync now',
       linkedSuccess: 'Your account is protected. You can now sign in on your other devices.',
       signedOutSuccess: 'You signed out and this device was wiped.',
+      privacyNote: 'See how Epix handles your data in the',
+      privacyLink: 'privacy policy',
       errors: {
         'invalid-email': 'Enter a valid email address.',
         'invalid-code': 'The code is not correct. Check it and try again.',
@@ -613,6 +695,73 @@ export const en: Dictionary = {
       accountSignedOut: 'Signed out',
       accountUnconfigured: 'Not set up',
       accountLinkedHint: 'Synced across devices',
+      privacy: 'Privacy',
+      privacyHint: 'What data Epix keeps and how to delete it',
+      privacyOpen: 'Read policy',
+    },
+    privacy: {
+      title: 'Privacy',
+      intro:
+        'Epix works without mandatory accounts and, by default, keeps everything on your device. This page summarizes what data exists, what it is used for and how you can review or delete it.',
+      device: {
+        title: 'What is stored on your device',
+        description:
+          'Epix stores in the browser local storage (IndexedDB) what it needs to work, even offline:',
+        items: [
+          'Favorites and history of shows and searches.',
+          'Theme, language, genre and maximum age preferences.',
+          'Pending changes queue and last sync status.',
+          'Already notified reminders, to avoid repeating alerts.',
+          'Usage events, only if you turned telemetry on.',
+        ],
+        footer:
+          'You can delete it from the app itself (for example, clearing your history) or by clearing the site data in your browser.',
+      },
+      cloud: {
+        title: 'What travels to the cloud',
+        description:
+          'If Epix is configured with Supabase, your favorites, history and telemetry events sync to your account (anonymous or linked) and are protected with Row Level Security: each row is only accessible to its own session. The anonymous session asks for no personal data; when you link an email you keep the same identifier and nothing is migrated.',
+      },
+      telemetry: {
+        title: 'Telemetry (optional)',
+        description:
+          'Off by default. With your consent, Epix records the date and time of use, screens visited, terms you search for, filters used and sync results. It includes no personal data or precise location.',
+        deletion:
+          'You can review the events and delete them at any time: deletion also reaches the copy in your cloud account.',
+        activityLink: 'Review and delete my activity',
+      },
+      gps: {
+        title: 'Location (GPS)',
+        description:
+          'GPS is only used when you tap “Detect with GPS”, with the browser explicit permission. Coordinates are used on the fly to identify your country and are not stored; only the detected country is kept, as the schedule needs it.',
+      },
+      notifications: {
+        title: 'Notifications',
+        description:
+          'New episode reminders are generated on your own device from your favorites: there are no push servers or third parties involved. You can turn them off anytime from Profile.',
+      },
+      accounts: {
+        title: 'Accounts',
+        description:
+          'You can use Epix without an account: each device gets an anonymous session. If you link an email, we send you a one-time code (OTP) to verify it and we do not use passwords. Linking keeps the same identity and your current data; signing out wipes this device, but not your cloud account.',
+      },
+      rights: {
+        title: 'Your rights',
+        description:
+          'You can exercise access, rectification and deletion from the app itself: review and delete your activity, clear your history and manage your account. If you need your account fully deleted, write to us.',
+        activityLink: 'Delete my activity',
+        accountLink: 'Manage my account',
+      },
+      contact: {
+        title: 'Contact',
+        description: 'For privacy questions or to request account deletion, write to us:',
+        email: 'nelson.fabian.gallego.s@gmail.com',
+      },
+      tvmaze: {
+        title: 'TVmaze data and images',
+        description:
+          'Show data and images come from TVmaze and are used under the CC BY-SA license. Epix shows attribution in the app footer and links to its website.',
+      },
     },
     notFound: {
       title: 'Page not found',

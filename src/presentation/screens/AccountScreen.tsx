@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
+import { Link } from 'react-router-dom';
 
 import { ConfirmDialog } from '@/presentation/components/ConfirmDialog';
 import { Spinner } from '@/presentation/components/Spinner';
@@ -355,6 +356,17 @@ export function AccountScreen() {
           setIsDialogOpen(false);
         }}
       />
+
+      <p className="text-xs leading-relaxed text-muted">
+        {t.screens.account.privacyNote}{' '}
+        <Link
+          to="/privacy"
+          className="inline-flex min-h-11 items-center text-accent-text underline underline-offset-2"
+        >
+          {t.screens.account.privacyLink}
+        </Link>
+        .
+      </p>
     </div>
   );
 }

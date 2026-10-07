@@ -14,6 +14,7 @@ import {
   BellIcon,
   LocationIcon,
   RefreshIcon,
+  ShieldIcon,
   UserIcon,
 } from '@/presentation/components/icons';
 import { useDependencies } from '@/presentation/hooks/dependencies-context';
@@ -162,6 +163,28 @@ function AccountSection() {
           {t.screens.profile.accountManage}
         </Link>
       </div>
+    </section>
+  );
+}
+
+function PrivacySection() {
+  const { t } = useI18n();
+
+  return (
+    <section className="space-y-3 rounded-xl border border-border bg-surface p-4">
+      <h2 className="text-sm font-semibold uppercase tracking-wide text-muted">
+        {t.screens.profile.privacy}
+      </h2>
+
+      <p className="text-xs leading-relaxed text-muted">{t.screens.profile.privacyHint}</p>
+
+      <Link
+        to="/privacy"
+        className="inline-flex min-h-11 items-center gap-2 rounded-full bg-surface-2 px-4 text-xs font-bold uppercase tracking-[1.4px] text-fg transition-colors duration-150 hover:text-accent-text"
+      >
+        <ShieldIcon className="h-4 w-4" />
+        {t.screens.profile.privacyOpen}
+      </Link>
     </section>
   );
 }
@@ -589,6 +612,8 @@ export function ProfileScreen() {
       <AccountSection />
 
       <SyncSection />
+
+      <PrivacySection />
     </div>
   );
 }

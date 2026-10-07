@@ -18,8 +18,10 @@ export default defineConfig({
     react(),
     tailwindcss(),
     VitePWA({
-      registerType: 'autoUpdate',
-      injectRegister: 'script-defer',
+      // Flujo prompt: el registro es manual (UpdatePrompt) y la nueva versión
+      // solo toma el control cuando el usuario pulsa «Actualizar» (SKIP_WAITING).
+      registerType: 'prompt',
+      injectRegister: null,
       includeAssets: ['favicon.svg', 'icons/*.png'],
       manifest: {
         name: 'Epix — Series y TV',
@@ -41,12 +43,50 @@ export default defineConfig({
             purpose: 'maskable',
           },
         ],
+        screenshots: [
+          {
+            src: 'screenshots/inicio.png',
+            sizes: '390x844',
+            type: 'image/png',
+            form_factor: 'narrow',
+            label: 'Hoy en TV',
+          },
+          {
+            src: 'screenshots/buscar.png',
+            sizes: '390x844',
+            type: 'image/png',
+            form_factor: 'narrow',
+            label: 'Buscar series',
+          },
+        ],
+        shortcuts: [
+          {
+            name: 'Buscar',
+            short_name: 'Buscar',
+            url: '/search',
+            icons: [{ src: 'icons/pwa-192x192.png', sizes: '192x192', type: 'image/png' }],
+          },
+          {
+            name: 'Agenda',
+            short_name: 'Agenda',
+            url: '/schedule',
+            icons: [{ src: 'icons/pwa-192x192.png', sizes: '192x192', type: 'image/png' }],
+          },
+          {
+            name: 'Favoritos',
+            short_name: 'Favoritos',
+            url: '/favorites',
+            icons: [{ src: 'icons/pwa-192x192.png', sizes: '192x192', type: 'image/png' }],
+          },
+        ],
       },
       strategies: 'injectManifest',
       srcDir: 'src',
       filename: 'sw.ts',
       injectManifest: {
         globPatterns: ['**/*.{js,css,html,svg,png,ico,woff2}'],
+        // Las capturas del manifest no se precachean: se piden al instalar/inspeccionar la PWA.
+        globIgnores: ['**/screenshots/**'],
       },
       devOptions: { enabled: false },
     }),
@@ -61,6 +101,12 @@ export default defineConfig({
     globals: true,
     setupFiles: ['./src/test/setup.ts', './src/test/setup-indexeddb.ts'],
     css: false,
+    alias: {
+      // Sin el plugin PWA activo en tests, el módulo virtual se reemplaza por un stub.
+      'virtual:pwa-register/react': fileURLToPath(
+        new URL('./src/test/pwa-register-stub.tsx', import.meta.url),
+      ),
+    },
     coverage: {
       enabled: false,
       provider: 'v8',

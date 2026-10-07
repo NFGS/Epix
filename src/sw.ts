@@ -26,8 +26,20 @@ const API_PATTERN = /^https:\/\/api\.tvmaze\.com\/.*/i;
 const STATIC_IMAGES_PATTERN = /^https:\/\/static\.tvmaze\.com\/.*/i;
 const UPLOADS_PATTERN = /\/uploads\/images\//;
 
-self.skipWaiting();
 clientsClaim();
+
+// Flujo prompt: la versión nueva queda en espera hasta que la app lo pide
+// (botón «Actualizar» → `postMessage({ type: 'SKIP_WAITING' })`).
+self.addEventListener('message', (event) => {
+  const data: unknown = event.data;
+  if (
+    typeof data === 'object' &&
+    data !== null &&
+    (data as { type?: unknown }).type === 'SKIP_WAITING'
+  ) {
+    void self.skipWaiting();
+  }
+});
 
 precacheAndRoute(self.__WB_MANIFEST);
 cleanupOutdatedCaches();

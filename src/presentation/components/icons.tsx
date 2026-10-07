@@ -215,6 +215,14 @@ export function ShieldIcon({ className }: IconProps) {
   );
 }
 
+export function CloseIcon({ className }: IconProps) {
+  return (
+    <svg {...iconProps(className)}>
+      <path d="m6 6 12 12M18 6 6 18" />
+    </svg>
+  );
+}
+
 export function LogOutIcon({ className }: IconProps) {
   return (
     <svg {...iconProps(className)}>

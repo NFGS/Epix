@@ -26,6 +26,7 @@ import { DependenciesContext, type Dependencies } from '@/presentation/hooks/dep
 import { createTvmazeScheduleRepository } from '@/infrastructure/tvmaze/tvmaze-schedule.repository';
 import { createTvmazeShowRepository } from '@/infrastructure/tvmaze/tvmaze-show.repository';
 import { RepositoriesContext, type Repositories } from '@/presentation/hooks/repositories-context';
+import { UpdatePrompt } from '@/presentation/components/UpdatePrompt';
 import { I18nProvider } from '@/shared/i18n/I18nProvider';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
@@ -145,6 +146,7 @@ export function AppProviders({ children }: { children: ReactNode }) {
             <I18nProvider>
               <BrowserRouter>
                 <ServiceWorkerBridge onNotificationOpen={handleNotificationOpen} />
+                <UpdatePrompt />
                 <TelemetryBootstrap telemetry={dependencies.telemetry} />
                 <RouteTelemetry telemetry={dependencies.telemetry} />
                 <EpisodeReminderBootstrap />
