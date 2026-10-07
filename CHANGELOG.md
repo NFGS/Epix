@@ -21,6 +21,10 @@ y el versionado [SemVer](https://semver.org/lang/es/).
 - Pulido PWA: aviso de «nueva versión disponible» (service worker en modo
   prompt), capturas y atajos en el manifest, `Permissions-Policy` + COOP y
   página de privacidad in-app (`/privacy`).
+- Calidad de datos y pipeline: mejoras de Supabase Advisors (índices de claves
+  foráneas y políticas RLS con `initplan`), función de retención
+  `purge_epix_data`, **Lighthouse CI** (accesibilidad bloqueante), metadatos
+  iOS y auditoría de dependencias de producción bloqueante.
 
 ### Fixed
 - El correo vacío (`''`) de los usuarios anónimos de Supabase se normaliza a

@@ -33,6 +33,9 @@ https://epix-xi.vercel.app
 - Colección Postman de la API TVmaze: `docs/postman/Epix-TVmaze.postman_collection.json`
 - Especificación y requisitos trazables: `SPEC.md`, `docs/requisitos.md`
 - Investigación con fuentes académicas: `docs/investigacion/`
+- Cuentas reales con código por correo (OTP) y sincronización en tiempo real entre dispositivos.
+- Página de privacidad in-app y guías de entrega (`docs/entrega/`).
+- Integración continua: 338 pruebas unitarias + 16 E2E, auditoría de seguridad y Lighthouse.
 
 Quedo atento a sus observaciones.
 

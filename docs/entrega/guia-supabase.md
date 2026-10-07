@@ -117,6 +117,19 @@ a **cualquier** destinatario sin comprar dominio:
 > producción. **Permite enviar códigos a cualquier destinatario** (Gmail ≈ 500 correos/día).
 > Verificado con una prueba real de envío. *(Resend queda documentado abajo como alternativa.)*
 
+## Mantenimiento de la nube (advisors y retención)
+
+- **Purga de datos antiguos:** `public.purge_epix_data(180)` (migración 003) elimina tombstones de
+  favoritos, eventos de uso e historial con más de N días. Ejecución manual o programada con `pg_cron`:
+  ```sql
+  select cron.schedule('epix-purge', '0 4 * * *', $$select public.purge_epix_data(180)$$);
+  ```
+  (Revocada para `anon`/`authenticated`: solo el propietario puede ejecutarla.)
+- **Advisors de Supabase:** aplicadas las mejoras de rendimiento (índices + políticas `auth.uid()`
+  con initplan: 26 → 2 avisos informativos). Quedan como *aceptados por diseño*: el aviso de sesiones
+  anónimas (modelo de identidad de Epix) y el de contraseñas filtradas (HIBP, exclusivo de planes Pro;
+  Epix no usa contraseñas).
+
 ## Problemas comunes
 
 | Síntoma | Causa probable | Solución |
