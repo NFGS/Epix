@@ -70,6 +70,18 @@ Supabase **no permite editar plantillas ni subir el límite de envíos** (2/hora
 2. En Supabase: **Authentication → Emails → SMTP Settings** → host, puerto, usuario y clave del proveedor.
 3. Con SMTP propio podrás editar las plantillas **Magic Link** y **Change Email** para incluir
    `{{ .Token }}` (el código de 6 dígitos que pide la app) y ajustar `rate_limit_email_sent`.
+
+   **Vía automatizada (recomendada):** con `RESEND_API_KEY` y `SMTP_ADMIN_EMAIL` en
+   `~/.config/secrets.env`, ejecuta:
+
+   ```bash
+   set -a; . ~/.config/secrets.env; set +a
+   node scripts/setup-smtp.mjs
+   ```
+
+   El script configura host/puerto/remitente, sube el límite a 30/hora, escribe las plantillas
+   con `{{ .Token }}` y verifica el resultado. (Para pruebas sin dominio: usa
+   `SMTP_ADMIN_EMAIL=onboarding@resend.dev`, que Resend solo entrega al correo dueño de la cuenta.)
 4. Prueba completa: Perfil → Cuenta → «Protege tu cuenta» → código → verificar (mismo `uid`, sin migrar datos);
    en otro dispositivo → «Inicia sesión» con el mismo correo → favoritos e historial llegan con el pull.
 

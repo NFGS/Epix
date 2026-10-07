@@ -25,6 +25,7 @@ Capturas generadas con Chromium real (Playwright) contra el build de producción
 | `14-supabase-sincronizado.png` | Nube activa: favorito sincronizado a PostgreSQL y estado «Al día» en Perfil |
 | `15-cuenta.png` | Cuenta (Sprint 5.2): flujo «Protege tu cuenta» con vinculación anónimo→permanente |
 | `16-perfil.png` | Perfil con la sección «Cuenta» y «Datos y sincronización» |
+| `17-privacidad.png` | Página de privacidad in-app (`/privacy`): telemetría, GPS, cuentas y derechos |
 
 > La revisión visual de los dos diagramas (legibilidad en desktop y móvil) fue realizada sobre
 > estas capturas: tipografía legible, sin recortes ni cruces problemáticos; no requirieron reparación.

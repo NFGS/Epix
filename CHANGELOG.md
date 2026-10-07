@@ -18,6 +18,9 @@ y el versionado [SemVer](https://semver.org/lang/es/).
   (Web Locks + BroadcastChannel); pantalla «Cuenta» (ADR-0010).
 - Rendimiento: code splitting por ruta, shell estático de arranque, hints de
   imagen LCP/CLS y presupuesto de tamaño (`size-limit`) en CI.
+- Pulido PWA: aviso de «nueva versión disponible» (service worker en modo
+  prompt), capturas y atajos en el manifest, `Permissions-Policy` + COOP y
+  página de privacidad in-app (`/privacy`).
 
 ### Fixed
 - El correo vacío (`''`) de los usuarios anónimos de Supabase se normaliza a
