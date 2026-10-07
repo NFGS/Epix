@@ -85,8 +85,12 @@ Supabase **no permite editar plantillas ni subir el límite de envíos** (2/hora
 4. Prueba completa: Perfil → Cuenta → «Protege tu cuenta» → código → verificar (mismo `uid`, sin migrar datos);
    en otro dispositivo → «Inicia sesión» con el mismo correo → favoritos e historial llegan con el pull.
 
-> Nota: mientras no haya SMTP propio, el flujo de código no puede completarse (el correo por defecto
-> no muestra el código). Todo lo demás (vinculación visible, Realtime, sync) está operativo.
+> ✅ **SMTP configurado (2026-10-07):** Resend activo — host `smtp.resend.com:465`, plantillas con
+> código `{{ .Token }}`, límite 30 correos/hora y `site_url` de producción.
+> **Para probar hoy:** usa el **mismo correo con el que creaste la cuenta de Resend** — el remitente
+> `onboarding@resend.dev` solo entrega a ese correo. Para cualquier otro destinatario o producción:
+> verifica un dominio en Resend, cambia `SMTP_ADMIN_EMAIL` en `~/.config/secrets.env` y re-ejecuta
+> `node scripts/setup-smtp.mjs`.
 
 ## Problemas comunes
 
