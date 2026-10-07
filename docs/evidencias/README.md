@@ -44,6 +44,11 @@ node docs/evidencias/verify-prod.mjs   # verifica la URL de producción (HTTP, S
   de origen en SW, retención de outbox, LWW determinista, foco en diálogos).
 - **Accesibilidad:** Lighthouse 100 en Inicio.
 
+## Notas de rendimiento (LCP)
+
+- **Shell estático de arranque:** mejora principal — FCP 2.07 s → 0.94 s en producción (mantenido).
+- **Pre-calentado HTTP de la agenda (`warm.js`):** técnica validada (la petición posterior se sirvió desde caché HTTP, 0 bytes transferidos) pero **descartada**: bajo red throttled el LCP regresó de 3.17 s a 5.14 s por contención de ancho de banda con el bundle (medición comparada en `lighthouse-produccion.json` v5 vs v6). Alternativa futura con mejor relación coste/beneficio: **proxy en el edge** con cabeceras de caché propias o prerender del contenido de Inicio.
+
 ## Pendientes de evidencia (dispositivo físico)
 
 - Capturas en **Android físico** (instalación, notificación, GPS): seguir
