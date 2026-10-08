@@ -5,8 +5,8 @@
  * sesión de la MISMA cuenta (creada y eliminada vía Admin API con service_role).
  *
  * Disparadores de sync probados (los reales de la app):
+ *  - Micro-sync automático tras marcar un favorito (push inmediato, sin reabrir ni tocar nada).
  *  - Arranque de la app (reabrir el PWA en el móvil) → push del outbox + pull de la nube.
- *  - Botón «Sincronizar ahora» (Cuenta) → push manual.
  *  - Realtime: la otra pestaña recibe los cambios EN VIVO sin recargar.
  *
  * Comprueba:
@@ -120,18 +120,15 @@ try {
   check('Dispositivo B: ve «Breaking Bad» sin interacción (pull de nube)', pullOk);
   await B.page.screenshot({ path: `${OUT}/18-multidispositivo-repull.png` });
 
-  // ── 5. A marca Game of Thrones y usa «Sincronizar ahora» ─────────────────────
+  // ── 5. A marca Game of Thrones → micro-sync automático (sin botón ni recargar) ─
   await A.page.goto(`${APP}/shows/82`, { waitUntil: 'domcontentloaded', timeout: 60000 });
   await A.page.waitForSelector('button[aria-label="Añadir a favoritos"]', { timeout: 45000 });
   await A.page.click('button[aria-label="Añadir a favoritos"]');
   await A.page.waitForSelector('button[aria-label="Quitar de favoritos"]', { timeout: 15000 });
   check('Dispositivo A: «Game of Thrones» marcado como favorito (local)', true);
-  await A.page.goto(`${APP}/account`, { waitUntil: 'domcontentloaded', timeout: 60000 });
-  await A.page.waitForSelector('text=Última sincronización', { timeout: 30000 });
-  await A.page.getByRole('button', { name: /sincronizar/i }).click();
   let cloudB = false;
-  for (let i = 0; i < 30 && !cloudB; i++) { await A.page.waitForTimeout(1000); cloudB = await cloudHas(82); }
-  check('Dispositivo A: «Game of Thrones» sincronizado (botón «Sincronizar ahora»)', cloudB, cloudB ? '' : 'timeout 30s');
+  for (let i = 0; i < 20 && !cloudB; i++) { await A.page.waitForTimeout(1000); cloudB = await cloudHas(82); }
+  check('Micro-sync: «Game of Thrones» llega a la nube sin intervención (≤20 s)', cloudB, cloudB ? '' : 'timeout 20s');
 
   // ── 6. Realtime: B lo ve EN VIVO sin recargar ────────────────────────────────
   let realtimeOk = false;

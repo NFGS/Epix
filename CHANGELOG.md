@@ -30,13 +30,18 @@ y el versionado [SemVer](https://semver.org/lang/es/).
   recordatorios diarios por cron) y tabla `push_subscriptions` con RLS.
 - **Cron diario** de recordatorios push (GitHub Actions, 12:00 UTC) invocando la
   Edge Function con `x-cron-secret`.
-- Observabilidad opcional: **Sentry** gated por `VITE_SENTRY_DSN` (plug-and-play;
-  sin DSN: cero peticiones y cero peso en el arranque; CSP preparada y boundary
-  de aplicación con fallback).
+- Observabilidad con **Sentry activa en producción** (cuenta y proyecto gratuitos
+  `epix`): errores reales capturados con boundary de aplicación y verificación
+  end-to-end (evento confirmado en el panel). Sigue siendo 100 % opcional por
+  DSN: sin `VITE_SENTRY_DSN` el SDK no se descarga ni ejecuta (cero peso y cero
+  peticiones), útil para despliegues propios.
 - Proxy edge de la agenda (`/api/schedule`) con caché CDN (`s-maxage`) para
   reducir latencia y proteger a TVmaze del rate limit.
 
 ### Changed
+- Sincronización multi-dispositivo **inmediata**: al marcar/quitar un favorito se
+  dispara un micro-sync automático del outbox (los demás dispositivos lo ven en
+  segundos, también en vivo por Realtime).
 - Refactor arquitectónico: puerto `PushGateway` en la capa de aplicación
   (presentación desacoplada de infraestructura en el flujo push; el cliente
   Web Push se sirve en chunks perezosos — resuelve la deuda P-08).

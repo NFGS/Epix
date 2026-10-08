@@ -28,6 +28,7 @@ Capturas generadas con Chromium real (Playwright) contra el build de producción
 | `17-privacidad.png` | Página de privacidad in-app (`/privacy`): telemetría, GPS, cuentas y derechos |
 | `18-multidispositivo-repull.png` | Multi-dispositivo: el dispositivo B (recién abierto) ve el favorito marcado en A — pull de nube |
 | `19-multidispositivo-realtime.png` | Multi-dispositivo: B ve «Game of Thrones» aparecer en vivo (Realtime) tras sincronizar A |
+| `20-sentry-evento.png` | Sentry activo en producción: error real capturado por el SDK y visible en el panel (proyecto «epix») |
 
 > La revisión visual de los dos diagramas (legibilidad en desktop y móvil) fue realizada sobre
 > estas capturas: tipografía legible, sin recortes ni cruces problemáticos; no requirieron reparación.
@@ -59,9 +60,12 @@ node docs/evidencias/verify-prod.mjs   # verifica la URL de producción (HTTP, S
 
 `verify-multidispositivo.mjs` simula **dos móviles reales**: dos contextos de navegador sin estado
 compartido con la sesión de la **misma cuenta** (creada y eliminada al vuelo vía Admin API con
-`service_role`). Comprueba el push (sync de arranque al reabrir el PWA y botón «Sincronizar
-ahora»), el pull de nube del segundo dispositivo y la propagación **Realtime en vivo sin recargar**.
-Veredicto **PASS (8/8)** registrado en `multidispositivo-resultado.json`.
+`service_role`). Comprueba el **micro-sync automático** (el favorito viaja a la nube sin ninguna
+intervención), el pull de nube del segundo dispositivo y la propagación **Realtime en vivo sin
+recargar**. Veredicto **PASS (9/9)** registrado en `multidispositivo-resultado.json`.
+
+La observabilidad externa se verificó end-to-end con `sentry-evento.mjs` (error real en producción
+→ evento visible en el panel; captura `20-sentry-evento.png`).
 
 ## Pendientes de evidencia (dispositivo físico)
 

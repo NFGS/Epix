@@ -1,11 +1,11 @@
 {
-  "fecha": "2026-10-08T06:31:48.669Z",
+  "fecha": "2026-10-08T07:07:25.799Z",
   "veredicto": "PASS",
   "pruebas": [
     {
       "name": "Sesión obtenida (misma cuenta para ambos dispositivos)",
       "ok": true,
-      "detail": "uid=638196a3-3c42-4acf-8366-6df17f9d4001"
+      "detail": "uid=75efaf29-dab2-4767-84b6-757f83b5b714"
     },
     {
       "name": "Dispositivo A: «Breaking Bad» marcado como favorito (local)",
@@ -28,7 +28,7 @@
       "detail": ""
     },
     {
-      "name": "Dispositivo A: «Game of Thrones» sincronizado (botón «Sincronizar ahora»)",
+      "name": "Micro-sync: «Game of Thrones» llega a la nube sin intervención (≤20 s)",
       "ok": true,
       "detail": ""
     },
