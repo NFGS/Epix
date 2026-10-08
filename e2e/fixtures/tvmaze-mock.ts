@@ -81,7 +81,7 @@ async function handleApiRequest(route: Route): Promise<void> {
     return;
   }
 
-  if (url.pathname === '/schedule') {
+  if (url.pathname === '/schedule' || url.pathname === '/api/schedule') {
     await fulfillJson(route, scheduleFixture);
     return;
   }
@@ -98,6 +98,9 @@ async function handleApiRequest(route: Route): Promise<void> {
  */
 export async function mockTvmazeApi(context: BrowserContext): Promise<void> {
   await context.route('https://api.tvmaze.com/**', handleApiRequest);
+  // La agenda se pide al proxy de mismo origen (`/api/schedule`), servido en
+  // producción por la función de Vercel.
+  await context.route('**/api/schedule**', handleApiRequest);
   await context.route('https://static.tvmaze.com/**', async (route) => {
     await route.fulfill({
       status: 200,

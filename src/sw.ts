@@ -1,5 +1,5 @@
 /// <reference lib="webworker" />
-import { clientsClaim } from 'workbox-core';
+import { clientsClaim, type RouteMatchCallback } from 'workbox-core';
 import { CacheableResponsePlugin } from 'workbox-cacheable-response';
 import { ExpirationPlugin } from 'workbox-expiration';
 import {
@@ -26,6 +26,11 @@ const API_PATTERN = /^https:\/\/api\.tvmaze\.com\/.*/i;
 const STATIC_IMAGES_PATTERN = /^https:\/\/static\.tvmaze\.com\/.*/i;
 const UPLOADS_PATTERN = /\/uploads\/images\//;
 
+// La agenda se pide al proxy de mismo origen (`/api/schedule`), no a
+// api.tvmaze.com; esta ruta la cachea igual que el resto de la API.
+const SAME_ORIGIN_SCHEDULE: RouteMatchCallback = ({ url }) =>
+  url.origin === self.location.origin && url.pathname === '/api/schedule';
+
 clientsClaim();
 
 // Flujo prompt: la versión nueva queda en espera hasta que la app lo pide
@@ -49,6 +54,18 @@ registerRoute(new NavigationRoute(createHandlerBoundToURL('index.html')));
 
 registerRoute(
   API_PATTERN,
+  new NetworkFirst({
+    cacheName: API_CACHE,
+    networkTimeoutSeconds: 8,
+    plugins: [
+      new CacheableResponsePlugin({ statuses: [0, 200] }),
+      new ExpirationPlugin({ maxEntries: 100, maxAgeSeconds: ONE_DAY_SECONDS }),
+    ],
+  }),
+);
+
+registerRoute(
+  SAME_ORIGIN_SCHEDULE,
   new NetworkFirst({
     cacheName: API_CACHE,
     networkTimeoutSeconds: 8,

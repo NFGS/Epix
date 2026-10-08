@@ -17,6 +17,8 @@ las opciones consideradas con sus trade-offs, la decisión tomada y sus consecue
 | [ADR-0007](./ADR-0007-csp-header-http-vercel.md) | CSP como header HTTP en Vercel (no `<meta>`) | Aceptado | 2026-10-06 |
 | [ADR-0008](./ADR-0008-sistema-diseno-open-design-spotify-runway.md) | Sistema de diseño propio adoptado de Open Design (Spotify × Runway) | Aceptado | 2026-10-05 |
 | [ADR-0009](./ADR-0009-cicd-github-actions-vercel.md) | CI/CD con GitHub Actions + deploy en Vercel vía CLI | Aceptado | 2026-10-06 |
+| [ADR-0010](./ADR-0010-cuentas-reales-otp-multidispositivo.md) | Cuentas reales con OTP por correo y sincronización multi-dispositivo | Aceptado | 2026-10-07 |
+| [ADR-0011](./ADR-0011-typescript-7-diferido.md) | Actualización a TypeScript 7 (diferida hasta typescript-eslint ≥ 7.1) | Aceptado | 2026-10-07 |
 
 ## Convención
 

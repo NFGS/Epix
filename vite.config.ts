@@ -10,6 +10,14 @@ const packageJson = JSON.parse(
   readFileSync(new URL('./package.json', import.meta.url), 'utf8'),
 ) as { version: string };
 
+// En producción `/api/schedule` lo sirve la función serverless de Vercel; en
+// `dev`/`preview` se reenvía a TVmaze para reproducir el mismo camino.
+const scheduleProxy = {
+  target: 'https://api.tvmaze.com',
+  changeOrigin: true,
+  rewrite: (path: string) => path.replace(/^\/api\/schedule/, '/schedule'),
+};
+
 export default defineConfig({
   define: {
     __APP_VERSION__: JSON.stringify(packageJson.version),
@@ -94,6 +102,16 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
+    },
+  },
+  server: {
+    proxy: {
+      '/api/schedule': scheduleProxy,
+    },
+  },
+  preview: {
+    proxy: {
+      '/api/schedule': scheduleProxy,
     },
   },
   test: {
