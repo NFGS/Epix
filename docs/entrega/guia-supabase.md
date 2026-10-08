@@ -55,9 +55,9 @@ pnpm dev        # o pnpm build && pnpm preview
 2. Pulsa **Sincronizar ahora**: favoritos e historial locales viajan a Supabase.
 3. En Supabase → **Table Editor → favorites**: aparecen tus filas con `user_id` (el dispositivo).
 4. **Telemetría** (si la activaste en Perfil): los eventos llegan a `usage_events` al sincronizar.
-5. Prueba multi-dispositivo: abre Epix en otro navegador con el MISMO `.env`… (cada dispositivo
-   crea su propia identidad anónima; para compartir datos entre dispositivos haría falta iniciar
-   sesión con la misma cuenta — evolución futura documentada en `docs/modelo-datos.md`).
+5. Prueba multi-dispositivo: abre Epix en otro navegador con el MISMO `.env` e **inicia sesión
+   con la misma cuenta** (OTP por correo, Sprint 5.2): los datos llegan en vivo por Realtime. Sin
+   cuenta, cada dispositivo conserva su identidad anónima propia.
 
 ## Cuentas reales (OTP por correo) — Sprint 5.2
 
@@ -149,4 +149,4 @@ Supabase **no permite editar plantillas ni subir el límite de envíos** (2/hora
 | Chip sigue en «Solo local» | `.env` ausente o mal escrito | Revisa que empiece con `VITE_` y reinicia el servidor |
 | Error de permisos al sincronizar | RLS sin políticas o migración incompleta | Reejecuta `001_init.sql` |
 | «Anonymous sign-ins disabled» | Falta activar sesiones anónimas | Paso 2 de esta guía |
-| Los favoritos no bajan en otro dispositivo | Identidad anónima distinta por dispositivo | Es el comportamiento actual; requiere cuentas reales |
+| Los favoritos no bajan en otro dispositivo | Cada dispositivo usa su identidad anónima propia | **Inicia sesión con la misma cuenta** en ambos (OTP, Sprint 5.2); o vincula primero el anónimo en «Cuenta» |

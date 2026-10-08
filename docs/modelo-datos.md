@@ -111,7 +111,7 @@ erDiagram
 ### 2.1 Esquema
 
 ```sql
--- Perfil mínimo por dispositivo (auth anónima de Supabase)
+-- Perfil por usuario (identidad anónima o cuenta OTP; mismo auth.users.id)
 create table public.profiles (
   user_id      uuid primary key references auth.users (id) on delete cascade,
   display_name text,
@@ -181,7 +181,7 @@ create table public.sync_cursors (
 - `alter table ... enable row level security;` en **todas** las tablas.
 - Política uniforme por tabla: `using (auth.uid() = user_id)` para `select` / `update` / `delete`
   y `with check (auth.uid() = user_id)` para `insert`.
-- El cliente solo usa la **anon key** con **auth anónima**; la `service_role` nunca sale del servidor.
+- El cliente solo usa la **anon key** con **auth anónima** (ampliable a cuentas OTP conservando el mismo `uid`, ADR-0010); la `service_role` nunca sale del servidor.
 - "Mi actividad" permite `delete` de las filas propias (derecho al olvido, RNF-03).
 
 ### 2.3 Diagrama

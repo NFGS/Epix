@@ -15,6 +15,8 @@ y el versionado [SemVer](https://semver.org/lang/es/).
   las ramas/PR obtienen previews. Sin tokens que rotar.
 
 ### Changed
+- Consistencia documental de los 4 entornos: SPEC, guías y modelo de datos actualizados
+  (cuentas OTP, push real, estado congelado); Notion y Obsidian alineados.
 - Limpieza de ecosistema: se retira el proveedor alternativo **Resend** del
   script SMTP y de la guía (Gmail SMTP es la ruta definitiva); la variable
   `RESEND_API_KEY` se eliminó de los secretos locales.

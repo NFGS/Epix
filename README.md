@@ -28,7 +28,7 @@ Aplicación web progresiva (PWA) instalable que permite:
 | Build / PWA | Vite + `vite-plugin-pwa` (Workbox) |
 | Datos remotos | TVmaze API (REST, sin API key) |
 | Persistencia local | Dexie (IndexedDB) + TanStack Query |
-| Nube / telemetría | Supabase (PostgreSQL + RLS + auth anónima) |
+| Nube / telemetría | Supabase (PostgreSQL + RLS; auth anónima → cuentas OTP) |
 | Calidad | ESLint + Prettier + Vitest + Playwright + Lighthouse |
 
 > 📐 Arquitectura, requisitos y decisiones: ver [`SPEC.md`](./SPEC.md) y [`docs/`](./docs/).
@@ -58,7 +58,7 @@ pnpm typecheck   # verificación de tipos
 - **Operación:** CI (lint, tipos, tests, Lighthouse, presupuesto) + CodeQL + Dependabot; cron diario
   de recordatorios push (GitHub Actions) y workflow `keepalive` mensual.
 - **Nube activa:** Supabase (`epix-db`) — favoritos, historial y telemetría sincronizan a PostgreSQL
-  con RLS (sesiones anónimas).
+  con RLS (sesiones anónimas → cuentas OTP).
 - **🔒 Infraestructura estable:** el deploy se mantiene tal como está (integración nativa; decisión
   del owner, 2026-10-08) — no se modifica ni se migra.
 

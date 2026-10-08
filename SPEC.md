@@ -7,7 +7,7 @@
 
 Epix es una **PWA instalable** de series y televisión que consume la **API pública de TVmaze**
 (CC BY-SA, sin API key). Ofrece búsqueda, detalle, agenda por país, favoritos, historial,
-personalización, GPS, notificaciones locales y telemetría de uso sincronizada a **Supabase**.
+personalización, GPS, notificaciones locales **y push real**, cuentas con OTP y telemetría de uso sincronizada a **Supabase**.
 Funciona **offline-first**: la UI lee siempre de la caché local (IndexedDB) y sincroniza en segundo plano.
 
 ## 2. Objetivos
@@ -27,6 +27,12 @@ Funciona **offline-first**: la UI lee siempre de la caché local (IndexedDB) y s
 
 **Fuera (por ahora):** autenticación con cuentas reales (se usa identidad anónima), push real
 con servidor VAPID (se usan notificaciones locales), comentarios sociales, reproductor de video.
+
+> **Actualización de alcance (2026-10-08):** los dos primeros ítems «fuera» **se implementaron
+> después como extras**: cuentas reales con OTP por correo (Sprint 5.2, ADR-0010) y push real
+> con VAPID (Edge Function `epix-push` + cron diario). La identidad anónima sigue siendo la
+> puerta de entrada y la vinculación conserva el mismo `uid`. Detalle en `CHANGELOG.md`
+> (release v1.1.0).
 
 ## 4. Requisitos obligatorios del instructor (macro)
 
@@ -80,7 +86,7 @@ con servidor VAPID (se usan notificaciones locales), comentarios sociales, repro
 `syncMeta` (últimos cursores). Detalle en [`docs/modelo-datos.md`](./docs/modelo-datos.md) *(Fase 1)*.
 
 **Externo (Supabase/PostgreSQL):** `profiles`, `preferences`, `favorites`, `watch_history`,
-`usage_events`, `sync_cursors`, con **RLS** por `auth.uid()` y auth anónima por dispositivo.
+`usage_events`, `sync_cursors`, con **RLS** por `auth.uid()` y auth anónima por dispositivo, **ampliable a cuentas OTP sin migrar datos** (ADR-0010).
 
 ## 7. Roadmap por incrementos
 

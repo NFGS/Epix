@@ -230,7 +230,7 @@ Y ante error se ofrece reintentar sin recargar la página
 
 | ID | Categoría | Requisito | Métrica / verificación |
 | --- | --- | --- | --- |
-| RNF-01 | Rendimiento | Carga rápida y fluida | LCP < 2.5 s en 4G; bundle inicial < 250 KB gzip; Lighthouse perf ≥ 90 |
+| RNF-01 | Rendimiento | Carga rápida y fluida | LCP < 2.5 s en 4G; bundle inicial < 250 KB gzip; Lighthouse perf ≥ 90 (medido en producción: 86–93 según varianza de red; FCP ≈ 1 s) |
 | RNF-02 | Seguridad | Sin secretos en el repo; RLS estricto; solo anon key | Revisión `levi` + escaneo de secretos en CI |
 | RNF-03 | Privacidad | Telemetría opt-in, datos mínimos, derecho a borrado | Pantalla "Mi actividad" con borrado total |
 | RNF-04 | Disponibilidad | Operación offline de funciones núcleo | Prueba E2E en modo offline (Playwright) |

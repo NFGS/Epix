@@ -21,7 +21,7 @@ colección Postman como evidencia y documentación publicada en Notion.
 - **Frontend/PWA**: React 19 + TypeScript + Tailwind CSS 4 + Vite + `vite-plugin-pwa` (Workbox).
 - **HTTP/estado remoto**: fetch + Zod (validación de contratos) + TanStack Query.
 - **Persistencia local**: Dexie (IndexedDB) para favoritos, historial, preferencias y outbox.
-- **Nube**: Supabase (PostgreSQL + RLS + auth anónima) para telemetría y sincronización.
+- **Nube**: Supabase (PostgreSQL + RLS + auth anónima → cuentas OTP) para telemetría y sincronización.
 - **Tests**: Vitest + Testing Library (unit) y Playwright (E2E, capturas).
 - **Calidad**: ESLint + Prettier. Gates obligatorios: `lint`, `typecheck`, `test:unit`, `build`.
 - **Diseño**: sistema propio en `docs/design/DESIGN.md` (Open Design: base *Spotify* × disciplina *Runway*, acento Epix `#6C4CF1`; ver `.open-design.json`).
