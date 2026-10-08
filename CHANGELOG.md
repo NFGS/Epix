@@ -6,6 +6,11 @@ y el versionado [SemVer](https://semver.org/lang/es/).
 
 ## [Unreleased]
 
+### Added
+- Workflow **keepalive** mensual: un commit mínimo automático mantiene el
+  repositorio activo y evita que GitHub pause los workflows programados (cron
+  diario de push) tras 60 días de inactividad.
+
 ## [1.1.0] - 2026-10-08
 
 ### Added
