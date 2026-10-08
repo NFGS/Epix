@@ -88,5 +88,5 @@ pnpm test:e2e    # Playwright
 - [x] Sprint 5.3 (pulido) — UX de «nueva versión disponible» (SW en modo prompt), manifest con capturas y atajos, `Permissions-Policy` + COOP y página de privacidad in-app (`/privacy`).
 - [x] Despliegue — producción en [epix-xi.vercel.app](https://epix-xi.vercel.app) (Vercel; deep links, service worker y CSP verificados con navegador real).
 - [x] Nube — Supabase `epix-db` activo (migración + RLS + sesiones anónimas + env vars en Vercel); sincronización de favoritos y telemetría verificada en producción.
-- [x] Operación — cron diario de recordatorios push (GitHub Actions, 12:00 UTC), Sentry activo con evento real verificado (proyecto `epix`), micro-sync de favoritos y verificación multi-dispositivo (PASS 9/9, 2 perfiles aislados + Realtime).
+- [x] Operación — cron diario de recordatorios push (GitHub Actions, 12:00 UTC), Sentry activo con evento real verificado (proyecto `epix`), micro-sync de favoritos, verificación multi-dispositivo (PASS 9/9, 2 perfiles aislados + Realtime), **deploy automático a producción** en cada push (GitHub Actions + token de Vercel) y workflow **keepalive** mensual.
 - [ ] Pendiente — capturas en Android físico (`docs/entrega/guia-verificacion-movil.md`) y dominio propio (opcional).

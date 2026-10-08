@@ -35,7 +35,7 @@ https://epix-xi.vercel.app
 - Investigación con fuentes académicas: `docs/investigacion/`
 - Cuentas reales con código por correo (OTP), notificaciones push (VAPID) con recordatorio diario programado y sincronización en tiempo real entre dispositivos (verificada con dos dispositivos: PASS 9/9).
 - Página de privacidad in-app y guías de entrega (`docs/entrega/`).
-- Integración continua: 498 pruebas unitarias + 16 E2E (cobertura 99 % en dominio/aplicación), auditoría de seguridad, Lighthouse, presupuesto de tamaño y seguimiento de errores en producción (Sentry).
+- Integración y entrega continua: 498 pruebas unitarias + 16 E2E (cobertura 99 % en dominio/aplicación), auditoría de seguridad, Lighthouse, presupuesto de tamaño, seguimiento de errores en producción (Sentry) y despliegue automático a producción en cada push.
 
 Quedo atento a sus observaciones.
 
