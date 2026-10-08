@@ -102,6 +102,9 @@ con servidor VAPID (se usan notificaciones locales), comentarios sociales, repro
 | 8 | Supabase | Migraciones SQL, políticas, guía de configuración |
 | 9 | Calidad | Tests, capturas, Lighthouse, revisiones |
 
+> **Estado (2026-10-08):** los 9 incrementos están completados — el 8 (Supabase) llegó como
+> migraciones 001–005 y el 9 (calidad) como los sprints 5.0–5.3; release actual **v1.1.0**.
+
 ## 8. Riesgos y mitigaciones
 
 | Riesgo | Impacto | Mitigación |
