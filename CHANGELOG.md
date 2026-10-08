@@ -39,6 +39,13 @@ y el versionado [SemVer](https://semver.org/lang/es/).
   de 8 (`mailer_otp_length`); ahora el proyecto emite 6 y el campo acepta
   longitudes mayores. Los enlaces de correo establecen sesión
   (`detectSessionInUrl`) y vuelven a `/account`.
+- Auditoría profunda (seguridad + código): endpoints push validados con
+  allowlist, comparación *timing-safe* y longitud mínima del secreto de cron,
+  CORS restringido al origen de la app, errores genéricos sin fugas internas,
+  RPC `claim_push_subscription` para navegadores compartidos, elegibilidad del
+  cron por suscripción (no por preferencia), *pacing* y topes de TVmaze,
+  ventana horaria UTC-5, y robustez del cliente push (anti doble toque, estados
+  reales de suscripción, validación VAPID antes del permiso).
 
 ## [1.0.0] - 2026-10-06
 

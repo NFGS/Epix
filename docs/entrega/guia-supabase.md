@@ -133,6 +133,12 @@ a **cualquier** destinatario sin comprar dominio:
   La corrida se detiene sola ante un `429` de TVmaze (devuelve lo enviado) y elimina suscripciones
   muertas (410/404).
 
+- **Seguridad del push (auditoría aplicada):** los `endpoint` se validan contra una allowlist de
+  *push services* antes de enviarse; el `CRON_SECRET` exige **≥ 32 caracteres** (`openssl rand -hex 32`;
+  si lo rotas: actualiza el secreto en Supabase, en `~/.config/secrets.env` y re-despliega la función);
+  la RPC `claim_push_subscription` permite reclamar el endpoint del navegador compartido entre cuentas.
+  Recibo del cron: `{"ok":true,"date":...,"window":{...},"users":N,"checkedShows":N,"sent":N,"removed":N}`.
+
 ## Mantenimiento de la nube (advisors y retención)
 
 - **Purga de datos antiguos:** `public.purge_epix_data(180)` (migración 003) elimina tombstones de
