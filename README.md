@@ -73,6 +73,7 @@ pnpm typecheck   # verificación de tipos
 | [`docs/investigacion/`](./docs/investigacion/) | Marco conceptual con fuentes |
 | [`docs/postman/`](./docs/postman/) | Colección Postman de TVmaze |
 | [`docs/adr/`](./docs/adr/) | Decisiones arquitectónicas en formato MADR |
+| [`tools/alignment-check/`](./tools/alignment-check/) | Alineación de los 4 entornos (directorio · GitHub · Notion · Obsidian) |
 
 ## ⚖️ Licencias y atribución
 

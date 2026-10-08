@@ -17,6 +17,9 @@
     "test:e2e:report": "playwright show-report",
     "test:lighthouse": "lhci autorun",
     "size": "size-limit",
+    "align:check": "node tools/alignment-check/check-alignment.mjs --all",
+    "align:ci": "node tools/alignment-check/check-alignment.mjs --ci",
+    "align:sync": "node tools/alignment-check/sync-obsidian.mjs && node tools/alignment-check/sync-notion.mjs",
     "format": "prettier --write ."
   },
   "dependencies": {

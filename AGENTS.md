@@ -73,6 +73,8 @@ pnpm typecheck   # tsc --noEmit
 pnpm test:unit   # Vitest
 pnpm test:coverage # cobertura (umbral 70 % en domain/application)
 pnpm test:e2e    # Playwright
+pnpm align:check # verifica que los 4 entornos estén alineados (con pistas)
+pnpm align:sync  # hechos canónicos → Obsidian y bloques gestionados de Notion
 ```
 
 ## 📌 Estado del proyecto

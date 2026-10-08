@@ -1,0 +1,47 @@
+{
+  "proyecto": "Epix",
+  "actualizado": "2026-10-08",
+  "roles": {
+    "directorio": "Código, operación y verdad técnica (README, SPEC, AGENTS, CHANGELOG, ADRs, requisitos)",
+    "github": "Cara técnica pública: repositorio, About (URL/topics), releases y CI",
+    "notion": "SSOT documental SENA: secciones 1–8, matriz de trazabilidad y evidencias para el instructor",
+    "obsidian": "Conocimiento enlazado: knowledge base, ADRs espejados, runbook de operación y estudio"
+  },
+  "hechos": {
+    "app": "https://epix-xi.vercel.app",
+    "repo": "https://github.com/NFGS/Epix",
+    "notionPublica": "https://sunset-conga-11b.notion.site/Epix-Documentaci-n-del-Proyecto-3f07d55fd95e802a95b9ce5191f3ecc8",
+    "version": "1.1.0",
+    "releaseDestacada": "v1.1.0",
+    "pruebasUnitarias": 498,
+    "pruebasE2E": 16,
+    "cobertura": "99 %",
+    "bundleEntradaGzipKB": 170,
+    "lighthouse": "86–93/100/100",
+    "deployModelo": "integración nativa Vercel↔GitHub",
+    "deployEstado": "congelado",
+    "deployFechaCongelamiento": "2026-10-08",
+    "pendientesUsuario": ["capturas en Android físico", "correo al docente"]
+  },
+  "github": {
+    "repo": "NFGS/Epix",
+    "homepage": "https://epix-xi.vercel.app",
+    "topicsMinimos": ["react", "pwa", "typescript", "tvmaze"]
+  },
+  "notion": {
+    "paginaIndex": "3f07d55f-d95e-802a-95b9-ce5191f3ecc8",
+    "paginaEstado": "3f07d55f-d95e-81e5-bff9-fdc4f9aa161c",
+    "paginaDescripcion": "3f07d55f-d95e-81b8-a21f-c5b92978525f"
+  },
+  "obsidian": {
+    "vault": "~/Documents/Obsidian Vaults/Ningendo Bee",
+    "carpeta": "Epix",
+    "notasClave": [
+      "Epix/README.md",
+      "Epix/Estado del Proyecto.md",
+      "Epix/Runbook — Operación.md",
+      "Epix/Checklist de entrega y sustentación.md",
+      "Epix/Decisiones Técnicas/Índice de ADRs.md"
+    ]
+  }
+}

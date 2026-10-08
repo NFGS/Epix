@@ -7,6 +7,10 @@ y el versionado [SemVer](https://semver.org/lang/es/).
 ## [Unreleased]
 
 ### Added
+- **Mecanismo de alineación de los 4 entornos** (`tools/alignment-check/`):
+  manifiesto de hechos canónicos, verificador con pistas (`pnpm align:check`),
+  sincronizadores repo→Obsidian/Notion (`pnpm align:sync`), hook pre-push y job
+  `alignment` en CI — cada entorno conserva su rol (no son espejos).
 - Workflow **keepalive** mensual: un commit mínimo automático mantiene el
   repositorio activo y evita que GitHub pause los workflows programados (cron
   diario de push) tras 60 días de inactividad.
