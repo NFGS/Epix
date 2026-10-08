@@ -381,6 +381,10 @@ function reminderOutcomeLabel(outcome: EpisodeRemindersOutcome, t: Dictionary): 
   }
 }
 
+const NOTIFICATIONS_MESSAGE_ID = 'notifications-message';
+const PUSH_HELP_ID = 'push-notifications-help';
+const PUSH_ERROR_ID = 'push-notifications-error';
+
 function NotificationsSection() {
   const { t } = useI18n();
   const { notifications, telemetry } = useDependencies();
@@ -396,8 +400,18 @@ function NotificationsSection() {
 
   const enabled = preferences?.notificationsEnabled ?? false;
   const pushActive = push.status === 'subscribed';
+  const pushBusy = push.status === 'ready';
   const canNotify = pushActive || (permission === 'granted' && enabled);
   const isChecking = status === 'running';
+
+  const pushErrorText =
+    push.errorAction === 'enable'
+      ? t.screens.profile.pushErrorEnable
+      : push.errorAction === 'disable'
+        ? t.screens.profile.pushErrorDisable
+        : push.errorAction === 'query'
+          ? t.screens.profile.pushErrorQuery
+          : null;
 
   const handleToggle = async () => {
     setTestStatus('idle');
@@ -420,9 +434,21 @@ function NotificationsSection() {
     setPendingPermission(true);
   };
 
-  const handlePushToggle = () => {
+  const handlePushToggle = async () => {
     setTestStatus('idle');
-    void (pushActive ? push.disable() : push.enable());
+
+    if (pushActive) {
+      await push.disable();
+      return;
+    }
+
+    // P-01: activar el push enciende también el interruptor principal para
+    // mantener sincronizada la preferencia local; al desactivar no se toca.
+    const activated = await push.enable();
+
+    if (activated) {
+      await updatePreferences({ notificationsEnabled: true });
+    }
   };
 
   const handleTest = async () => {
@@ -473,11 +499,13 @@ function NotificationsSection() {
           checked={enabled}
           onCheckedChange={() => void handleToggle()}
           label={t.screens.profile.notifications}
+          describedBy={message !== null ? NOTIFICATIONS_MESSAGE_ID : undefined}
         />
       </div>
 
       {message !== null && (
         <p
+          id={NOTIFICATIONS_MESSAGE_ID}
           role="status"
           aria-live="polite"
           className={[
@@ -492,23 +520,31 @@ function NotificationsSection() {
       {push.isAvailable && (
         <div className="flex items-center justify-between gap-3 border-t border-border pt-3">
           <div>
-            <p className="text-sm font-medium">{t.screens.profile.pushNotifications}</p>
-            <p className="text-xs text-muted">
+            <h3 className="text-sm font-medium">{t.screens.profile.pushNotifications}</h3>
+            <p id={PUSH_HELP_ID} className="text-xs text-muted">
               {pushActive ? t.screens.profile.pushEnabledNote : t.screens.profile.pushHint}
             </p>
           </div>
 
           <Switch
             checked={pushActive}
-            onCheckedChange={handlePushToggle}
+            onCheckedChange={() => void handlePushToggle()}
             label={t.screens.profile.pushNotifications}
+            disabled={pushBusy}
+            busy={pushBusy}
+            describedBy={pushErrorText !== null ? PUSH_ERROR_ID : PUSH_HELP_ID}
           />
         </div>
       )}
 
-      {push.status === 'error' && (
-        <p role="status" aria-live="polite" className="text-xs leading-relaxed text-danger">
-          {t.screens.profile.pushError}
+      {pushErrorText !== null && (
+        <p
+          id={PUSH_ERROR_ID}
+          role="status"
+          aria-live="polite"
+          className="text-xs leading-relaxed text-danger"
+        >
+          {pushErrorText}
         </p>
       )}
 

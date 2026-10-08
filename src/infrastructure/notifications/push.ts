@@ -13,11 +13,7 @@
  */
 
 export type PushErrorCode =
-  | 'unsupported'
-  | 'invalid-key'
-  | 'permission-denied'
-  | 'subscribe'
-  | 'unsubscribe';
+  'unsupported' | 'invalid-key' | 'permission-denied' | 'subscribe' | 'unsubscribe' | 'query';
 
 export class PushError extends Error {
   readonly code: PushErrorCode;
@@ -71,6 +67,15 @@ export interface SerializedPushSubscription {
   p256dh: string;
   auth: string;
 }
+
+/**
+ * P-07: resultado discriminado de la consulta de suscripción. La UI debe poder
+ * distinguir «no hay» de «no se pudo preguntar» para no afirmar un estado falso.
+ */
+export type PushSubscriptionLookup =
+  | { status: 'none' }
+  | { status: 'subscription'; subscription: PushSubscriptionLike }
+  | { status: 'error'; error: PushError };
 
 function defaultIsSupported(): boolean {
   return (
@@ -135,12 +140,38 @@ export function urlBase64ToUint8Array(base64String: string): Uint8Array<ArrayBuf
   return output;
 }
 
+/** La clave pública VAPID es un punto P-256 sin comprimir: 65 bytes, prefijo 0x04. */
+const VAPID_PUBLIC_KEY_LENGTH = 65;
+const UNCOMPRESSED_POINT_PREFIX = 0x04;
+
+/**
+ * Decodifica y valida la clave pública VAPID (P-05). Se ejecuta ANTES de pedir
+ * el permiso de notificaciones: abrir el prompt con una clave rota dejaría al
+ * usuario con el permiso concedido y la suscripción imposible.
+ */
+export function decodeVapidPublicKey(base64String: string): Uint8Array<ArrayBuffer> {
+  let bytes: Uint8Array<ArrayBuffer>;
+
+  try {
+    bytes = urlBase64ToUint8Array(base64String);
+  } catch {
+    throw new PushError('invalid-key', 'La clave pública VAPID no es válida.');
+  }
+
+  if (bytes.length !== VAPID_PUBLIC_KEY_LENGTH || bytes[0] !== UNCOMPRESSED_POINT_PREFIX) {
+    throw new PushError('invalid-key', 'La clave pública VAPID no es válida.');
+  }
+
+  return bytes;
+}
+
 /**
  * Suscribe este navegador al push de Epix.
  *
- * Orden: soporte → clave VAPID válida → permiso de notificaciones → service
- * worker → `pushManager.subscribe`. Cualquier rechazo produce un `PushError`
- * con código tipado y traducible por la UI.
+ * Orden: soporte → clave VAPID válida (decodificada ANTES de pedir permiso,
+ * P-05) → permiso de notificaciones → service worker →
+ * `pushManager.subscribe`. Cualquier rechazo produce un `PushError` con código
+ * tipado y traducible por la UI.
  */
 export async function subscribeToPush(
   vapidPublicKey: string,
@@ -154,6 +185,8 @@ export async function subscribeToPush(
   if (key === '') {
     throw new PushError('invalid-key', 'Falta la clave pública VAPID.');
   }
+
+  const applicationServerKey = decodeVapidPublicKey(key);
 
   const getPermission = deps.getPermission ?? defaultGetPermission;
   const requestPermission = deps.requestPermission ?? defaultRequestPermission;
@@ -180,15 +213,11 @@ export async function subscribeToPush(
     throw new PushError('unsupported', 'No hay un service worker activo para recibir push.');
   }
 
-  let applicationServerKey: Uint8Array<ArrayBuffer>;
   try {
-    applicationServerKey = urlBase64ToUint8Array(key);
-  } catch {
-    throw new PushError('invalid-key', 'La clave pública VAPID no es válida.');
-  }
-
-  try {
-    return await registration.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey });
+    return await registration.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey,
+    });
   } catch (cause) {
     throw new PushError(
       'subscribe',
@@ -197,28 +226,53 @@ export async function subscribeToPush(
   }
 }
 
-/** Suscripción activa de este navegador, o `null` si no hay (o no hay soporte). */
+/**
+ * P-07: consulta la suscripción activa de este navegador con resultado
+ * discriminado: `none` (no hay), `subscription` (activa) o `error` (no se pudo
+ * consultar). Así el hook no confunde «sin suscripción» con «fallo de lectura».
+ */
 export async function getPushSubscription(
   deps: PushClientDeps = {},
-): Promise<PushSubscriptionLike | null> {
+): Promise<PushSubscriptionLookup> {
   if (!isPushSupported(deps)) {
-    return null;
+    return { status: 'none' };
   }
 
   const getRegistration =
     deps.getRegistration === undefined
       ? defaultGetRegistration
       : (deps.getRegistration ?? (async () => null));
-  const registration = await getRegistration();
+
+  let registration: ServiceWorkerRegistrationLike | null;
+
+  try {
+    registration = await getRegistration();
+  } catch (cause) {
+    return {
+      status: 'error',
+      error: new PushError(
+        'query',
+        asErrorMessage(cause, 'No se pudo consultar el service worker.'),
+      ),
+    };
+  }
 
   if (registration === null) {
-    return null;
+    return { status: 'none' };
   }
 
   try {
-    return await registration.pushManager.getSubscription();
-  } catch {
-    return null;
+    const subscription = await registration.pushManager.getSubscription();
+
+    return subscription === null ? { status: 'none' } : { status: 'subscription', subscription };
+  } catch (cause) {
+    return {
+      status: 'error',
+      error: new PushError(
+        'query',
+        asErrorMessage(cause, 'No se pudo consultar la suscripción push.'),
+      ),
+    };
   }
 }
 
@@ -227,14 +281,18 @@ export async function getPushSubscription(
  * que cancelar. El borrado en Supabase lo hace quien llama (adaptador).
  */
 export async function unsubscribeFromPush(deps: PushClientDeps = {}): Promise<boolean> {
-  const subscription = await getPushSubscription(deps);
+  const lookup = await getPushSubscription(deps);
 
-  if (subscription === null) {
+  if (lookup.status === 'error') {
+    throw lookup.error;
+  }
+
+  if (lookup.status === 'none') {
     return false;
   }
 
   try {
-    return await subscription.unsubscribe();
+    return await lookup.subscription.unsubscribe();
   } catch (cause) {
     throw new PushError(
       'unsubscribe',

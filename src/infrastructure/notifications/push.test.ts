@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import {
+  decodeVapidPublicKey,
   getPushSubscription,
   isPushSupported,
   PushError,
@@ -89,6 +90,23 @@ describe('urlBase64ToUint8Array', () => {
   });
 });
 
+describe('decodeVapidPublicKey (P-05)', () => {
+  it('decodifica una clave VAPID real (65 bytes, prefijo 0x04)', () => {
+    const bytes = decodeVapidPublicKey(VAPID_PUBLIC_KEY);
+
+    expect(bytes).toHaveLength(65);
+    expect(bytes[0]).toBe(0x04);
+  });
+
+  it('lanza invalid-key con base64 inválido', () => {
+    expect(() => decodeVapidPublicKey('!!!no-base64!!!')).toThrowError(PushError);
+  });
+
+  it('lanza invalid-key con una clave base64 válida de longitud incorrecta', () => {
+    expect(() => decodeVapidPublicKey('AQID')).toThrowError(PushError);
+  });
+});
+
 describe('subscribeToPush', () => {
   it('suscribe con userVisibleOnly y la clave VAPID convertida a bytes', async () => {
     const { deps, pushManager, subscription } = createFakeDeps();
@@ -141,6 +159,20 @@ describe('subscribeToPush', () => {
     expect(pushManager.subscribe).not.toHaveBeenCalled();
   });
 
+  it('valida la clave antes de pedir permiso (P-05)', async () => {
+    const requestPermission = vi.fn(async () => 'granted' as const);
+    const { deps, pushManager } = createFakeDeps({
+      getPermission: () => 'default',
+      requestPermission,
+    });
+
+    await expect(subscribeToPush('!!!no-base64!!!', deps)).rejects.toMatchObject({
+      code: 'invalid-key',
+    });
+    expect(requestPermission).not.toHaveBeenCalled();
+    expect(pushManager.subscribe).not.toHaveBeenCalled();
+  });
+
   it('lanza unsupported cuando no hay soporte', async () => {
     const { deps } = createFakeDeps({ isSupported: () => false });
 
@@ -169,22 +201,34 @@ describe('subscribeToPush', () => {
 });
 
 describe('getPushSubscription', () => {
-  it('devuelve null sin soporte', async () => {
-    expect(await getPushSubscription({ isSupported: () => false })).toBeNull();
+  it('devuelve none sin soporte', async () => {
+    expect(await getPushSubscription({ isSupported: () => false })).toEqual({ status: 'none' });
   });
 
   it('devuelve la suscripción activa', async () => {
     const { deps, pushManager, subscription } = createFakeDeps();
     pushManager.getSubscription.mockResolvedValueOnce(subscription);
 
-    expect(await getPushSubscription(deps)).toBe(subscription);
+    expect(await getPushSubscription(deps)).toEqual({ status: 'subscription', subscription });
   });
 
-  it('devuelve null si el pushManager falla', async () => {
+  it('devuelve error discriminado si el pushManager falla (P-07)', async () => {
     const { deps, pushManager } = createFakeDeps();
     pushManager.getSubscription.mockRejectedValueOnce(new Error('boom'));
 
-    expect(await getPushSubscription(deps)).toBeNull();
+    const result = await getPushSubscription(deps);
+
+    expect(result).toMatchObject({ status: 'error', error: expect.any(PushError) });
+  });
+
+  it('devuelve error discriminado si el registro lanza (P-07)', async () => {
+    const { deps } = createFakeDeps({
+      getRegistration: async () => {
+        throw new Error('sin service worker');
+      },
+    });
+
+    expect(await getPushSubscription(deps)).toMatchObject({ status: 'error' });
   });
 });
 

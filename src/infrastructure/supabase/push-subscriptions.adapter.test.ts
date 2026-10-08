@@ -17,14 +17,15 @@ const SESSION = {
 
 interface RecordedCall {
   table: string;
-  method: 'upsert' | 'delete' | 'select';
+  method: 'upsert' | 'delete' | 'select' | 'rpc';
   args: unknown[];
 }
 
 interface FakeClientOptions {
   session?: typeof SESSION | null;
   rows?: unknown[];
-  error?: { message: string } | null;
+  error?: { message: string; code?: string } | null;
+  rpcError?: { message: string; code?: string } | null;
 }
 
 function createFakeClient(options: FakeClientOptions = {}) {
@@ -36,6 +37,10 @@ function createFakeClient(options: FakeClientOptions = {}) {
     auth: {
       getSession: vi.fn(async () => ({ data: { session }, error: null })),
       signInAnonymously: vi.fn(async () => ({ data: { user: { id: 'anon-user' } }, error: null })),
+    },
+    rpc: (fn: string, args: unknown) => {
+      calls.push({ table: 'rpc', method: 'rpc', args: [fn, args] });
+      return Promise.resolve({ data: null, error: options.rpcError ?? null });
     },
     from(table: string) {
       return {
@@ -69,20 +74,25 @@ const subscription = {
 };
 
 describe('push subscriptions adapter · guardar', () => {
-  it('hace upsert por endpoint con el user_id de la sesión', async () => {
+  it('reclama el endpoint con la RPC 005', async () => {
     const { client, calls } = createFakeClient();
 
     await savePushSubscription(subscription, { client });
 
-    expect(calls).toHaveLength(1);
-    expect(calls[0]).toEqual({
-      table: 'push_subscriptions',
-      method: 'upsert',
-      args: [
-        { user_id: 'user-1', ...subscription },
-        { onConflict: 'endpoint' },
-      ],
-    });
+    expect(calls).toEqual([
+      {
+        table: 'rpc',
+        method: 'rpc',
+        args: [
+          'claim_push_subscription',
+          {
+            p_endpoint: subscription.endpoint,
+            p_p256dh: subscription.p256dh,
+            p_auth: subscription.auth,
+          },
+        ],
+      },
+    ]);
   });
 
   it('crea sesión anónima si no hay sesión activa', async () => {
@@ -90,7 +100,37 @@ describe('push subscriptions adapter · guardar', () => {
 
     await savePushSubscription(subscription, { client });
 
-    expect(calls[0].args[0]).toMatchObject({ user_id: 'anon-user' });
+    expect(calls[0].method).toBe('rpc');
+  });
+
+  it('cae al upsert cuando la RPC no está desplegada (PGRST202)', async () => {
+    const { client, calls } = createFakeClient({
+      rpcError: {
+        message: 'Could not find the function public.claim_push_subscription in the schema cache',
+        code: 'PGRST202',
+      },
+    });
+
+    await savePushSubscription(subscription, { client });
+
+    expect(calls.map((call) => call.method)).toEqual(['rpc', 'upsert']);
+    expect(calls[1].args).toEqual([
+      { user_id: 'user-1', ...subscription },
+      { onConflict: 'endpoint' },
+    ]);
+  });
+
+  it('cae al upsert si el mensaje apunta a una función inexistente', async () => {
+    const { client, calls } = createFakeClient({
+      rpcError: {
+        message: 'function public.claim_push_subscription does not exist',
+        code: '42883',
+      },
+    });
+
+    await savePushSubscription(subscription, { client });
+
+    expect(calls.map((call) => call.method)).toEqual(['rpc', 'upsert']);
   });
 
   it('lanza unconfigured sin Supabase configurado', async () => {
@@ -99,12 +139,16 @@ describe('push subscriptions adapter · guardar', () => {
     });
   });
 
-  it('propaga el error de PostgREST como save', async () => {
-    const { client } = createFakeClient({ error: { message: 'RLS denegó el insert' } });
+  it('propaga el error de la RPC como save y no intenta el upsert', async () => {
+    const { client, calls } = createFakeClient({
+      rpcError: { message: 'RLS denegó el insert', code: '42501' },
+    });
 
     await expect(savePushSubscription(subscription, { client })).rejects.toMatchObject({
       code: 'save',
     });
+    expect(calls).toHaveLength(1);
+    expect(calls[0].method).toBe('rpc');
   });
 });
 
@@ -147,11 +191,7 @@ describe('push subscriptions adapter · listar', () => {
     const records = await listMySubscriptions({ client });
 
     expect(records).toEqual([{ ...subscription, createdAt: '2026-10-07T10:00:00.000Z' }]);
-    expect(calls[0].args).toEqual([
-      'endpoint, p256dh, auth, created_at',
-      'user_id',
-      'user-1',
-    ]);
+    expect(calls[0].args).toEqual(['endpoint, p256dh, auth, created_at', 'user_id', 'user-1']);
   });
 
   it('propaga el error como list', async () => {

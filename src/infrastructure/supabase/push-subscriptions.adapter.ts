@@ -1,8 +1,11 @@
 /**
  * Adaptador de `public.push_subscriptions` (RLS por `auth.uid()`).
  *
- * - `savePushSubscription`: upsert por `endpoint` con la sesión actual (crea la
- *   sesión anónima si aún no existe, igual que el motor de sincronización).
+ * - `savePushSubscription`: llama a la RPC `claim_push_subscription`
+ *   (migración 005), que reasigna el endpoint a la cuenta actual de forma
+ *   atómica incluso en un navegador compartido (el `endpoint` es único global
+ *   y RLS impide que un usuario toque la fila de otro). Si la RPC aún no está
+ *   desplegada, cae con elegancia al upsert directo por `endpoint`.
  * - `deletePushSubscription`: borra la fila del endpoint (RLS limita al dueño).
  * - `listMySubscriptions`: lee y valida las suscripciones propias.
  * - `sendTestPush`: invoca la Edge Function `epix-push` en modo prueba con el
@@ -22,12 +25,7 @@ import { getSupabaseClient } from './client';
 import { readSupabaseEnv } from './env';
 
 export type PushSubscriptionsErrorCode =
-  | 'unconfigured'
-  | 'session'
-  | 'save'
-  | 'delete'
-  | 'list'
-  | 'test';
+  'unconfigured' | 'session' | 'save' | 'delete' | 'list' | 'test';
 
 export class PushSubscriptionsError extends Error {
   readonly code: PushSubscriptionsErrorCode;
@@ -64,6 +62,20 @@ export interface PushSubscriptionsOptions {
 
 interface PostgrestErrorLike {
   message: string;
+  code?: string;
+}
+
+/**
+ * `true` cuando el error indica que la RPC `claim_push_subscription` no existe
+ * todavía en el proyecto (migración 005 sin aplicar). PostgREST responde
+ * `PGRST202` («Could not find the function … in the schema cache»).
+ */
+function isClaimRpcMissing(error: PostgrestErrorLike): boolean {
+  return (
+    error.code === 'PGRST202' ||
+    (error.message.includes('claim_push_subscription') &&
+      (error.message.includes('Could not find') || error.message.includes('does not exist')))
+  );
 }
 
 function resolveClient(options: PushSubscriptionsOptions): SupabaseClient {
@@ -134,7 +146,14 @@ async function ensureUserId(client: SupabaseClient): Promise<string> {
   return signInData.user.id;
 }
 
-/** Guarda (o reasigna) la suscripción del navegador actual. */
+/**
+ * Guarda (o reasigna) la suscripción del navegador actual.
+ *
+ * Con la RPC `claim_push_subscription` la reasignación es atómica y permitida
+ * por RLS (security definer). Sin ella (proyecto sin la migración 005) se usa
+ * el upsert directo, que funciona mientras el endpoint no pertenezca a otra
+ * cuenta.
+ */
 export async function savePushSubscription(
   subscription: SerializedPushSubscription,
   options: PushSubscriptionsOptions = {},
@@ -142,7 +161,24 @@ export async function savePushSubscription(
   const client = resolveClient(options);
   const userId = await ensureUserId(client);
 
-  const { error } = await client.from('push_subscriptions').upsert(
+  const { error } = await client.rpc('claim_push_subscription', {
+    p_endpoint: subscription.endpoint,
+    p_p256dh: subscription.p256dh,
+    p_auth: subscription.auth,
+  });
+
+  if (error === null) {
+    return;
+  }
+
+  if (!isClaimRpcMissing(error)) {
+    throw new PushSubscriptionsError(
+      'save',
+      `No se pudo guardar la suscripción push: ${error.message}`,
+    );
+  }
+
+  const { error: fallbackError } = await client.from('push_subscriptions').upsert(
     {
       user_id: userId,
       endpoint: subscription.endpoint,
@@ -152,7 +188,7 @@ export async function savePushSubscription(
     { onConflict: 'endpoint' },
   );
 
-  assertNoError(error, 'save', 'No se pudo guardar la suscripción push');
+  assertNoError(fallbackError, 'save', 'No se pudo guardar la suscripción push');
 }
 
 /** Borra la fila del endpoint (RLS: solo si pertenece al usuario actual). */

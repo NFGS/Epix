@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { authErrorCode, type AuthErrorCode, type AuthUser } from '@/application/ports/auth';
 import { clearUserData } from '@/application/use-cases/clear-user-data';
+import { releasePushOnSignOut } from '@/infrastructure/notifications/push-session';
 import { logger } from '@/shared/lib/logger';
 
 import { useDependencies } from './dependencies-context';
@@ -160,6 +161,10 @@ export function useAccount(): UseAccountResult {
     setError(null);
 
     try {
+      // E-05: en un dispositivo compartido la suscripción push de esta cuenta
+      // se cancela ANTES de cerrar sesión (el borrado remoto en Supabase exige
+      // la sesión por RLS) y antes de borrar los datos locales.
+      await releasePushOnSignOut();
       await auth.signOut();
       // Dispositivo compartido: fuera favoritos, historial, actividad y cola;
       // las preferencias de UI (tema/idioma/filtros) se conservan.

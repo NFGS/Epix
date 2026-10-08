@@ -220,14 +220,16 @@ export const es = {
       verifying: 'Verificando…',
       changeEmail: 'Usar otro correo',
       linkedTitle: 'Cuenta protegida',
-      linkedDescription: 'Tus favoritos, historial y ajustes se sincronizan entre tus dispositivos.',
+      linkedDescription:
+        'Tus favoritos, historial y ajustes se sincronizan entre tus dispositivos.',
       signedInAs: 'Sesión iniciada como {email}',
       signOut: 'Cerrar sesión',
       signOutTitle: '¿Cerrar sesión?',
       signOutDescription:
         'Se borrarán de este dispositivo tus favoritos, historial, actividad y datos pendientes de sincronizar. Tu cuenta en la nube no se toca: podrás recuperarla al volver a iniciar sesión. Conservamos tus preferencias de tema, idioma y filtros.',
       syncNow: 'Sincronizar ahora',
-      linkedSuccess: 'Tu cuenta quedó protegida. Ya puedes iniciar sesión en tus otros dispositivos.',
+      linkedSuccess:
+        'Tu cuenta quedó protegida. Ya puedes iniciar sesión en tus otros dispositivos.',
       signedOutSuccess: 'Cerraste sesión y borramos los datos de este dispositivo.',
       privacyNote: 'Consulta cómo Epix trata tus datos en la',
       privacyLink: 'política de privacidad',
@@ -275,7 +277,9 @@ export const es = {
       pushHint: 'Avisos en segundo plano, incluso con la app cerrada.',
       pushEnabledNote:
         'Push activo: te avisaremos de los nuevos episodios aunque no tengas Epix abierta.',
-      pushError: 'No pudimos activar las notificaciones push. Inténtalo de nuevo.',
+      pushErrorEnable: 'No pudimos activar las notificaciones push. Inténtalo de nuevo.',
+      pushErrorDisable: 'No pudimos desactivar las notificaciones push. Inténtalo de nuevo.',
+      pushErrorQuery: 'No pudimos consultar el estado de las notificaciones push.',
       notificationsUnsupported:
         'Este navegador no soporta notificaciones locales. Instala Epix desde Chrome o Edge para usarlas.',
       notificationsTest: 'Enviar notificación de prueba',
@@ -664,9 +668,10 @@ export const en: Dictionary = {
       notificationsDismissed: 'Permission is still pending. Toggle it again to retry.',
       pushNotifications: 'Push notifications',
       pushHint: 'Background alerts, even when the app is closed.',
-      pushEnabledNote:
-        "Push is on: we'll alert you about new episodes even when Epix isn't open.",
-      pushError: "We couldn't enable push notifications. Try again.",
+      pushEnabledNote: "Push is on: we'll alert you about new episodes even when Epix isn't open.",
+      pushErrorEnable: "We couldn't enable push notifications. Try again.",
+      pushErrorDisable: "We couldn't turn off push notifications. Try again.",
+      pushErrorQuery: "We couldn't check the push notification status.",
       notificationsUnsupported:
         'This browser does not support local notifications. Install Epix from Chrome or Edge to use them.',
       notificationsTest: 'Send test notification',

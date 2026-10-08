@@ -11,6 +11,7 @@ import {
 import { NavigationRoute, registerRoute } from 'workbox-routing';
 import { CacheFirst, NetworkFirst } from 'workbox-strategies';
 
+import { parsePushPayload } from './infrastructure/notifications/push-payload';
 import { isInternalUrl } from './shared/lib/is-internal-url';
 
 declare let self: ServiceWorkerGlobalScope & {
@@ -56,29 +57,20 @@ cleanupOutdatedCaches();
 // Fallback de navegación del SPA (equivalente a `navigateFallback` de generateSW).
 registerRoute(new NavigationRoute(createHandlerBoundToURL('index.html')));
 
-registerRoute(
-  API_PATTERN,
-  new NetworkFirst({
-    cacheName: API_CACHE,
-    networkTimeoutSeconds: 8,
-    plugins: [
-      new CacheableResponsePlugin({ statuses: [0, 200] }),
-      new ExpirationPlugin({ maxEntries: 100, maxAgeSeconds: ONE_DAY_SECONDS }),
-    ],
-  }),
-);
+// P-14: misma política para el API de TVmaze y el proxy de la agenda (mismo
+// origen); se factoriza para que ambas rutas no puedan divergir.
+const API_STRATEGY_OPTIONS = {
+  cacheName: API_CACHE,
+  networkTimeoutSeconds: 8,
+  plugins: [
+    new CacheableResponsePlugin({ statuses: [0, 200] }),
+    new ExpirationPlugin({ maxEntries: 100, maxAgeSeconds: ONE_DAY_SECONDS }),
+  ],
+};
 
-registerRoute(
-  SAME_ORIGIN_SCHEDULE,
-  new NetworkFirst({
-    cacheName: API_CACHE,
-    networkTimeoutSeconds: 8,
-    plugins: [
-      new CacheableResponsePlugin({ statuses: [0, 200] }),
-      new ExpirationPlugin({ maxEntries: 100, maxAgeSeconds: ONE_DAY_SECONDS }),
-    ],
-  }),
-);
+registerRoute(API_PATTERN, new NetworkFirst(API_STRATEGY_OPTIONS));
+
+registerRoute(SAME_ORIGIN_SCHEDULE, new NetworkFirst(API_STRATEGY_OPTIONS));
 
 const imageStrategyOptions = {
   cacheName: IMAGES_CACHE,
@@ -125,61 +117,8 @@ self.addEventListener('notificationclick', (event) => {
   event.waitUntil(focusOrOpen(url));
 });
 
-interface PushPayload {
-  title?: string;
-  body?: string;
-  url?: string;
-}
-
-function nonEmptyString(value: unknown): string | null {
-  return typeof value === 'string' && value.trim() !== '' ? value : null;
-}
-
-/** Acepta `{ title, body, data: { url } }` y también `{ title, body, url }`. */
-function parsePushPayload(data: unknown): PushPayload {
-  if (typeof data !== 'object' || data === null) {
-    return {};
-  }
-
-  const record = data as Record<string, unknown>;
-  const nested =
-    typeof record.data === 'object' && record.data !== null
-      ? (record.data as Record<string, unknown>)
-      : {};
-  const payload: PushPayload = {};
-
-  const title = nonEmptyString(record.title);
-  const body = nonEmptyString(record.body);
-  const url = nonEmptyString(record.url) ?? nonEmptyString(nested.url);
-
-  if (title !== null) {
-    payload.title = title;
-  }
-  if (body !== null) {
-    payload.body = body;
-  }
-  if (url !== null) {
-    payload.url = url;
-  }
-
-  return payload;
-}
-
 async function handlePush(event: PushEvent): Promise<void> {
-  let payload: PushPayload = {};
-
-  try {
-    payload = parsePushPayload(event.data?.json());
-  } catch {
-    try {
-      const text = nonEmptyString(event.data?.text());
-      if (text !== null) {
-        payload = { body: text };
-      }
-    } catch {
-      // Payload binario irreconocible: se muestra el aviso genérico.
-    }
-  }
+  const payload = parsePushPayload(event.data);
 
   const options: NotificationOptions = {
     body: payload.body ?? DEFAULT_PUSH_BODY,

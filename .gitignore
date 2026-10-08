@@ -45,3 +45,6 @@ Memory/
 # Workspace local de archify (los diagramas finales viven en docs/diagramas/)
 .archify/
 .vercel
+
+# Estado local del CLI de Supabase (vinculación de proyecto, caché)
+supabase/.temp/

@@ -24,4 +24,26 @@ describe('Switch (R-11)', () => {
 
     expect(onCheckedChange).toHaveBeenCalledWith(false);
   });
+
+  it('en ready se deshabilita, anuncia ocupación y no acepta toques (P-03)', async () => {
+    const onCheckedChange = vi.fn();
+    render(
+      <Switch
+        checked={false}
+        onCheckedChange={onCheckedChange}
+        label="Notificaciones push"
+        disabled
+        busy
+        describedBy="push-error"
+      />,
+    );
+
+    const toggle = screen.getByRole('switch', { name: 'Notificaciones push' });
+    expect(toggle).toBeDisabled();
+    expect(toggle).toHaveAttribute('aria-busy', 'true');
+    expect(toggle).toHaveAttribute('aria-describedby', 'push-error');
+
+    await userEvent.click(toggle);
+    expect(onCheckedChange).not.toHaveBeenCalled();
+  });
 });

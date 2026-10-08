@@ -34,10 +34,7 @@ describe('TvmazeScheduleRepository', () => {
     const repository = createTvmazeScheduleRepository(client);
     const entries = await repository.getByCountryAndDate('CO', '2026-10-05');
 
-    expect(get).toHaveBeenCalledWith(
-      '/api/schedule?country=CO&date=2026-10-05',
-      expect.anything(),
-    );
+    expect(get).toHaveBeenCalledWith('/api/schedule?country=CO&date=2026-10-05', expect.anything());
     expect(entries).toEqual([
       {
         episodeId: 9,
@@ -53,6 +50,16 @@ describe('TvmazeScheduleRepository', () => {
         channel: 'Netflix',
       },
     ]);
+  });
+
+  it('canonicaliza el país a mayúsculas para compartir clave de caché (P-13)', async () => {
+    const { client, get } = createClient();
+    get.mockResolvedValueOnce([]);
+
+    const repository = createTvmazeScheduleRepository(client);
+    await repository.getByCountryAndDate(' co ', '2026-10-05');
+
+    expect(get).toHaveBeenCalledWith('/api/schedule?country=CO&date=2026-10-05', expect.anything());
   });
 
   it('pide la agenda al proxy de mismo origen sin base remota', async () => {

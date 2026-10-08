@@ -12,7 +12,10 @@ export function createTvmazeScheduleRepository(
 ): ScheduleRepository {
   return {
     async getByCountryAndDate(country: string, date: string): Promise<ScheduleEntry[]> {
-      const params = new URLSearchParams({ country, date });
+      // P-13: el país se canonicaliza a mayúsculas ISO en el borde para que
+      // `co`, `Co` y `CO` compartan la misma URL y, por tanto, la misma clave
+      // de caché (TanStack Query + Workbox + CDN del proxy).
+      const params = new URLSearchParams({ country: country.trim().toUpperCase(), date });
       const dtos = await client.get(
         `/api/schedule?${params.toString()}`,
         tvmazeScheduleResponseSchema,
