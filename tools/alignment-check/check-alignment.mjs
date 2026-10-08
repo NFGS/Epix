@@ -56,11 +56,22 @@ function revisarDirectorio() {
   contiene('directorio', 'README.md', H.app, 'Añade la URL de la app en README § Producción');
   contiene('directorio', 'README.md', 'integración nativa', 'Documenta el deploy nativo en README § Producción');
   contiene('directorio', 'AGENTS.md', String(H.pruebasUnitarias), 'Actualiza el conteo de pruebas en AGENTS.md (estado)');
+  contiene('directorio', 'AGENTS.md', H.cobertura, 'Actualiza la cobertura en AGENTS.md (estado)');
+  contiene('directorio', 'AGENTS.md', H.lighthouse, 'Actualiza el rango de Lighthouse en AGENTS.md (estado)');
   contiene('directorio', 'AGENTS.md', 'congelados', 'Marca el congelamiento de infraestructura en AGENTS.md');
   contiene('directorio', 'SPEC.md', `v${H.version}`, 'Actualiza la versión en SPEC.md (estado del roadmap)');
   contiene('directorio', 'CHANGELOG.md', `[${H.version}]`, 'Añade el corte de versión en CHANGELOG.md');
   contiene('directorio', 'docs/entrega/correo-docente.md', H.app, 'Incluye la URL en el correo al docente');
   contiene('directorio', 'docs/entrega/correo-docente.md', String(H.pruebasUnitarias), 'Actualiza el conteo de pruebas en el correo');
+  contiene('directorio', 'docs/entrega/correo-docente.md', H.cobertura, 'Actualiza la cobertura en el correo al docente');
+  contiene('directorio', 'docs/entrega/correo-docente.md', new URL(H.notionPublica).host, 'Incluye el enlace público de Notion en el correo');
+
+  try {
+    const adrs = readdirSync(join(ROOT, 'docs/adr')).filter((f) => /^ADR-\d{4}.*\.md$/.test(String(f))).length;
+    check('directorio', `docs/adr con ${H.adrs} ADRs`, adrs === H.adrs, `${adrs}`, 'Añade/elimina el ADR y actualiza el manifiesto si el número cambió a propósito');
+  } catch {
+    check('directorio', 'docs/adr legible', false, '', 'Revisa la carpeta docs/adr del repositorio');
+  }
 
   const pkg = leer('package.json');
   if (pkg === null) {
@@ -151,6 +162,14 @@ function revisarObsidian() {
   if (readme !== null) {
     check('obsidian', 'Epix/README contiene la URL de la app', readme.includes(H.app), '', '`pnpm align:sync` no lo escribe: edítalo a mano o revisa');
     check('obsidian', `Epix/README contiene ${H.pruebasUnitarias} (pruebas)`, readme.includes(String(H.pruebasUnitarias)), '', 'Actualiza la tabla de identidad del README del vault');
+    check('obsidian', `Epix/README contiene ${H.cobertura} (cobertura)`, readme.includes(H.cobertura), '', 'Actualiza la tabla de identidad del README del vault');
+    check('obsidian', `Epix/README contiene ${H.lighthouse} (Lighthouse)`, readme.includes(H.lighthouse), '', 'Actualiza la tabla de identidad del README del vault');
+  }
+  try {
+    const adrs = readdirSync(join(vault, 'Epix/Decisiones Técnicas')).filter((f) => String(f).startsWith('ADR-') && String(f).endsWith('.md')).length;
+    check('obsidian', `Decisiones Técnicas con ${H.adrs} ADRs`, adrs === H.adrs, `${adrs}`, 'Ejecuta `pnpm align:sync` o revisa las notas espejo del vault');
+  } catch {
+    check('obsidian', 'carpeta Decisiones Técnicas navegable', false, '', 'Revisa el vault');
   }
   const estado = leerVault('Epix/Estado del Proyecto.md');
   if (estado !== null) {
@@ -209,6 +228,10 @@ async function revisarNotion() {
     const estado = await textoPagina(M.notion.paginaEstado);
     check('notion', `§8: conteo de pruebas (${H.pruebasUnitarias})`, estado.includes(String(H.pruebasUnitarias)), '', '`pnpm align:sync` lo actualiza (bloque gestionado)');
     check('notion', `§8: bundle ${H.bundleEntradaGzipKB} KB`, estado.includes(`${H.bundleEntradaGzipKB} KB`), '', '`pnpm align:sync` lo actualiza (bloque gestionado)');
+    check('notion', '§8: Lighthouse (93/100/100)', estado.includes('Lighthouse') && estado.includes('93'), '', 'Actualiza las métricas de Lighthouse en §8');
+    check('notion', `§8: cobertura ${H.cobertura}`, estado.includes(H.cobertura), '', 'Edita las métricas de calidad en §8 (solo el bloque gestionado se sincroniza)');
+    check('notion', `§8: ADRs 0001–${String(H.adrs).padStart(4, '0')}`, estado.includes(`0001–${String(H.adrs).padStart(4, '0')}`), '', 'Actualiza el conteo de ADRs en §8');
+    check('notion', '§8: pendiente «Android físico»', estado.includes('Android físico'), '', 'Registra los pendientes del usuario en §8');
   } catch (e) {
     check('notion', 'API de Notion accesible', null, e.message, 'Verificación omitida');
   }

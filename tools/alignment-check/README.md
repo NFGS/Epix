@@ -17,7 +17,8 @@
 ## El mecanismo
 
 1. **Manifiesto de hechos canónicos** — `manifest.json` (este directorio): URL, versión,
-   pruebas, cobertura, bundle, deploy, releases, páginas de Notion, notas del vault.
+   pruebas, cobertura, Lighthouse, conteo de ADRs, bundle, deploy, releases, páginas de
+   Notion y notas del vault.
 2. **Verificador** — `check-alignment.mjs`: compara los 4 entornos contra el manifiesto y
    cada ❌ trae una **pista** con el archivo/página exacto a corregir.
 3. **Sincronizadores** — empujan los hechos del manifiesto hacia los entornos no-código:

@@ -16,6 +16,7 @@
     "pruebasUnitarias": 498,
     "pruebasE2E": 16,
     "cobertura": "99 %",
+    "adrs": 11,
     "bundleEntradaGzipKB": 170,
     "lighthouse": "86–93/100/100",
     "deployModelo": "integración nativa Vercel↔GitHub",
