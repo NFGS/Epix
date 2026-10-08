@@ -14,6 +14,11 @@ y el versionado [SemVer](https://semver.org/lang/es/).
   cada push a `main` despliega solo (build remoto en Vercel, con source maps) y
   las ramas/PR obtienen previews. Sin tokens que rotar.
 
+### Changed
+- Limpieza de ecosistema: se retira el proveedor alternativo **Resend** del
+  script SMTP y de la guía (Gmail SMTP es la ruta definitiva); la variable
+  `RESEND_API_KEY` se eliminó de los secretos locales.
+
 ## [1.1.0] - 2026-10-08
 
 ### Added

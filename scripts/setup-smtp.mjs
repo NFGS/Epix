@@ -5,14 +5,10 @@
  *
  * Proveedores soportados (variables en ~/.config/secrets.env; nunca se imprimen):
  *
- *  A) Resend (por defecto si hay RESEND_API_KEY):
- *       RESEND_API_KEY=re_...
- *
- *  B) Cualquier SMTP (Gmail, Brevo, …):
- *       SMTP_HOST=smtp.gmail.com
- *       SMTP_PORT=465
- *       SMTP_USER=tucorreo@gmail.com
- *       SMTP_PASS=contrasena-de-aplicacion
+ *   SMTP_HOST=smtp.gmail.com
+ *   SMTP_PORT=465
+ *   SMTP_USER=tucorreo@gmail.com
+ *   SMTP_PASS=contrasena-de-aplicacion
  *
  *  Comunes:
  *   SUPABASE_ACCESS_TOKEN   token personal de Supabase
@@ -25,22 +21,21 @@
  */
 const ref = process.env.SUPABASE_PROJECT_REF ?? 'qeadwdtzqgbdbrczhkuf';
 const token = process.env.SUPABASE_ACCESS_TOKEN;
-const resendKey = process.env.RESEND_API_KEY;
 const adminEmail = process.env.SMTP_ADMIN_EMAIL;
 const senderName = process.env.SMTP_SENDER_NAME ?? 'Epix';
 
-const host = process.env.SMTP_HOST ?? (resendKey ? 'smtp.resend.com' : null);
-const port = process.env.SMTP_PORT ?? (resendKey ? '465' : null);
-const user = process.env.SMTP_USER ?? (resendKey ? 'resend' : null);
-const pass = process.env.SMTP_PASS ?? resendKey;
+const host = process.env.SMTP_HOST;
+const port = process.env.SMTP_PORT;
+const user = process.env.SMTP_USER;
+const pass = process.env.SMTP_PASS;
 
 const missing = [
   ['SUPABASE_ACCESS_TOKEN', token],
   ['SMTP_ADMIN_EMAIL', adminEmail],
-  ['SMTP_HOST o RESEND_API_KEY', host],
-  ['SMTP_PORT (si usas SMTP_HOST)', process.env.SMTP_HOST ? port : 'n/a'],
-  ['SMTP_USER (si usas SMTP_HOST)', process.env.SMTP_HOST ? user : 'n/a'],
-  ['SMTP_PASS o RESEND_API_KEY', pass],
+  ['SMTP_HOST', host],
+  ['SMTP_PORT', port],
+  ['SMTP_USER', user],
+  ['SMTP_PASS', pass],
 ].filter(([, value]) => !value || value === '');
 
 if (missing.length > 0) {

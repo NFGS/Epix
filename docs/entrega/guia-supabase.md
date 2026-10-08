@@ -66,13 +66,12 @@ Estado actual: pantalla «Cuenta» activa, Realtime habilitado en `favorites` y 
 **Requisito para enviar códigos reales:** con el proveedor de correo por defecto del plan gratuito,
 Supabase **no permite editar plantillas ni subir el límite de envíos** (2/hora). Para producción:
 
-1. Crea una cuenta en un proveedor SMTP transaccional (p. ej. Resend: 3.000 correos/mes gratis).
+1. Configura un SMTP propio (ruta actual: **Gmail** con contraseña de aplicación; ver abajo).
 2. En Supabase: **Authentication → Emails → SMTP Settings** → host, puerto, usuario y clave del proveedor.
 3. Con SMTP propio podrás editar las plantillas **Magic Link** y **Change Email** para incluir
    `{{ .Token }}` (el código de 6 dígitos que pide la app) y ajustar `rate_limit_email_sent`.
 
-   **Vía automatizada (recomendada):** con `RESEND_API_KEY` y `SMTP_ADMIN_EMAIL` en
-   `~/.config/secrets.env`, ejecuta:
+   **Vía automatizada (recomendada):** con las variables `SMTP_*` en `~/.config/secrets.env`, ejecuta:
 
    ```bash
    set -a; . ~/.config/secrets.env; set +a
@@ -80,15 +79,15 @@ Supabase **no permite editar plantillas ni subir el límite de envíos** (2/hora
    ```
 
    El script configura host/puerto/remitente, sube el límite a 30/hora, escribe las plantillas
-   con `{{ .Token }}` y verifica el resultado. (Para pruebas sin dominio: usa
-   `SMTP_ADMIN_EMAIL=onboarding@resend.dev`, que Resend solo entrega al correo dueño de la cuenta.)
+   con `{{ .Token }}` y verifica el resultado.
 
-### Alternativas a coste 0 si no tienes dominio propio
+4. **Prueba completa:** Perfil → Cuenta → «Protege tu cuenta» → código → verificar (mismo `uid`,
+   sin migrar datos); en otro dispositivo → «Inicia sesión» con el mismo correo → favoritos e
+   historial llegan con el pull.
 
-Resend sin dominio verificado solo entrega al correo **dueño de la cuenta**. Para enviar códigos
-a **cualquier** destinatario sin comprar dominio:
+### SMTP a coste 0 (sin dominio propio)
 
-- **Gmail (SMTP):** activa la verificación en 2 pasos de tu cuenta de Google → crea una
+- **Gmail (ruta actual):** activa la verificación en 2 pasos de tu cuenta de Google → crea una
   **«Contraseña de aplicación»** → añade a `~/.config/secrets.env`:
   ```
   SMTP_HOST=smtp.gmail.com
@@ -97,25 +96,16 @@ a **cualquier** destinatario sin comprar dominio:
   SMTP_PASS=contrasena-de-aplicacion
   SMTP_ADMIN_EMAIL=tucorreo@gmail.com
   ```
-  y ejecuta el script (detecta el SMTP automáticamente). Gmail permite ≈ 500 correos/día.
+  y ejecuta el script. Gmail permite ≈ 500 correos/día y entrega a **cualquier** destinatario.
 - **Brevo (SMTP):** plan gratis (300 correos/día) con verificación de **remitente individual**
   (tu correo, sin dominio); usa sus credenciales SMTP con las mismas variables.
-
-### Cómo verificar un dominio en Resend (referencia futura)
-
-1. Resend → **Domains → Add Domain** → escribe tu dominio.
-2. Resend muestra los registros DNS exactos: **MX** y **TXT (SPF)** para el subdominio
-   `send.tudominio.com`, y **TXT (DKIM)**.
-3. Créalos en tu proveedor de DNS tal cual (nombre y valor).
-4. Pulsa **Verify** en Resend (la propagación DNS puede tardar minutos).
-5. Cambia `SMTP_ADMIN_EMAIL=no-reply@tudominio.com` y re-ejecuta el script.
-4. Prueba completa: Perfil → Cuenta → «Protege tu cuenta» → código → verificar (mismo `uid`, sin migrar datos);
-   en otro dispositivo → «Inicia sesión» con el mismo correo → favoritos e historial llegan con el pull.
+- **Dominio propio (futuro):** verifica el dominio en tu proveedor SMTP (registros MX/SPF/DKIM
+  que él te indique), actualiza `SMTP_ADMIN_EMAIL` y re-ejecuta el script.
 
 > ✅ **SMTP configurado (2026-10-07) — Gmail SMTP (coste 0):** host `smtp.gmail.com:465` con
 > contraseña de aplicación, plantillas con código `{{ .Token }}`, límite 30/hora y `site_url` de
 > producción. **Permite enviar códigos a cualquier destinatario** (Gmail ≈ 500 correos/día).
-> Verificado con una prueba real de envío. *(Resend queda documentado abajo como alternativa.)*
+> Verificado con una prueba real de envío. *(Ruta definitiva: Gmail SMTP.)*
 
 ## Notificaciones push (VAPID) — desplegado
 
