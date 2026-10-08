@@ -30,6 +30,9 @@ y el versionado [SemVer](https://semver.org/lang/es/).
   recordatorios diarios por cron) y tabla `push_subscriptions` con RLS.
 - **Cron diario** de recordatorios push (GitHub Actions, 12:00 UTC) invocando la
   Edge Function con `x-cron-secret`.
+- Observabilidad opcional: **Sentry** gated por `VITE_SENTRY_DSN` (plug-and-play;
+  sin DSN: cero peticiones y cero peso en el arranque; CSP preparada y boundary
+  de aplicación con fallback).
 - Proxy edge de la agenda (`/api/schedule`) con caché CDN (`s-maxage`) para
   reducir latencia y proteger a TVmaze del rate limit.
 

@@ -26,6 +26,8 @@ Capturas generadas con Chromium real (Playwright) contra el build de producción
 | `15-cuenta.png` | Cuenta (Sprint 5.2): flujo «Protege tu cuenta» con vinculación anónimo→permanente |
 | `16-perfil.png` | Perfil con la sección «Cuenta» y «Datos y sincronización» |
 | `17-privacidad.png` | Página de privacidad in-app (`/privacy`): telemetría, GPS, cuentas y derechos |
+| `18-multidispositivo-repull.png` | Multi-dispositivo: el dispositivo B (recién abierto) ve el favorito marcado en A — pull de nube |
+| `19-multidispositivo-realtime.png` | Multi-dispositivo: B ve «Game of Thrones» aparecer en vivo (Realtime) tras sincronizar A |
 
 > La revisión visual de los dos diagramas (legibilidad en desktop y móvil) fue realizada sobre
 > estas capturas: tipografía legible, sin recortes ni cruces problemáticos; no requirieron reparación.
@@ -53,10 +55,18 @@ node docs/evidencias/verify-prod.mjs   # verifica la URL de producción (HTTP, S
 - **Pre-calentado HTTP de la agenda (`warm.js`):** técnica validada (la petición posterior se sirvió desde caché HTTP, 0 bytes transferidos) pero **descartada**: medido bajo throttling, añadía contención de ancho de banda al arranque sin mejorar el resultado. Referencia: `lighthouse-produccion.json` (v5 vs v6 vs mediana v8).
 - **LCP honesto:** en móvil emulado la LCP oscila ~3.2–5.0 s según la agenda del día (RTT y peso del JSON de TVmaze + pósters) y la varianza de Lighthouse; el FCP se mantiene estable ~0.9 s con el shell estático. Palanca pendiente (backlog): proxy en el edge con caché propia o prerender del contenido de Inicio.
 
+## Verificación multi-dispositivo (2026-10-08)
+
+`verify-multidispositivo.mjs` simula **dos móviles reales**: dos contextos de navegador sin estado
+compartido con la sesión de la **misma cuenta** (creada y eliminada al vuelo vía Admin API con
+`service_role`). Comprueba el push (sync de arranque al reabrir el PWA y botón «Sincronizar
+ahora»), el pull de nube del segundo dispositivo y la propagación **Realtime en vivo sin recargar**.
+Veredicto **PASS (8/8)** registrado en `multidispositivo-resultado.json`.
+
 ## Pendientes de evidencia (dispositivo físico)
 
 - Capturas en **Android físico** (instalación, notificación, GPS): seguir
   [`docs/entrega/guia-verificacion-movil.md`](../entrega/guia-verificacion-movil.md) y guardar en
   `capturas-android/`.
-- Sincronización multi-dispositivo: requiere cuentas reales (hoy cada dispositivo usa una identidad
-  anónima propia).
+- Sincronización multi-dispositivo: **verificada** con dos perfiles aislados + Realtime
+  (`multidispositivo-resultado.json`); en hardware físico solo restan las **capturas**.

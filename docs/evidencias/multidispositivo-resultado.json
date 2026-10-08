@@ -1,0 +1,47 @@
+{
+  "fecha": "2026-10-08T06:31:48.669Z",
+  "veredicto": "PASS",
+  "pruebas": [
+    {
+      "name": "Sesión obtenida (misma cuenta para ambos dispositivos)",
+      "ok": true,
+      "detail": "uid=638196a3-3c42-4acf-8366-6df17f9d4001"
+    },
+    {
+      "name": "Dispositivo A: «Breaking Bad» marcado como favorito (local)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Dispositivo A: favorito sincronizado a la nube (sync de arranque)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Dispositivo B: ve «Breaking Bad» sin interacción (pull de nube)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Dispositivo A: «Game of Thrones» marcado como favorito (local)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Dispositivo A: «Game of Thrones» sincronizado (botón «Sincronizar ahora»)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Realtime: B ve «Game of Thrones» aparecer en vivo (sin recargar)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Sin errores de consola en los dispositivos",
+      "ok": true,
+      "detail": "A=0 B=0"
+    }
+  ],
+  "nota": "Dos contextos de navegador aislados con la misma cuenta (simulación fiel de 2 dispositivos). Disparadores reales: sync de arranque, botón «Sincronizar ahora» y Realtime."
+}
