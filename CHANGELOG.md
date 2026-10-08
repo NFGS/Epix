@@ -28,8 +28,15 @@ y el versionado [SemVer](https://semver.org/lang/es/).
 - Notificaciones **push reales (Web Push + VAPID)**: suscripción en el cliente,
   entrega desde la Edge Function `epix-push` (modo prueba por usuario y
   recordatorios diarios por cron) y tabla `push_subscriptions` con RLS.
+- **Cron diario** de recordatorios push (GitHub Actions, 12:00 UTC) invocando la
+  Edge Function con `x-cron-secret`.
 - Proxy edge de la agenda (`/api/schedule`) con caché CDN (`s-maxage`) para
   reducir latencia y proteger a TVmaze del rate limit.
+
+### Changed
+- Refactor arquitectónico: puerto `PushGateway` en la capa de aplicación
+  (presentación desacoplada de infraestructura en el flujo push; el cliente
+  Web Push se sirve en chunks perezosos — resuelve la deuda P-08).
 
 ### Fixed
 - El correo vacío (`''`) de los usuarios anónimos de Supabase se normaliza a
