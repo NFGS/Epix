@@ -40,6 +40,7 @@ describe('useToggleFavorite · telemetría', () => {
   it('expone el fallo sin dejar un rechazo sin manejar (R-09)', async () => {
     const dependencies = createTestDependencies();
     vi.spyOn(dependencies.favorites, 'add').mockRejectedValue(new Error('cuota excedida'));
+    const syncNow = vi.spyOn(dependencies.engine, 'syncNow');
     const { result } = renderHook(() => useToggleFavorite(SHOW), {
       wrapper: createWrapper(dependencies),
     });
@@ -51,5 +52,24 @@ describe('useToggleFavorite · telemetría', () => {
     expect(result.current.error).toBe(true);
     expect(result.current.isPending).toBe(false);
     expect(result.current.isFavorite).toBe(false);
+    expect(syncNow).not.toHaveBeenCalled();
+  });
+
+  it('dispara el micro-sync tras alternar (multi-dispositivo inmediato)', async () => {
+    const dependencies = createTestDependencies();
+    const syncNow = vi.spyOn(dependencies.engine, 'syncNow');
+    const { result } = renderHook(() => useToggleFavorite(SHOW), {
+      wrapper: createWrapper(dependencies),
+    });
+
+    await act(async () => {
+      await result.current.toggle();
+    });
+    expect(syncNow).toHaveBeenCalledTimes(1);
+
+    await act(async () => {
+      await result.current.toggle();
+    });
+    expect(syncNow).toHaveBeenCalledTimes(2);
   });
 });

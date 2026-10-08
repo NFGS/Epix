@@ -51,6 +51,10 @@ export function useToggleFavorite(show: Show | null) {
         },
         show,
       );
+      // Micro-sync inmediato: el favorito viaja a los demás dispositivos en
+      // segundos sin esperar a reabrir la app. El motor deduplica llamadas
+      // concurrentes (inFlight) y es no-op en modo «Solo local».
+      void deps.engine.syncNow();
       void deps.telemetry.track(isNowFavorite ? 'favorite_add' : 'favorite_remove', {
         showId: show.id,
       });
