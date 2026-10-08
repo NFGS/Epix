@@ -10,6 +10,9 @@ y el versionado [SemVer](https://semver.org/lang/es/).
 - Workflow **keepalive** mensual: un commit mínimo automático mantiene el
   repositorio activo y evita que GitHub pause los workflows programados (cron
   diario de push) tras 60 días de inactividad.
+- **Deploy automático a producción**: cada push a `main` que toque código o
+  configuración dispara un despliegue en Vercel vía GitHub Actions (`deploy.yml`);
+  los cambios solo de docs/markdown y los pushes del keepalive no despliegan.
 
 ## [1.1.0] - 2026-10-08
 
