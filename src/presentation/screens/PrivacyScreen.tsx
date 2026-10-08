@@ -62,6 +62,10 @@ export function PrivacyScreen() {
         </Link>
       </Section>
 
+      <Section id="privacy-error-reports" title={privacy.errorReports.title}>
+        <p className={paragraphClassName}>{privacy.errorReports.description}</p>
+      </Section>
+
       <Section id="privacy-gps" title={privacy.gps.title}>
         <p className={paragraphClassName}>{privacy.gps.description}</p>
       </Section>

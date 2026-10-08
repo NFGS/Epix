@@ -59,6 +59,7 @@ describe('PrivacyScreen', () => {
     for (const title of [
       'Qué se guarda en tu dispositivo',
       'Telemetría (opcional)',
+      'Reportes de errores (opcional)',
       'Ubicación (GPS)',
       'Tus derechos',
     ]) {

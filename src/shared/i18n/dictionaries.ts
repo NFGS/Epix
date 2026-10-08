@@ -353,6 +353,11 @@ export const es = {
           'Puedes revisar los eventos y borrarlos cuando quieras: el borrado alcanza también la copia de tu cuenta en la nube.',
         activityLink: 'Revisar y borrar mi actividad',
       },
+      errorReports: {
+        title: 'Reportes de errores (opcional)',
+        description:
+          'Reportes técnicos anónimos de errores (solo si el proyecto lo habilita; sin datos personales).',
+      },
       gps: {
         title: 'Ubicación (GPS)',
         description:
@@ -744,6 +749,11 @@ export const en: Dictionary = {
         deletion:
           'You can review the events and delete them at any time: deletion also reaches the copy in your cloud account.',
         activityLink: 'Review and delete my activity',
+      },
+      errorReports: {
+        title: 'Error reports (optional)',
+        description:
+          'Anonymous technical error reports (only if the project enables them; no personal data).',
       },
       gps: {
         title: 'Location (GPS)',

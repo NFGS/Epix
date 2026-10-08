@@ -9,6 +9,10 @@ interface ImportMetaEnv {
   readonly VITE_SUPABASE_ANON_KEY?: string;
   /** Clave pública VAPID (Web Push). Opcional: sin ella no se muestra el push. */
   readonly VITE_VAPID_PUBLIC_KEY?: string;
+  /** DSN de Sentry. Opcional: sin él no se carga el SDK de reportes de errores. */
+  readonly VITE_SENTRY_DSN?: string;
+  /** Entorno de Sentry. Opcional: por defecto se usa el `MODE` de Vite. */
+  readonly VITE_SENTRY_ENVIRONMENT?: string;
 }
 
 interface ImportMeta {

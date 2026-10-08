@@ -8,6 +8,12 @@ export interface SupabaseEnv {
   anonKey: string;
 }
 
+/** Configuración de Sentry ya validada (reportes de errores opcionales). */
+export interface SentryEnv {
+  dsn: string;
+  environment: string;
+}
+
 /** Entorno de la aplicación resuelto y tipado (P2-5). */
 export interface AppEnv {
   readonly mode: string;
@@ -25,6 +31,8 @@ export interface EnvSource {
   readonly VITE_SUPABASE_URL?: string;
   readonly VITE_SUPABASE_ANON_KEY?: string;
   readonly VITE_VAPID_PUBLIC_KEY?: string;
+  readonly VITE_SENTRY_DSN?: string;
+  readonly VITE_SENTRY_ENVIRONMENT?: string;
 }
 
 const envSourceSchema = z.object({
@@ -34,9 +42,11 @@ const envSourceSchema = z.object({
   VITE_SUPABASE_URL: z.string().optional(),
   VITE_SUPABASE_ANON_KEY: z.string().optional(),
   VITE_VAPID_PUBLIC_KEY: z.string().optional(),
+  VITE_SENTRY_DSN: z.string().optional(),
+  VITE_SENTRY_ENVIRONMENT: z.string().optional(),
 });
 
-const supabaseUrlSchema = z.url();
+const urlSchema = z.url();
 
 let invalidUrlWarned = false;
 
@@ -65,12 +75,53 @@ function resolveSupabase(source: EnvSource): SupabaseEnv | null {
     return null;
   }
 
-  if (!supabaseUrlSchema.safeParse(url).success) {
+  if (!urlSchema.safeParse(url).success) {
     warnInvalidUrlOnce();
     return null;
   }
 
   return { url, anonKey };
+}
+
+let invalidSentryDsnWarned = false;
+
+function warnInvalidSentryDsnOnce(): void {
+  if (invalidSentryDsnWarned) {
+    return;
+  }
+
+  invalidSentryDsnWarned = true;
+  logger.warn(
+    'Epix: VITE_SENTRY_DSN no es una URL válida; los reportes de errores quedarán desactivados.',
+  );
+}
+
+/**
+ * Resuelve la configuración de Sentry:
+ * - ausente o vacía → `null` (sin SDK, sin peticiones, sin peso);
+ * - definida pero inválida → `null` + un único aviso (no rompe la app);
+ * - válida → `{ dsn, environment }`, donde `environment` cae a `MODE`.
+ */
+export function resolveSentryConfig(
+  source: Pick<EnvSource, 'MODE' | 'VITE_SENTRY_DSN' | 'VITE_SENTRY_ENVIRONMENT'> = import.meta.env,
+): SentryEnv | null {
+  const dsn = source.VITE_SENTRY_DSN?.trim() ?? '';
+
+  if (dsn === '') {
+    return null;
+  }
+
+  if (!urlSchema.safeParse(dsn).success) {
+    warnInvalidSentryDsnOnce();
+    return null;
+  }
+
+  const environment = source.VITE_SENTRY_ENVIRONMENT?.trim() ?? '';
+
+  return {
+    dsn,
+    environment: environment === '' ? (source.MODE ?? 'production') : environment,
+  };
 }
 
 /** Construye el entorno tipado a partir de una fuente (p. ej. `import.meta.env`). */

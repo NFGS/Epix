@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { resolveAppEnv, resolveVapidPublicKey } from './env';
+import { resolveAppEnv, resolveSentryConfig, resolveVapidPublicKey } from './env';
 
 const VALID_URL = 'https://epix.supabase.co';
 const VALID_KEY = 'anon-key-de-prueba';
@@ -110,5 +110,57 @@ describe('resolveVapidPublicKey', () => {
     expect(resolveVapidPublicKey({ VITE_VAPID_PUBLIC_KEY: '  clave-vapid  ' })).toBe(
       'clave-vapid',
     );
+  });
+});
+
+describe('resolveSentryConfig', () => {
+  const VALID_DSN = 'https://clave-publica@o4506.ingest.sentry.io/4506';
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('sin DSN devuelve null (Sentry desactivado)', () => {
+    expect(resolveSentryConfig({ MODE: 'production' })).toBeNull();
+  });
+
+  it('con DSN vacío o solo espacios devuelve null sin avisar', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+
+    expect(resolveSentryConfig({ VITE_SENTRY_DSN: '   ' })).toBeNull();
+    expect(warn).not.toHaveBeenCalled();
+  });
+
+  it('con DSN válida usa MODE como entorno por defecto', () => {
+    expect(
+      resolveSentryConfig({ MODE: 'development', VITE_SENTRY_DSN: `  ${VALID_DSN}  ` }),
+    ).toEqual({ dsn: VALID_DSN, environment: 'development' });
+  });
+
+  it('VITE_SENTRY_ENVIRONMENT tiene prioridad y se recorta', () => {
+    expect(
+      resolveSentryConfig({
+        MODE: 'development',
+        VITE_SENTRY_DSN: VALID_DSN,
+        VITE_SENTRY_ENVIRONMENT: '  staging  ',
+      }),
+    ).toEqual({ dsn: VALID_DSN, environment: 'staging' });
+  });
+
+  it('sin MODE ni entorno explícito cae a production', () => {
+    expect(resolveSentryConfig({ VITE_SENTRY_DSN: VALID_DSN })).toEqual({
+      dsn: VALID_DSN,
+      environment: 'production',
+    });
+  });
+
+  it('con DSN inválida avisa una vez y deja Sentry desactivado', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+
+    expect(resolveSentryConfig({ VITE_SENTRY_DSN: 'no-es-una-url' })).toBeNull();
+    expect(warn).toHaveBeenCalledTimes(1);
+
+    expect(resolveSentryConfig({ VITE_SENTRY_DSN: 'tampoco-es-url' })).toBeNull();
+    expect(warn).toHaveBeenCalledTimes(1);
   });
 });
