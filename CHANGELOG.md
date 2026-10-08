@@ -25,6 +25,11 @@ y el versionado [SemVer](https://semver.org/lang/es/).
   foráneas y políticas RLS con `initplan`), función de retención
   `purge_epix_data`, **Lighthouse CI** (accesibilidad bloqueante), metadatos
   iOS y auditoría de dependencias de producción bloqueante.
+- Notificaciones **push reales (Web Push + VAPID)**: suscripción en el cliente,
+  entrega desde la Edge Function `epix-push` (modo prueba por usuario y
+  recordatorios diarios por cron) y tabla `push_subscriptions` con RLS.
+- Proxy edge de la agenda (`/api/schedule`) con caché CDN (`s-maxage`) para
+  reducir latencia y proteger a TVmaze del rate limit.
 
 ### Fixed
 - El correo vacío (`''`) de los usuarios anónimos de Supabase se normaliza a

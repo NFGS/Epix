@@ -117,6 +117,22 @@ a **cualquier** destinatario sin comprar dominio:
 > producción. **Permite enviar códigos a cualquier destinatario** (Gmail ≈ 500 correos/día).
 > Verificado con una prueba real de envío. *(Resend queda documentado abajo como alternativa.)*
 
+## Notificaciones push (VAPID) — desplegado
+
+- **Estado:** ✅ Edge Function `epix-push` desplegada y verificada en producción (acepta JWT de usuario,
+  rechaza sin token → 401 y valida `x-cron-secret` → 401 si es incorrecto). Secretos
+  `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT` y `CRON_SECRET` configurados;
+  `VITE_VAPID_PUBLIC_KEY` en Vercel y en `.env`; tabla `push_subscriptions` con RLS (migración 004).
+- **Probar en un dispositivo:** Perfil → Notificaciones → activar **«Notificaciones push»** → botón
+  «Enviar notificación de prueba» → llega «Epix — Notificaciones push activas» que abre `/account`.
+- **Recordatorios diarios (opcional):** invoca la función una vez al día con el secreto de cron, por ejemplo
+  desde GitHub Actions (schedule) o `pg_cron` + `pg_net`:
+  ```bash
+  curl -X POST "$SUPABASE_URL/functions/v1/epix-push" -H "x-cron-secret: $CRON_SECRET"
+  ```
+  La corrida se detiene sola ante un `429` de TVmaze (devuelve lo enviado) y elimina suscripciones
+  muertas (410/404).
+
 ## Mantenimiento de la nube (advisors y retención)
 
 - **Purga de datos antiguos:** `public.purge_epix_data(180)` (migración 003) elimina tombstones de
