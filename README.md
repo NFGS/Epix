@@ -49,9 +49,18 @@ pnpm typecheck   # verificación de tipos
 
 ## 🌐 Producción
 
-- **App desplegada:** [https://epix-xi.vercel.app](https://epix-xi.vercel.app) (Vercel)
-- Build: `pnpm build` (salida `dist/`) · SPA rewrites y headers de caché en [`vercel.json`](./vercel.json)
-- **Nube activa:** Supabase (`epix-db`) — favoritos, historial y telemetría sincronizan a PostgreSQL con RLS (sesiones anónimas).
+- **App en vivo:** [https://epix-xi.vercel.app](https://epix-xi.vercel.app)
+- **Despliegue automático (integración nativa Vercel ↔ GitHub):** cada push a `main` construye y
+  publica solo; las ramas/PR obtienen previews. Sin tokens ni comandos manuales (el flujo por CLI
+  quedó retirado). SPA rewrites y headers de caché en [`vercel.json`](./vercel.json).
+- **Variables en Vercel:** `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `VITE_VAPID_PUBLIC_KEY`,
+  `VITE_SENTRY_DSN` · para source maps: `SENTRY_AUTH_TOKEN`, `SENTRY_ORG`, `SENTRY_PROJECT`.
+- **Operación:** CI (lint, tipos, tests, Lighthouse, presupuesto) + CodeQL + Dependabot; cron diario
+  de recordatorios push (GitHub Actions) y workflow `keepalive` mensual.
+- **Nube activa:** Supabase (`epix-db`) — favoritos, historial y telemetría sincronizan a PostgreSQL
+  con RLS (sesiones anónimas).
+- **🔒 Infraestructura estable:** el deploy se mantiene tal como está (integración nativa; decisión
+  del owner, 2026-10-08) — no se modifica ni se migra.
 
 ## 📚 Documentación
 
