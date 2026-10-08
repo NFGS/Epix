@@ -2,6 +2,7 @@ import { createContext, useContext } from 'react';
 
 import type { CloudAuth } from '@/application/ports/auth';
 import type { ResolveCountryFn } from '@/application/ports/location';
+import type { PushGateway } from '@/application/ports/push-gateway';
 import type { SyncAdapter } from '@/application/ports/sync-adapter';
 import type { SyncEngine } from '@/application/ports/sync-engine';
 import type { FavoritesRepository } from '@/domain/ports/favorites-repository';
@@ -32,6 +33,11 @@ export interface Dependencies {
   engine: SyncEngine;
   /** Auth en la nube (OTP por correo); `null` cuando no hay Supabase configurado. */
   auth: CloudAuth | null;
+  /**
+   * Gateway de Web Push (P-08); siempre presente (es inerte hasta usarse) y el
+   * hook decide ocultar la UI si no hay clave VAPID o soporte del navegador.
+   */
+  push: PushGateway;
   /** Resolución de país por GPS (composición en `providers.tsx`, R-03). */
   resolveCountry: ResolveCountryFn;
 }

@@ -11,9 +11,9 @@
  * usuario que posee la fila). Nunca lanza: el cierre de sesión no debe fallar
  * porque un push no se pudo limpiar; solo se registra el aviso.
  *
- * Deuda aceptada (P-08): esto debería vivir detrás de un puerto `PushGateway`
- * en la capa de aplicación; hoy es un helper de infraestructura invocado desde
- * el hook de cuenta.
+ * P-08: este helper ya no lo invoca la presentación; lo compone el
+ * `PushGateway` (`infrastructure/notifications/push-gateway`) detrás del puerto
+ * `application/ports/push-gateway`.
  */
 
 import { logger } from '@/shared/lib/logger';

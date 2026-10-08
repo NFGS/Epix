@@ -11,6 +11,7 @@ import { createNotificationClient } from '@/infrastructure/notifications/notific
 import { createSyncEngine } from '@/infrastructure/sync/sync-engine';
 import { createTelemetryService } from '@/infrastructure/telemetry/telemetry-service';
 import type { Dependencies } from '@/presentation/hooks/dependencies-context';
+import { createFakePushGateway } from '@/test/fake-push-gateway';
 
 let databaseCounter = 0;
 
@@ -48,6 +49,7 @@ export function createTestDependencies(overrides: Partial<Dependencies> = {}): T
     },
   });
   const resolveCountry: ResolveCountryFn = async () => ({ country: 'CO', source: 'gps' });
+  const push = createFakePushGateway();
 
   return {
     db,
@@ -63,6 +65,7 @@ export function createTestDependencies(overrides: Partial<Dependencies> = {}): T
     adapter,
     engine,
     auth: null,
+    push,
     resolveCountry,
     ...overrides,
   };

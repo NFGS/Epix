@@ -12,18 +12,13 @@
  * poder probar los flujos sin Push API real.
  */
 
-export type PushErrorCode =
-  'unsupported' | 'invalid-key' | 'permission-denied' | 'subscribe' | 'unsubscribe' | 'query';
+import { PushError, type PushErrorCode } from '@/application/ports/push-gateway';
 
-export class PushError extends Error {
-  readonly code: PushErrorCode;
+import { isWebPushSupported } from './push-support';
 
-  constructor(code: PushErrorCode, message: string) {
-    super(message);
-    this.name = 'PushError';
-    this.code = code;
-  }
-}
+// El contrato (y sus códigos) vive en application/ports; se re-exporta para que
+// los adaptadores de infraestructura sigan importándolo desde este módulo.
+export { PushError, type PushErrorCode };
 
 /** Contrato mínimo de una `PushSubscription` real (inyectable en pruebas). */
 export interface PushSubscriptionLike {
@@ -78,12 +73,7 @@ export type PushSubscriptionLookup =
   | { status: 'error'; error: PushError };
 
 function defaultIsSupported(): boolean {
-  return (
-    typeof navigator !== 'undefined' &&
-    'serviceWorker' in navigator &&
-    typeof globalThis.Notification !== 'undefined' &&
-    typeof globalThis.PushManager !== 'undefined'
-  );
+  return isWebPushSupported();
 }
 
 async function defaultGetRegistration(): Promise<ServiceWorkerRegistrationLike | null> {

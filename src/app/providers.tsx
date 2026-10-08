@@ -13,6 +13,7 @@ import { createPreferencesRepository } from '@/infrastructure/local/preferences.
 import { createSyncMetaRepository } from '@/infrastructure/local/sync-meta.repository';
 import { createUsageEventsRepository } from '@/infrastructure/local/usage-events.repository';
 import { createNotificationClient } from '@/infrastructure/notifications/notifications';
+import { createPushGateway } from '@/infrastructure/notifications/push-gateway';
 import { createLazySupabaseAuth } from '@/infrastructure/supabase/create-auth';
 import {
   createLazySupabaseSyncAdapter,
@@ -55,6 +56,7 @@ function createDependencies(): Dependencies {
   });
   const adapter = hasSupabaseConfig() ? createLazySupabaseSyncAdapter() : null;
   const auth = hasSupabaseConfig() ? createLazySupabaseAuth() : null;
+  const push = createPushGateway();
   const engine = createCrossTabSyncEngine({
     engine: createSyncEngine({
       outbox,
@@ -90,6 +92,7 @@ function createDependencies(): Dependencies {
     adapter,
     engine,
     auth,
+    push,
     resolveCountry,
   };
 }

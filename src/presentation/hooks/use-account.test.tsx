@@ -1,19 +1,16 @@
 import { act, renderHook, waitFor } from '@testing-library/react';
 import type { ReactNode } from 'react';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import { AuthError } from '@/application/ports/auth';
+import type { PushGateway } from '@/application/ports/push-gateway';
 import type { FavoriteShow } from '@/domain/entities/favorite';
-import { releasePushOnSignOut } from '@/infrastructure/notifications/push-session';
 import { DependenciesContext } from '@/presentation/hooks/dependencies-context';
 import { createFakeAuth, type FakeAuth } from '@/test/fake-auth';
+import { createFakePushGateway } from '@/test/fake-push-gateway';
 import { createTestDependencies, type TestDependencies } from '@/test/test-dependencies';
 
 import { useAccount } from './use-account';
-
-vi.mock('@/infrastructure/notifications/push-session', () => ({
-  releasePushOnSignOut: vi.fn(async () => undefined),
-}));
 
 const T1 = '2026-10-05T10:00:00.000Z';
 const ANONYMOUS = { id: 'user-1', email: null };
@@ -27,9 +24,12 @@ function renderAccount(deps: TestDependencies) {
   });
 }
 
-function createAnonymousDeps(fake: FakeAuth): TestDependencies {
+function createAnonymousDeps(
+  fake: FakeAuth,
+  push: PushGateway = createFakePushGateway(),
+): TestDependencies {
   vi.mocked(fake.auth.getUser).mockResolvedValue({ ...ANONYMOUS });
-  return createTestDependencies({ auth: fake.auth });
+  return createTestDependencies({ auth: fake.auth, push });
 }
 
 function createFavorite(): FavoriteShow {
@@ -263,13 +263,10 @@ describe('useAccount · vincular y entrar', () => {
 });
 
 describe('useAccount · cerrar sesión', () => {
-  beforeEach(() => {
-    vi.mocked(releasePushOnSignOut).mockClear();
-  });
-
   it('borra los datos de usuario de Dexie y conserva las preferencias', async () => {
     const fake = createFakeAuth();
-    const deps = createAnonymousDeps(fake);
+    const push = createFakePushGateway();
+    const deps = createAnonymousDeps(fake, push);
     const { result } = renderAccount(deps);
 
     await waitFor(() => {
@@ -305,7 +302,11 @@ describe('useAccount · cerrar sesión', () => {
     });
 
     expect(fake.auth.signOut).toHaveBeenCalledTimes(1);
-    expect(releasePushOnSignOut).toHaveBeenCalledTimes(1);
+    expect(push.release).toHaveBeenCalledTimes(1);
+    // E-05: la limpieza del push ocurre ANTES de cerrar sesión (RLS exige la sesión).
+    expect(vi.mocked(push.release).mock.invocationCallOrder[0]).toBeLessThan(
+      vi.mocked(fake.auth.signOut).mock.invocationCallOrder[0],
+    );
     expect(await deps.db.favorites.count()).toBe(0);
     expect(await deps.db.history.count()).toBe(0);
     expect(await deps.db.searchHistory.count()).toBe(0);
@@ -322,7 +323,8 @@ describe('useAccount · cerrar sesión', () => {
         throw new AuthError('network', 'sin red');
       }),
     });
-    const deps = createAnonymousDeps(fake);
+    const push = createFakePushGateway();
+    const deps = createAnonymousDeps(fake, push);
     const { result } = renderAccount(deps);
 
     await waitFor(() => {
@@ -335,7 +337,7 @@ describe('useAccount · cerrar sesión', () => {
       await result.current.signOut();
     });
 
-    expect(releasePushOnSignOut).toHaveBeenCalledTimes(1);
+    expect(push.release).toHaveBeenCalledTimes(1);
     expect(result.current.status).toBe('error');
     expect(result.current.error).toBe('network');
     expect(await deps.db.favorites.count()).toBe(1);
