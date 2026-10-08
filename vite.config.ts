@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { fileURLToPath, URL } from 'node:url';
 
+import { sentryVitePlugin } from '@sentry/vite-plugin';
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
@@ -9,6 +10,22 @@ import { configDefaults, defineConfig } from 'vitest/config';
 const packageJson = JSON.parse(
   readFileSync(new URL('./package.json', import.meta.url), 'utf8'),
 ) as { version: string };
+
+/** Token de subida de source maps (solo en builds con Sentry); en local va vacío. */
+const sentryAuthToken = process.env.SENTRY_AUTH_TOKEN;
+
+// Los source maps se generan y suben SOLO cuando hay token (p. ej., Vercel).
+// `hidden` evita exponerlos en el bundle y el plugin los borra tras subirlos.
+const sentryPlugin = sentryAuthToken
+  ? sentryVitePlugin({
+      org: process.env.SENTRY_ORG ?? 'epix-ct',
+      project: process.env.SENTRY_PROJECT ?? 'epix',
+      authToken: sentryAuthToken,
+      release: { name: `epix@${packageJson.version}` },
+      telemetry: false,
+      sourcemaps: { filesToDeleteAfterUpload: ['./dist/**/*.map'] },
+    })
+  : null;
 
 // En producción `/api/schedule` lo sirve la función serverless de Vercel; en
 // `dev`/`preview` se reenvía a TVmaze para reproducir el mismo camino.
@@ -98,7 +115,13 @@ export default defineConfig({
       },
       devOptions: { enabled: false },
     }),
+    // El plugin de Sentry va al final (sube los mapas y crea el release).
+    ...(sentryPlugin !== null ? [sentryPlugin] : []),
   ],
+  build: {
+    // Con token: mapas ocultos para Sentry (se borran tras subirlos). Sin él: igual que antes.
+    sourcemap: sentryAuthToken ? 'hidden' : false,
+  },
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),

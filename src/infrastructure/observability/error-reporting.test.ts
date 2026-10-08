@@ -36,6 +36,8 @@ describe('error-reporting', () => {
   });
 
   it('sin DSN no importa Sentry, no inicializa y reportError es no-op', async () => {
+    // Explícito para que el test no dependa de si el .env local tiene DSN.
+    vi.stubEnv('VITE_SENTRY_DSN', '');
     const reporting = await import('./error-reporting');
 
     await reporting.initErrorReporting();
@@ -83,6 +85,7 @@ describe('error-reporting', () => {
       expect.objectContaining({
         dsn: VALID_DSN,
         environment: 'production',
+        release: `epix@${__APP_VERSION__}`,
         tracesSampleRate: 0,
         dataCollection: expect.objectContaining({
           userInfo: false,

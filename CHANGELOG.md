@@ -6,6 +6,8 @@ y el versionado [SemVer](https://semver.org/lang/es/).
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-10-08
+
 ### Added
 - ADRs (MADR) de las decisiones arquitectónicas en `docs/adr/`.
 - Cobertura de pruebas con umbrales (domain/application ≥ 70 %).
@@ -35,6 +37,9 @@ y el versionado [SemVer](https://semver.org/lang/es/).
   end-to-end (evento confirmado en el panel). Sigue siendo 100 % opcional por
   DSN: sin `VITE_SENTRY_DSN` el SDK no se descarga ni ejecuta (cero peso y cero
   peticiones), útil para despliegues propios.
+- **Source maps en Sentry**: cada build con `SENTRY_AUTH_TOKEN` sube los mapas
+  (y los borra del bundle) con release `epix@<versión>`; los errores del panel
+  muestran el código fuente real en vez del bundle minificado.
 - Proxy edge de la agenda (`/api/schedule`) con caché CDN (`s-maxage`) para
   reducir latencia y proteger a TVmaze del rate limit.
 
@@ -93,5 +98,6 @@ y el versionado [SemVer](https://semver.org/lang/es/).
   determinista, validación Zod del pull remoto, focus trap en diálogos y
   validación de origen del service worker.
 
-[Unreleased]: https://github.com/NFGS/Epix/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/NFGS/Epix/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/NFGS/Epix/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/NFGS/Epix/releases/tag/v1.0.0

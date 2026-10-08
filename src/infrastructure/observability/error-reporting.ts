@@ -36,6 +36,8 @@ async function initialize(): Promise<void> {
     Sentry.init({
       dsn: config.dsn,
       environment: config.environment,
+      // Mismo identificador que sube el plugin en el build: une eventos ↔ source maps.
+      release: `epix@${__APP_VERSION__}`,
       tracesSampleRate: 0,
       // Sentry v11 eliminó `sendDefaultPii`: `dataCollection` es su reemplazo
       // oficial y aquí replica la postura «sin PII» (documentación de migración
