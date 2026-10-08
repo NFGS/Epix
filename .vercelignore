@@ -14,3 +14,7 @@ node_modules/
 # OpenCode (local)
 .opencode/
 opencode.json
+
+# Entorno local (Vercel usa sus Environment Variables; el .env no debe subirse)
+.env
+.env.*
