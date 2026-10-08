@@ -40,6 +40,8 @@ y el versionado [SemVer](https://semver.org/lang/es/).
 - **Source maps en Sentry**: cada build con `SENTRY_AUTH_TOKEN` sube los mapas
   (y los borra del bundle) con release `epix@<versión>`; los errores del panel
   muestran el código fuente real en vez del bundle minificado.
+- Alerta de Sentry **«aviso de todo issue nuevo»** (email) asociada al monitor
+  del proyecto, verificada end-to-end.
 - Proxy edge de la agenda (`/api/schedule`) con caché CDN (`s-maxage`) para
   reducir latencia y proteger a TVmaze del rate limit.
 

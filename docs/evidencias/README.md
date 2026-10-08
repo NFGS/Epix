@@ -29,6 +29,8 @@ Capturas generadas con Chromium real (Playwright) contra el build de producción
 | `18-multidispositivo-repull.png` | Multi-dispositivo: el dispositivo B (recién abierto) ve el favorito marcado en A — pull de nube |
 | `19-multidispositivo-realtime.png` | Multi-dispositivo: B ve «Game of Thrones» aparecer en vivo (Realtime) tras sincronizar A |
 | `20-sentry-evento.png` | Sentry activo en producción: error real capturado por el SDK y visible en el panel (proyecto «epix») |
+| `21-sentry-sourcemaps.png` | Sentry: source maps subidos (55 archivos) y asociados al release 1.1.0 — stack traces con código fuente |
+| `22-sentry-alerta.png` | Sentry: regla «aviso de todo issue nuevo» conectada al monitor `epix` (notificación por email) |
 
 > La revisión visual de los dos diagramas (legibilidad en desktop y móvil) fue realizada sobre
 > estas capturas: tipografía legible, sin recortes ni cruces problemáticos; no requirieron reparación.
