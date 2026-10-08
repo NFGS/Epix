@@ -1,0 +1,30 @@
+name: Push cron (recordatorios diarios)
+
+# Invoca la Edge Function «epix-push» en modo cron una vez al día.
+# - 12:00 UTC = 7:00 a. m. en Colombia.
+# - Nota de GitHub: los workflows programados se pausan si el repositorio queda
+#   60 días sin actividad; cualquier push los reactiva.
+# - Verificación manual: Actions → «Push cron (recordatorios diarios)» → Run workflow.
+
+on:
+  schedule:
+    - cron: '0 12 * * *'
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  reminders:
+    name: Recordatorios de episodios
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Invocar la Edge Function de push
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          curl -fsS -X POST "https://qeadwdtzqgbdbrczhkuf.supabase.co/functions/v1/epix-push" \
+            -H "x-cron-secret: ${CRON_SECRET}" \
+            -H "Content-Type: application/json" \
+            -d '{}'
