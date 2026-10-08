@@ -24,6 +24,7 @@ import {
   type EpisodeRemindersOutcome,
 } from '@/presentation/hooks/use-episode-reminders';
 import { usePreferences, useUpdatePreferences } from '@/presentation/hooks/use-preferences';
+import { usePushNotifications } from '@/presentation/hooks/use-push-notifications';
 import { useRequestLocation } from '@/presentation/hooks/use-request-location';
 import { useScheduleCountry } from '@/presentation/hooks/use-schedule-country';
 import { useSyncMeta } from '@/presentation/hooks/use-sync-meta';
@@ -386,6 +387,7 @@ function NotificationsSection() {
   const preferences = usePreferences();
   const updatePreferences = useUpdatePreferences();
   const { status, result, checkNow } = useEpisodeReminders();
+  const push = usePushNotifications();
   const [permission, setPermission] = useState<NotificationPermissionState>(() =>
     notifications.getPermissionState(),
   );
@@ -393,7 +395,8 @@ function NotificationsSection() {
   const [testStatus, setTestStatus] = useState<'idle' | 'sent' | 'error'>('idle');
 
   const enabled = preferences?.notificationsEnabled ?? false;
-  const canNotify = permission === 'granted' && enabled;
+  const pushActive = push.status === 'subscribed';
+  const canNotify = pushActive || (permission === 'granted' && enabled);
   const isChecking = status === 'running';
 
   const handleToggle = async () => {
@@ -417,7 +420,21 @@ function NotificationsSection() {
     setPendingPermission(true);
   };
 
+  const handlePushToggle = () => {
+    setTestStatus('idle');
+    void (pushActive ? push.disable() : push.enable());
+  };
+
   const handleTest = async () => {
+    setTestStatus('idle');
+
+    // Con push real activo la prueba viaja por la Edge Function (servidor);
+    // sin él se mantiene la notificación local de siempre.
+    if (pushActive) {
+      setTestStatus((await push.sendTest()) ? 'sent' : 'error');
+      return;
+    }
+
     try {
       await notifications.showLocalNotification({
         title: t.notificationsContent.testTitle,
@@ -469,6 +486,29 @@ function NotificationsSection() {
           ].join(' ')}
         >
           {message}
+        </p>
+      )}
+
+      {push.isAvailable && (
+        <div className="flex items-center justify-between gap-3 border-t border-border pt-3">
+          <div>
+            <p className="text-sm font-medium">{t.screens.profile.pushNotifications}</p>
+            <p className="text-xs text-muted">
+              {pushActive ? t.screens.profile.pushEnabledNote : t.screens.profile.pushHint}
+            </p>
+          </div>
+
+          <Switch
+            checked={pushActive}
+            onCheckedChange={handlePushToggle}
+            label={t.screens.profile.pushNotifications}
+          />
+        </div>
+      )}
+
+      {push.status === 'error' && (
+        <p role="status" aria-live="polite" className="text-xs leading-relaxed text-danger">
+          {t.screens.profile.pushError}
         </p>
       )}
 

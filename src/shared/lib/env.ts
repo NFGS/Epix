@@ -24,6 +24,7 @@ export interface EnvSource {
   readonly PROD?: boolean;
   readonly VITE_SUPABASE_URL?: string;
   readonly VITE_SUPABASE_ANON_KEY?: string;
+  readonly VITE_VAPID_PUBLIC_KEY?: string;
 }
 
 const envSourceSchema = z.object({
@@ -32,6 +33,7 @@ const envSourceSchema = z.object({
   PROD: z.boolean().catch(true),
   VITE_SUPABASE_URL: z.string().optional(),
   VITE_SUPABASE_ANON_KEY: z.string().optional(),
+  VITE_VAPID_PUBLIC_KEY: z.string().optional(),
 });
 
 const supabaseUrlSchema = z.url();
@@ -84,6 +86,20 @@ export function resolveAppEnv(source: EnvSource): AppEnv {
     isProd,
     supabase: resolveSupabase(source),
   };
+}
+
+/**
+ * Clave pública VAPID para Web Push (opcional).
+ *
+ * Se lee `import.meta.env` en cada llamada (igual que el logger) para que las
+ * pruebas puedan simularla con `vi.stubEnv` sin reimportar el módulo. Sin ella,
+ * toda la UI de push queda oculta y la app funciona exactamente igual.
+ */
+export function resolveVapidPublicKey(
+  source: Pick<EnvSource, 'VITE_VAPID_PUBLIC_KEY'> = import.meta.env,
+): string | null {
+  const key = source.VITE_VAPID_PUBLIC_KEY?.trim() ?? '';
+  return key === '' ? null : key;
 }
 
 /** Entorno real de la aplicación, validado una sola vez al arrancar. */

@@ -21,6 +21,10 @@ const API_CACHE = 'tvmaze-api';
 const IMAGES_CACHE = 'tvmaze-images';
 const ONE_DAY_SECONDS = 24 * 60 * 60;
 const THIRTY_DAYS_SECONDS = 30 * ONE_DAY_SECONDS;
+const NOTIFICATION_ICON = '/icons/pwa-192x192.png';
+const NOTIFICATION_BADGE = '/icons/pwa-192x192.png';
+const DEFAULT_PUSH_TITLE = 'Epix';
+const DEFAULT_PUSH_BODY = 'Tienes novedades en tus series favoritas.';
 
 const API_PATTERN = /^https:\/\/api\.tvmaze\.com\/.*/i;
 const STATIC_IMAGES_PATTERN = /^https:\/\/static\.tvmaze\.com\/.*/i;
@@ -119,4 +123,78 @@ self.addEventListener('notificationclick', (event) => {
   }
 
   event.waitUntil(focusOrOpen(url));
+});
+
+interface PushPayload {
+  title?: string;
+  body?: string;
+  url?: string;
+}
+
+function nonEmptyString(value: unknown): string | null {
+  return typeof value === 'string' && value.trim() !== '' ? value : null;
+}
+
+/** Acepta `{ title, body, data: { url } }` y también `{ title, body, url }`. */
+function parsePushPayload(data: unknown): PushPayload {
+  if (typeof data !== 'object' || data === null) {
+    return {};
+  }
+
+  const record = data as Record<string, unknown>;
+  const nested =
+    typeof record.data === 'object' && record.data !== null
+      ? (record.data as Record<string, unknown>)
+      : {};
+  const payload: PushPayload = {};
+
+  const title = nonEmptyString(record.title);
+  const body = nonEmptyString(record.body);
+  const url = nonEmptyString(record.url) ?? nonEmptyString(nested.url);
+
+  if (title !== null) {
+    payload.title = title;
+  }
+  if (body !== null) {
+    payload.body = body;
+  }
+  if (url !== null) {
+    payload.url = url;
+  }
+
+  return payload;
+}
+
+async function handlePush(event: PushEvent): Promise<void> {
+  let payload: PushPayload = {};
+
+  try {
+    payload = parsePushPayload(event.data?.json());
+  } catch {
+    try {
+      const text = nonEmptyString(event.data?.text());
+      if (text !== null) {
+        payload = { body: text };
+      }
+    } catch {
+      // Payload binario irreconocible: se muestra el aviso genérico.
+    }
+  }
+
+  const options: NotificationOptions = {
+    body: payload.body ?? DEFAULT_PUSH_BODY,
+    icon: NOTIFICATION_ICON,
+    badge: NOTIFICATION_BADGE,
+  };
+
+  if (payload.url !== undefined) {
+    options.data = { url: payload.url };
+  }
+
+  await self.registration.showNotification(payload.title ?? DEFAULT_PUSH_TITLE, options);
+}
+
+// Push real (Web Push + VAPID): Epix lo envía desde la Edge Function `epix-push`.
+self.addEventListener('push', (event) => {
+  event.waitUntil(handlePush(event));
 });

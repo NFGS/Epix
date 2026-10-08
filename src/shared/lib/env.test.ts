@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { resolveAppEnv } from './env';
+import { resolveAppEnv, resolveVapidPublicKey } from './env';
 
 const VALID_URL = 'https://epix.supabase.co';
 const VALID_KEY = 'anon-key-de-prueba';
@@ -94,5 +94,21 @@ describe('resolveAppEnv', () => {
     expect(env.mode).toBe('production');
     expect(env.isDev).toBe(false);
     expect(env.isProd).toBe(true);
+  });
+});
+
+describe('resolveVapidPublicKey', () => {
+  it('sin variable devuelve null (push deshabilitado)', () => {
+    expect(resolveVapidPublicKey({})).toBeNull();
+  });
+
+  it('con variable vacía o solo espacios devuelve null', () => {
+    expect(resolveVapidPublicKey({ VITE_VAPID_PUBLIC_KEY: '   ' })).toBeNull();
+  });
+
+  it('normaliza los espacios alrededor de la clave', () => {
+    expect(resolveVapidPublicKey({ VITE_VAPID_PUBLIC_KEY: '  clave-vapid  ' })).toBe(
+      'clave-vapid',
+    );
   });
 });

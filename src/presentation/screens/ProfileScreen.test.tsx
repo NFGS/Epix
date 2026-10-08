@@ -1,7 +1,7 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { NotificationsPort, NotificationPermissionState } from '@/domain/ports/notifications';
 import { DependenciesContext } from '@/presentation/hooks/dependencies-context';
@@ -215,5 +215,41 @@ describe('ProfileScreen · cuenta (Sprint 5.2)', () => {
     renderProfile(createTestDependencies({ auth: fake.auth }));
 
     expect(await screen.findByText('ana@example.com')).toBeInTheDocument();
+  });
+});
+
+describe('ProfileScreen · notificaciones push (Web Push)', () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    vi.unstubAllGlobals();
+  });
+
+  function stubPushEnvironment(): void {
+    vi.stubEnv('VITE_VAPID_PUBLIC_KEY', 'BEl62iUYgUivxIkv69yViEuiBIa-Ib9-SkvMeAtA3L');
+    vi.stubGlobal('Notification', {
+      permission: 'default',
+      requestPermission: vi.fn(async () => 'default'),
+    });
+    vi.stubGlobal('PushManager', class PushManager {});
+    vi.stubGlobal('navigator', {
+      serviceWorker: {
+        ready: Promise.resolve({ pushManager: { getSubscription: async () => null } }),
+      },
+    });
+  }
+
+  it('con clave VAPID y soporte muestra el interruptor de push', async () => {
+    stubPushEnvironment();
+    renderProfile();
+
+    expect(await screen.findByRole('switch', { name: 'Notificaciones push' })).toBeInTheDocument();
+  });
+
+  it('sin clave VAPID no muestra el interruptor de push', async () => {
+    vi.stubEnv('VITE_VAPID_PUBLIC_KEY', '');
+    renderProfile();
+
+    await screen.findByRole('switch', { name: 'Notificaciones' });
+    expect(screen.queryByRole('switch', { name: 'Notificaciones push' })).not.toBeInTheDocument();
   });
 });

@@ -1,0 +1,9 @@
+# Configuración de las Edge Functions de Epix (Supabase CLI).
+#
+# La función `epix-push` valida la identidad por dentro:
+# - modo prueba: JWT del usuario (`Authorization: Bearer …`) → `auth.getUser(jwt)`;
+# - modo cron: cabecera `x-cron-secret` comparada con el secreto `CRON_SECRET`.
+# Por eso el gateway NO debe exigir JWT (verify_jwt = false); si se activara,
+# la invocación del cron (sin JWT) sería rechazada antes de llegar al código.
+[functions.epix-push]
+verify_jwt = false

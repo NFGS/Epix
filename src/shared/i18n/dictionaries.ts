@@ -271,6 +271,11 @@ export const es = {
         'El navegador bloqueó las notificaciones. Actívalas en la configuración del sitio y recarga la página.',
       notificationsDismissed:
         'El permiso quedó pendiente. Vuelve a activar el interruptor para intentarlo de nuevo.',
+      pushNotifications: 'Notificaciones push',
+      pushHint: 'Avisos en segundo plano, incluso con la app cerrada.',
+      pushEnabledNote:
+        'Push activo: te avisaremos de los nuevos episodios aunque no tengas Epix abierta.',
+      pushError: 'No pudimos activar las notificaciones push. Inténtalo de nuevo.',
       notificationsUnsupported:
         'Este navegador no soporta notificaciones locales. Instala Epix desde Chrome o Edge para usarlas.',
       notificationsTest: 'Enviar notificación de prueba',
@@ -657,6 +662,11 @@ export const en: Dictionary = {
       notificationsDenied:
         'The browser blocked notifications. Enable them in the site settings and reload the page.',
       notificationsDismissed: 'Permission is still pending. Toggle it again to retry.',
+      pushNotifications: 'Push notifications',
+      pushHint: 'Background alerts, even when the app is closed.',
+      pushEnabledNote:
+        "Push is on: we'll alert you about new episodes even when Epix isn't open.",
+      pushError: "We couldn't enable push notifications. Try again.",
       notificationsUnsupported:
         'This browser does not support local notifications. Install Epix from Chrome or Edge to use them.',
       notificationsTest: 'Send test notification',
