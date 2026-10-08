@@ -58,6 +58,14 @@ issue #10940) o cambio de estrategia del ecosistema.
 - **Riesgos:** que el ecosistema tarde más de lo previsto; mitigación: revisar la issue en cada
   mantenimiento trimestral.
 
+## Revisiones
+
+- **2026-10-08 — revisión de mantenimiento:** sin cambios en la decisión. La última versión
+  publicada de `typescript-eslint` (**8.71.1**) sigue declarando el peer range
+  `typescript >=4.8.4 <6.1.0`, y la versión estable más reciente de TS es `7.0.2`. El disparador
+  (**soporte de TS ≥ 7.1 en typescript-eslint**) **no se ha cumplido**; se mantiene el
+  diferimiento.
+
 ## Enlaces
 
 - Anuncio TypeScript 7.0 y ejecución side-by-side con 6.0:
