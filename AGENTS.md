@@ -83,7 +83,7 @@ pnpm align:sync  # hechos canónicos → Obsidian y bloques gestionados de Notio
 - [x] Fase 1 — Investigación + documentación Notion.
 - [x] Fase 2 — Scaffolding, arquitectura y diseño base (incremento 1: tokens, layout, navegación, componentes, PWA, tests).
 - [x] Fase 3 · Incrementos 2–7 — API TVmaze + caché, offline-first con sync, personalización con filtros, GPS, notificaciones y telemetría.
-- [x] Calidad — 498 pruebas unitarias + 16 E2E (Playwright, API mockeada); cobertura domain/application 99 %; Lighthouse producción en el rango 86–93/100/100 (varianza de red); auditoría de seguridad sin hallazgos críticos.
+- [x] Calidad — 498 pruebas unitarias + 16 E2E (Playwright, API mockeada); cobertura domain/application 99 %; Lighthouse producción: accesibilidad y buenas prácticas **100**, rendimiento en el rango **67–93/100/100** (varianza de agenda/red; LCP honesto 3.2–5.7 s); auditoría de seguridad sin hallazgos críticos.
 - [x] Sprint 5.0 (fundaciones) — ADRs (MADR), cobertura con umbrales, logger tipado, validación de entorno con Zod, CI ampliado (Dependabot, CodeQL, auditoría, artefacto de cobertura) y documentos de comunidad (LICENSE, CHANGELOG, CONTRIBUTING, SECURITY, CODE_OF_CONDUCT).
 - [x] Sprint 5.1 (rendimiento) — code splitting por ruta, shell estático de arranque (FCP 2.1 s → 1.0 s), hints LCP/CLS, «Mostrar más» en búsquedas largas y presupuesto `size-limit` en CI.
 - [x] Sprint 5.2 (cuentas reales) — OTP por correo, vinculación anónimo→permanente (mismo `uid`), Realtime en favoritos, sync multi-pestaña (Web Locks + BroadcastChannel) y pantalla «Cuenta» (ADR-0010). Para códigos reales: SMTP propio (el proveedor por defecto del plan free no permite editar plantillas).

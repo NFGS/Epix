@@ -56,7 +56,7 @@ node docs/evidencias/verify-prod.mjs   # verifica la URL de producción (HTTP, S
 
 - **Shell estático de arranque:** mejora principal — FCP 2.07 s → 0.94 s en producción (mantenido).
 - **Pre-calentado HTTP de la agenda (`warm.js`):** técnica validada (la petición posterior se sirvió desde caché HTTP, 0 bytes transferidos) pero **descartada**: medido bajo throttling, añadía contención de ancho de banda al arranque sin mejorar el resultado. Referencia: `lighthouse-produccion.json` (v5 vs v6 vs mediana v8).
-- **LCP honesto:** en móvil emulado la LCP oscila ~3.2–5.0 s según la agenda del día (RTT y peso del JSON de TVmaze + pósters) y la varianza de Lighthouse; el FCP se mantiene estable ~0.9 s con el shell estático. Palanca pendiente (backlog): proxy en el edge con caché propia o prerender del contenido de Inicio.
+- **LCP honesto:** en móvil emulado la LCP oscila ~3.2–5.7 s según la agenda del día (póster remoto como LCP) y la varianza de Lighthouse; el FCP se mantiene estable ~1 s con el shell estático. Palanca pendiente (backlog): proxy en el edge con caché propia o prerender del contenido de Inicio.
 
 ## Verificación multi-dispositivo (2026-10-08)
 
@@ -82,6 +82,7 @@ owner (`docs/design/referencias/muestra-1.webp`, `muestra-2.webp`):
 | `restyle/04-perfil-oscuro.png` | Perfil con la nueva tipografía (Poppins/Lato) |
 | `restyle/05-agenda-oscuro.png` | Agenda con la paleta nueva |
 | `restyle/06-inicio-claro.png` | Tema claro adaptado (fondo `#F6F7FB`, CTA azul) |
+| `restyle/lighthouse-produccion-epix-stream.json` | Lighthouse de producción tras el rediseño: accesibilidad **100** · buenas prácticas **100** · rendimiento **69–75** (LCP 4.4–5.7 s: póster de la agenda como LCP — varianza de contenido documentada) |
 
 ## Pendientes de evidencia (dispositivo físico)
 

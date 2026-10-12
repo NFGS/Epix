@@ -205,14 +205,26 @@ function tokenNotion() {
 }
 
 async function textoPagina(id) {
-  const r = await fetch(`https://api.notion.com/v1/blocks/${id}/children?page_size=100`, {
-    headers: { Authorization: `Bearer ${tokenNotion()}`, 'Notion-Version': '2022-06-28' },
-  });
+  const cabeceras = { Authorization: `Bearer ${tokenNotion()}`, 'Notion-Version': '2022-06-28' };
+  const r = await fetch(`https://api.notion.com/v1/blocks/${id}/children?page_size=100`, { headers: cabeceras });
   if (!r.ok) throw new Error(`HTTP ${r.status}`);
   const j = await r.json();
-  return (j.results ?? [])
-    .map((b) => (b[b.type]?.rich_text ?? []).map((t) => t.plain_text ?? '').join(''))
-    .join('\n');
+  const partes = [];
+  for (const b of j.results ?? []) {
+    partes.push((b[b.type]?.rich_text ?? []).map((t) => t.plain_text ?? '').join(''));
+    // Las tablas guardan su texto en bloques hijos (table_row): leer un nivel más.
+    if (b.type === 'table') {
+      const r2 = await fetch(`https://api.notion.com/v1/blocks/${b.id}/children?page_size=100`, { headers: cabeceras });
+      if (r2.ok) {
+        const j2 = await r2.json();
+        for (const fila of j2.results ?? []) {
+          const celdas = fila.type === 'table_row' ? fila.table_row.cells : [];
+          partes.push(celdas.map((celda) => celda.map((t) => t.plain_text ?? '').join('')).join(' | '));
+        }
+      }
+    }
+  }
+  return partes.join('\n');
 }
 
 async function revisarNotion() {
