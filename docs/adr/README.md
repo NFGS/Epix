@@ -15,10 +15,11 @@ las opciones consideradas con sus trade-offs, la decisión tomada y sus consecue
 | [ADR-0005](./ADR-0005-service-worker-injectmanifest-workbox.md) | Service worker propio con `injectManifest` + Workbox | Aceptado | 2026-10-06 |
 | [ADR-0006](./ADR-0006-contratos-zod-jitless-csp.md) | Contratos con Zod en todos los límites + `z.config({ jitless: true })` | Aceptado | 2026-10-06 |
 | [ADR-0007](./ADR-0007-csp-header-http-vercel.md) | CSP como header HTTP en Vercel (no `<meta>`) | Aceptado | 2026-10-06 |
-| [ADR-0008](./ADR-0008-sistema-diseno-open-design-spotify-runway.md) | Sistema de diseño propio adoptado de Open Design (Spotify × Runway) | Aceptado | 2026-10-05 |
+| [ADR-0008](./ADR-0008-sistema-diseno-open-design-spotify-runway.md) | Sistema de diseño propio adoptado de Open Design (Spotify × Runway) | Reemplazado por ADR-0012 | 2026-10-05 |
 | [ADR-0009](./ADR-0009-cicd-github-actions-vercel.md) | CI/CD con GitHub Actions + deploy en Vercel vía CLI | Aceptado | 2026-10-06 |
 | [ADR-0010](./ADR-0010-cuentas-reales-otp-multidispositivo.md) | Cuentas reales con OTP por correo y sincronización multi-dispositivo | Aceptado | 2026-10-07 |
 | [ADR-0011](./ADR-0011-typescript-7-diferido.md) | Actualización a TypeScript 7 (diferida hasta typescript-eslint ≥ 7.1) | Aceptado | 2026-10-07 |
+| [ADR-0012](./ADR-0012-epix-stream-identidad-visual.md) | Identidad visual «Epix Stream» (Poppins × Lato, azul/rosa/negro/blanco) sobre las referencias del owner | Aceptado | 2026-10-08 |
 
 ## Convención
 

@@ -5,7 +5,7 @@ import type { Show } from '@/domain/entities/show';
 
 import { StarIcon } from './icons';
 
-const POSTER_SCRIM = 'linear-gradient(transparent, rgba(14, 13, 19, 0.85))';
+const POSTER_SCRIM = 'linear-gradient(transparent, rgba(11, 11, 16, 0.88))';
 
 interface ShowCardProps {
   show: Show;
@@ -54,11 +54,11 @@ export function ShowCard({ show, action, priority = false }: ShowCardProps) {
           {show.rating !== undefined && (
             <span
               className={[
-                'absolute top-2 flex items-center gap-1 rounded-full bg-white/12 px-2 py-0.5 text-[11px] font-bold text-white backdrop-blur-md',
+                'absolute top-2 flex items-center gap-1 rounded-full bg-black/55 px-2 py-0.5 text-[11px] font-bold text-white backdrop-blur-md',
                 hasAction ? 'left-2' : 'right-2',
               ].join(' ')}
             >
-              <StarIcon className="h-3 w-3" />
+              <StarIcon className="h-3 w-3 text-star" />
               {show.rating.toFixed(1)}
             </span>
           )}

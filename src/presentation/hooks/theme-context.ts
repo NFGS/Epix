@@ -6,8 +6,8 @@ export type ResolvedTheme = 'light' | 'dark';
 export const THEME_STORAGE_KEY = 'epix:theme';
 
 export const THEME_COLORS: Record<ResolvedTheme, string> = {
-  light: '#6C4CF1',
-  dark: '#0e0d13',
+  light: '#2563EB',
+  dark: '#0B0B10',
 };
 
 /** Función pura: resuelve la preferencia del usuario contra el tema del sistema. */

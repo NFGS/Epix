@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import type { ScheduleEntry } from '@/domain/entities/schedule-entry';
 import { useI18n } from '@/shared/i18n/i18n-context';
 
-const POSTER_SCRIM = 'linear-gradient(transparent, rgba(14, 13, 19, 0.85))';
+const POSTER_SCRIM = 'linear-gradient(transparent, rgba(11, 11, 16, 0.88))';
 
 interface ScheduleItemProps {
   entry: ScheduleEntry;

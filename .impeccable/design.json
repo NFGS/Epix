@@ -1,0 +1,143 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-08T10:45:00Z",
+  "title": "Design System: Epix Stream",
+  "extensions": {
+    "colorMeta": {
+      "accent-blue": {
+        "role": "primary",
+        "displayName": "Azul Stream",
+        "canonical": "#2563EB",
+        "tonalRamp": ["#0B2A6B", "#123A8F", "#1D4ED8", "#2563EB", "#3B82F6", "#6EA8FF", "#A8C6FF", "#DBEAFE"]
+      },
+      "accent-blue-text-dark": {
+        "role": "primary",
+        "displayName": "Azul Niebla (texto sobre oscuro)",
+        "canonical": "#6EA8FF",
+        "tonalRamp": ["#0B2A6B", "#123A8F", "#1D4ED8", "#2563EB", "#3B82F6", "#6EA8FF", "#A8C6FF", "#DBEAFE"]
+      },
+      "affection-magenta-dark": {
+        "role": "secondary",
+        "displayName": "Magenta Afecto",
+        "canonical": "#EC4899",
+        "tonalRamp": ["#4A0D2E", "#831843", "#BE185D", "#DB2777", "#EC4899", "#F58FD0", "#FAD1E4", "#FDF2F8"]
+      },
+      "rating-star-dark": {
+        "role": "tertiary",
+        "displayName": "Estrella Dorada",
+        "canonical": "#FACC15",
+        "tonalRamp": ["#422006", "#713F12", "#B45309", "#D97706", "#FACC15", "#FDE047", "#FEF08A", "#FEF9C3"]
+      },
+      "carbon-bg-dark": {
+        "role": "neutral",
+        "displayName": "Carbón Azulado",
+        "canonical": "#0B0B10",
+        "tonalRamp": ["#000000", "#0B0B10", "#14141B", "#1D1D26", "#2A2A36", "#545A6E", "#A7A7B6", "#F5F5F7"]
+      },
+      "mist-fg-dark": {
+        "role": "neutral",
+        "displayName": "Blanco Niebla",
+        "canonical": "#F5F5F7",
+        "tonalRamp": ["#000000", "#0B0B10", "#14141B", "#1D1D26", "#2A2A36", "#545A6E", "#A7A7B6", "#F5F5F7"]
+      }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Poppins Display", "purpose": "Títulos de pantalla y sección, botones, chips, labels uppercase." },
+      "body": { "displayName": "Lato Body", "purpose": "Párrafos, resúmenes, metadatos, episodios." }
+    },
+    "shadows": [
+      { "name": "shadow-card", "value": "0 8px 16px rgba(0,0,0,0.4)", "purpose": "Elevación de tarjetas en hover." },
+      { "name": "shadow-dialog", "value": "0 8px 24px rgba(0,0,0,0.55)", "purpose": "Modales y menús." }
+    ],
+    "motion": [
+      { "name": "ease-standard", "value": "cubic-bezier(0.2, 0, 0, 1)", "purpose": "Default 150 ms para confirmación de estado." },
+      { "name": "heart-pop", "value": "scale(1) → scale(1.15) → scale(1), 200 ms", "purpose": "Micro-interacción del corazón de favoritos al marcar." }
+    ],
+    "breakpoints": [{ "name": "sm", "value": "640px" }]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "CTA pill azul con label uppercase en Poppins; blanco sobre azul 5.2:1.",
+      "html": "<button class=\"ds-btn-primary\">Buscar series</button>",
+      "css": ".ds-btn-primary { background: var(--accent, #2563EB); color: #fff; border: none; border-radius: 9999px; padding: 12px 20px; font-family: 'Poppins', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase; min-height: 44px; transition: background 0.15s cubic-bezier(0.2,0,0,1); } .ds-btn-primary:hover { background: #2D6BE8; } .ds-btn-primary:focus-visible { outline: 2px solid var(--accent, #2563EB); outline-offset: 2px; }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Pill sutil de superficie elevada con texto de primer plano.",
+      "html": "<button class=\"ds-btn-secondary\">Cancelar</button>",
+      "css": ".ds-btn-secondary { background: var(--surface-2, #1D1D26); color: var(--fg, #F5F5F7); border: none; border-radius: 9999px; padding: 12px 20px; font-family: 'Poppins', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase; min-height: 44px; transition: color 0.15s; } .ds-btn-secondary:hover { color: var(--accent-text, #6EA8FF); } .ds-btn-secondary:focus-visible { outline: 2px solid var(--accent, #2563EB); outline-offset: 2px; }"
+    },
+    {
+      "name": "Genre Chip",
+      "kind": "chip",
+      "refersTo": "chip-selected",
+      "description": "Pill de género; activo = fill azul + blanco (grupo activo = un único uso visible del acento).",
+      "html": "<button class=\"ds-chip ds-chip--active\" aria-pressed=\"true\">Drama</button> <button class=\"ds-chip\" aria-pressed=\"false\">Comedy</button>",
+      "css": ".ds-chip { background: var(--surface-2, #1D1D26); color: var(--muted, #A7A7B6); border: 1px solid rgba(255,255,255,0.08); border-radius: 9999px; padding: 8px 12px; font-family: 'Poppins', sans-serif; font-size: 12px; font-weight: 500; min-height: 44px; transition: all 0.15s; } .ds-chip--active { background: var(--accent, #2563EB); border-color: var(--accent, #2563EB); color: #fff; } .ds-chip:focus-visible { outline: 2px solid var(--accent, #2563EB); outline-offset: 2px; }"
+    },
+    {
+      "name": "Search Input",
+      "kind": "input",
+      "refersTo": "input-search",
+      "description": "Buscador pill con lupa; focus = anillo suave azul + borde azul.",
+      "html": "<div class=\"ds-input-wrap\"><svg class=\"ds-input-icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\"><circle cx=\"11\" cy=\"11\" r=\"7\"/><path d=\"m20 20-3.2-3.2\"/></svg><input class=\"ds-input-search\" type=\"search\" placeholder=\"Buscar series…\" /></div>",
+      "css": ".ds-input-wrap { position: relative; } .ds-input-search { width: 100%; height: 48px; border-radius: 9999px; border: 1px solid transparent; background: var(--surface-2, #1D1D26); color: var(--fg, #F5F5F7); padding-left: 44px; padding-right: 16px; font-family: 'Lato', sans-serif; font-size: 16px; transition: border-color 0.15s, box-shadow 0.15s; } .ds-input-search::placeholder { color: var(--muted, #A7A7B6); } .ds-input-search:focus { outline: none; border-color: var(--accent, #2563EB); box-shadow: 0 0 0 4px rgba(59,130,246,0.18); } .ds-input-icon { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); width: 20px; height: 20px; color: var(--muted, #A7A7B6); }"
+    },
+    {
+      "name": "Bottom Nav",
+      "kind": "nav",
+      "refersTo": "bottom-nav",
+      "description": "Nav fija con blur; destino activo = ícono + label en azul niebla.",
+      "html": "<nav class=\"ds-nav\" aria-label=\"Navegación principal\"><a class=\"ds-nav-item ds-nav-item--active\" href=\"#\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M3 10.5 12 3l9 7.5\"/><path d=\"M5 9.5V21h14V9.5\"/><path d=\"M9.5 21v-6h5v6\"/></svg><span>Inicio</span></a><a class=\"ds-nav-item\" href=\"#\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\"><circle cx=\"11\" cy=\"11\" r=\"7\"/><path d=\"m20 20-3.2-3.2\"/></svg><span>Buscar</span></a></nav>",
+      "css": ".ds-nav { display: flex; background: rgba(20,20,27,0.85); backdrop-filter: blur(12px); border-top: 1px solid rgba(255,255,255,0.08); height: 60px; } .ds-nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-height: 44px; color: var(--muted, #A7A7B6); text-decoration: none; font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 500; transition: color 0.15s; } .ds-nav-item svg { width: 24px; height: 24px; } .ds-nav-item--active { color: var(--accent-text, #6EA8FF); } .ds-nav-item:focus-visible { outline: 2px solid var(--accent, #2563EB); outline-offset: -2px; border-radius: 8px; }"
+    },
+    {
+      "name": "Show Card",
+      "kind": "card",
+      "refersTo": "show-card",
+      "description": "Póster 2:3 con scrim, título blanco, badge de rating con estrella dorada sobre cristal oscuro.",
+      "html": "<a class=\"ds-show-card\" href=\"#\"><div class=\"ds-show-poster\"><div class=\"ds-show-scrim\"></div><span class=\"ds-rating\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linejoin=\"round\"><path d=\"m12 3.2 2.7 5.5 6 .9-4.3 4.2 1 6-5.4-2.8-5.4 2.8 1-6-4.3-4.2 6-.9Z\"/></svg>8.7</span><h3 class=\"ds-show-title\">Under the Bridge</h3></div><p class=\"ds-show-meta\">2024 · Drama</p></a>",
+      "css": ".ds-show-card { display: block; text-decoration: none; } .ds-show-poster { position: relative; aspect-ratio: 2/3; border-radius: 12px; overflow: hidden; background: var(--surface-2, #1D1D26); } .ds-show-scrim { position: absolute; inset: auto 0 0 0; height: 50%; background: linear-gradient(transparent, rgba(11,11,16,0.88)); } .ds-rating { position: absolute; top: 8px; right: 8px; display: inline-flex; align-items: center; gap: 4px; background: rgba(0,0,0,0.55); backdrop-filter: blur(12px); color: #fff; border-radius: 9999px; padding: 2px 8px; font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 700; } .ds-rating svg { width: 12px; height: 12px; color: var(--star, #FACC15); } .ds-show-title { position: absolute; left: 10px; right: 10px; bottom: 8px; margin: 0; color: #fff; font-family: 'Poppins', sans-serif; font-size: 15px; font-weight: 700; line-height: 1.25; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; } .ds-show-meta { margin: 6px 2px 0; color: var(--muted, #A7A7B6); font-family: 'Lato', sans-serif; font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }"
+    },
+    {
+      "name": "Favorite Heart",
+      "kind": "custom",
+      "refersTo": "favorite-heart-active",
+      "description": "Corazón circular sobre póster; activo = fill rosa magenta con pop.",
+      "html": "<button class=\"ds-heart ds-heart--active\" aria-pressed=\"true\" aria-label=\"Quitar de favoritos\"><svg viewBox=\"0 0 24 24\" fill=\"currentColor\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M12 20.5 4.8 13.7a5 5 0 0 1 .2-7.3 4.7 4.7 0 0 1 6.6.4l.4.4.4-.4a4.7 4.7 0 0 1 6.6-.4 5 5 0 0 1 .2 7.3Z\"/></svg></button>",
+      "css": ".ds-heart { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border: none; border-radius: 9999px; background: rgba(0,0,0,0.5); backdrop-filter: blur(12px); color: #fff; transition: background 0.15s; } .ds-heart:hover { background: rgba(0,0,0,0.65); } .ds-heart svg { width: 20px; height: 20px; } .ds-heart--active svg { color: var(--secondary, #EC4899); animation: ds-heart-pop 200ms cubic-bezier(0.2,0,0,1); } .ds-heart:focus-visible { outline: 2px solid var(--accent, #2563EB); outline-offset: 2px; } @keyframes ds-heart-pop { 0% { transform: scale(1); } 45% { transform: scale(1.15); } 100% { transform: scale(1); } }"
+    }
+  ],
+  "narrative": {
+    "northStar": "Epix Stream",
+    "overview": "Streaming oscuro contenido-primero: la UI se retira a negros con tinte azul y deja que los pósters aporten el color. El azul vivo es la única voz de acción (CTA, activo, foco); el rosa magenta existe únicamente donde hay afecto (el corazón de favoritos). Poppins geométrica da la voz de plataforma a títulos y controles; Lato humanista lee el cuerpo. El tema claro es una variante digna, no la principal.",
+    "keyCharacteristics": [
+      "Negro carbón con tinte azul, nunca negro puro ni gris plano",
+      "Un solo acento funcional azul (#2563EB en fills, #6EA8FF como texto sobre oscuro)",
+      "Rosa magenta reservado al afecto (corazón de favoritos activo)",
+      "Estrella dorada del rating sobre cristal oscuro estable (bg-black/55 + blur)",
+      "Pills y círculos en todos los controles; tarjetas 12px, sheets 20px",
+      "Fuentes autohospedadas (offline-first): Poppins 500/600/700/800 + Lato 400/700, ~78 KB"
+    ],
+    "rules": [
+      { "name": "The One Blue Rule", "body": "El azul es acción: máximo 2 usos visibles de --accent por pantalla. El grupo de chips activos cuenta como un único uso.", "section": "colors" },
+      { "name": "The Affection Rule", "body": "El rosa (--secondary) solo existe donde hay amor: el corazón de favoritos activo. Nunca en botones, texto ni decoración.", "section": "colors" },
+      { "name": "The Stable Crystal Rule", "body": "El badge de rating siempre lleva cristal oscuro (bg-black/55 + blur) para que la estrella dorada y el número blanco contrasten con independencia del póster detrás.", "section": "components" }
+    ],
+    "dos": [
+      "Do usar --accent-text (#6EA8FF en oscuro) para texto/enlaces azules; --accent (#2563EB) es solo fill o UI ≥3:1",
+      "Do mantener los scrims en rgba(11,11,16,…) — el negro de la marca, no un gris genérico",
+      "Do autohospedar las fuentes (public/fonts/) y pre-cachearlas vía SW (woff2 ya está en globPatterns)"
+    ],
+    "donts": [
+      "Don't usar #3B82F6 como fill de botón con texto blanco (3.7:1 falla AA); el fill canónico es #2563EB (5.2:1)",
+      "Don't usar el rosa como texto pequeño ni como fill con blanco (usar #DB2777 si algún día se necesita fill)",
+      "Don't cargar fuentes de Google Fonts en runtime: rompe el offline-first"
+    ]
+  }
+}

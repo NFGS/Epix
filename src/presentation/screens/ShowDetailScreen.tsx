@@ -16,7 +16,7 @@ import { formatTemplate } from '@/shared/lib/format';
 import { groupEpisodesBySeason } from '@/shared/lib/episodes';
 import { useI18n } from '@/shared/i18n/i18n-context';
 
-const HERO_SCRIM = 'linear-gradient(transparent 25%, rgba(14, 13, 19, 0.92))';
+const HERO_SCRIM = 'linear-gradient(transparent 25%, rgba(11, 11, 16, 0.92))';
 const EPISODE_SKELETON_COUNT = 3;
 
 function statusLabel(status: string | undefined, t: Dictionary): string | undefined {
@@ -68,7 +68,7 @@ function HeroInfo({ show, overlay }: { show: Show; overlay: boolean }) {
                 overlay ? 'bg-white/12 text-white' : 'bg-fg/10 text-fg',
               ].join(' ')}
             >
-              <StarIcon className="h-3 w-3" />
+              <StarIcon className="h-3 w-3 text-star" />
               {show.rating.toFixed(1)}
             </span>
           )}
@@ -161,8 +161,8 @@ function FavoriteButton({ show }: { show: Show }) {
             key={popCount}
             className={
               popCount > 0
-                ? 'h-5 w-5 animate-[epix-heart-pop_200ms_cubic-bezier(0.2,0,0,1)]'
-                : 'h-5 w-5'
+                ? 'h-5 w-5 text-secondary animate-[epix-heart-pop_200ms_cubic-bezier(0.2,0,0,1)]'
+                : 'h-5 w-5 text-secondary'
             }
           />
         ) : (

@@ -2,15 +2,76 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* Fuentes autohospedadas (offline-first): subset latin de Google Fonts, woff2,
+   font-display swap. Presupuesto total ~78 KB:
+   Poppins 500/600/700/800 (display/UI) + Lato 400/700 (cuerpo). */
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('/fonts/poppins-latin-500.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('/fonts/poppins-latin-600.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/poppins-latin-700.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url('/fonts/poppins-latin-800.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/lato-latin-400.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/lato-latin-700.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
 @theme {
   --font-sans:
-    ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    'Lato', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+    sans-serif;
+  --font-display:
+    'Poppins', 'Lato', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, sans-serif;
 
   --radius-card: 12px;
   --radius-sheet: 20px;
 
-  --shadow-card: rgba(0, 0, 0, 0.35) 0 8px 16px;
-  --shadow-dialog: rgba(0, 0, 0, 0.5) 0 8px 24px;
+  --shadow-card: rgba(0, 0, 0, 0.4) 0 8px 16px;
+  --shadow-dialog: rgba(0, 0, 0, 0.55) 0 8px 24px;
 
   --ease-standard: cubic-bezier(0.2, 0, 0, 1);
   --default-transition-duration: 150ms;
@@ -21,16 +82,18 @@
 
 :root {
   color-scheme: light;
-  --bg: #fafafc;
+  --bg: #f6f7fb;
   --surface: #ffffff;
-  --surface-2: #f1f0f5;
-  --fg: #141218;
-  --muted: #5d5b68;
-  --border: rgba(20, 18, 24, 0.1);
-  --accent: #6c4cf1;
-  --accent-hover: #5b38e0;
-  --accent-soft: rgba(108, 76, 241, 0.16);
-  --accent-text: #6c4cf1;
+  --surface-2: #edeff5;
+  --fg: #10131f;
+  --muted: #545a6e;
+  --border: rgba(16, 19, 31, 0.1);
+  --accent: #2563eb;
+  --accent-hover: #1d4ed8;
+  --accent-soft: rgba(37, 99, 235, 0.12);
+  --accent-text: #1d4ed8;
+  --secondary: #db2777;
+  --star: #b45309;
   --success: #0f8a3d;
   --warning: #9a5b00;
   --danger: #c2374f;
@@ -38,16 +101,18 @@
 
 .dark {
   color-scheme: dark;
-  --bg: #0e0d13;
-  --surface: #16151d;
-  --surface-2: #1e1d27;
-  --fg: #f2f1f6;
-  --muted: #a9a7b5;
+  --bg: #0b0b10;
+  --surface: #14141b;
+  --surface-2: #1d1d26;
+  --fg: #f5f5f7;
+  --muted: #a7a7b6;
   --border: rgba(255, 255, 255, 0.08);
-  --accent: #6c4cf1;
-  --accent-hover: #7d5ff5;
-  --accent-soft: rgba(108, 76, 241, 0.16);
-  --accent-text: #b9a5ff;
+  --accent: #2563eb;
+  --accent-hover: #2d6be8;
+  --accent-soft: rgba(59, 130, 246, 0.18);
+  --accent-text: #6ea8ff;
+  --secondary: #ec4899;
+  --star: #facc15;
   --success: #1ed760;
   --warning: #ffa42b;
   --danger: #f3727f;
@@ -64,6 +129,8 @@
   --color-accent-hover: var(--accent-hover);
   --color-accent-soft: var(--accent-soft);
   --color-accent-text: var(--accent-text);
+  --color-secondary: var(--secondary);
+  --color-star: var(--star);
   --color-success: var(--success);
   --color-warning: var(--warning);
   --color-danger: var(--danger);
@@ -82,6 +149,16 @@
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Poppins gana la voz de display: títulos y controles (botones, chips),
+     como en la referencia del owner. El cuerpo y los metadatos van en Lato. */
+  h1,
+  h2,
+  h3,
+  h4,
+  button {
+    font-family: var(--font-display);
   }
 
   :focus-visible {

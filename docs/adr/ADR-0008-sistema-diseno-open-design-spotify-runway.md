@@ -1,6 +1,6 @@
 # ADR-0008: Sistema de diseño propio adoptado de Open Design (Spotify × Runway)
 
-- **Estado:** Aceptado
+- **Estado:** Reemplazado por ADR-0012 (queda como historial; identidad sustituida por «Epix Stream»)
 - **Fecha:** 2026-10-05
 - **Decisores:** Fabian (arquitecto)
 

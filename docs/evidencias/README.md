@@ -69,6 +69,20 @@ recargar**. Veredicto **PASS (9/9)** registrado en `multidispositivo-resultado.j
 La observabilidad externa se verificó end-to-end con `sentry-evento.mjs` (error real en producción
 → evento visible en el panel; captura `20-sentry-evento.png`).
 
+## Rediseño «Epix Stream» (2026-10-08)
+
+Capturas del nuevo sistema visual (390×844, `restyle/`), cotejadas contra las referencias del
+owner (`docs/design/referencias/muestra-1.webp`, `muestra-2.webp`):
+
+| Archivo | Qué evidencia |
+| --- | --- |
+| `restyle/01-inicio-oscuro.png` | Inicio en oscuro: fondo `#0B0B10`, CTA azul y nav activa azul |
+| `restyle/02-detalle-oscuro.png` | Detalle con corazón de favorito rosa (`#EC4899`, «rosa de afecto») |
+| `restyle/03-favoritos-oscuro.png` | Favoritos con tarjeta, estrella dorada y badge de «cristal oscuro» |
+| `restyle/04-perfil-oscuro.png` | Perfil con la nueva tipografía (Poppins/Lato) |
+| `restyle/05-agenda-oscuro.png` | Agenda con la paleta nueva |
+| `restyle/06-inicio-claro.png` | Tema claro adaptado (fondo `#F6F7FB`, CTA azul) |
+
 ## Pendientes de evidencia (dispositivo físico)
 
 - Capturas en **Android físico** (instalación, notificación, GPS): seguir

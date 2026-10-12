@@ -65,6 +65,8 @@ function revisarDirectorio() {
   contiene('directorio', 'docs/entrega/correo-docente.md', String(H.pruebasUnitarias), 'Actualiza el conteo de pruebas en el correo');
   contiene('directorio', 'docs/entrega/correo-docente.md', H.cobertura, 'Actualiza la cobertura en el correo al docente');
   contiene('directorio', 'docs/entrega/correo-docente.md', new URL(H.notionPublica).host, 'Incluye el enlace público de Notion en el correo');
+  contiene('directorio', 'AGENTS.md', H.sistemaDiseno, 'Documenta el sistema de diseño vigente en AGENTS.md');
+  contiene('directorio', 'docs/design/DESIGN.md', H.sistemaDiseno, 'Asegura que DESIGN.md nombra el sistema vigente');
 
   try {
     const adrs = readdirSync(join(ROOT, 'docs/adr')).filter((f) => /^ADR-\d{4}.*\.md$/.test(String(f))).length;
@@ -164,6 +166,7 @@ function revisarObsidian() {
     check('obsidian', `Epix/README contiene ${H.pruebasUnitarias} (pruebas)`, readme.includes(String(H.pruebasUnitarias)), '', 'Actualiza la tabla de identidad del README del vault');
     check('obsidian', `Epix/README contiene ${H.cobertura} (cobertura)`, readme.includes(H.cobertura), '', 'Actualiza la tabla de identidad del README del vault');
     check('obsidian', `Epix/README contiene ${H.lighthouse} (Lighthouse)`, readme.includes(H.lighthouse), '', 'Actualiza la tabla de identidad del README del vault');
+    check('obsidian', `Epix/README menciona «${H.sistemaDiseno}»`, readme.includes(H.sistemaDiseno), '', 'Añade la fila de diseño a la tabla de identidad del vault');
   }
   try {
     const adrs = readdirSync(join(vault, 'Epix/Decisiones Técnicas')).filter((f) => String(f).startsWith('ADR-') && String(f).endsWith('.md')).length;
@@ -232,6 +235,7 @@ async function revisarNotion() {
     check('notion', `§8: cobertura ${H.cobertura}`, estado.includes(H.cobertura), '', 'Edita las métricas de calidad en §8 (solo el bloque gestionado se sincroniza)');
     check('notion', `§8: ADRs 0001–${String(H.adrs).padStart(4, '0')}`, estado.includes(`0001–${String(H.adrs).padStart(4, '0')}`), '', 'Actualiza el conteo de ADRs en §8');
     check('notion', '§8: pendiente «Android físico»', estado.includes('Android físico'), '', 'Registra los pendientes del usuario en §8');
+    check('notion', `§8: «${H.sistemaDiseno}» (sistema de diseño)`, estado.includes(H.sistemaDiseno), '', 'Actualiza la fila del sistema de diseño en §8');
   } catch (e) {
     check('notion', 'API de Notion accesible', null, e.message, 'Verificación omitida');
   }

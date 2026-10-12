@@ -7,8 +7,8 @@
       name="description"
       content="Epix: PWA de series y TV con la API de TVmaze. Busca series, guarda favoritos y consulta la agenda, incluso sin conexión."
     />
-    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#6C4CF1" />
-    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0e0d13" />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#2563EB" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0B0B10" />
     <link rel="preconnect" href="https://static.tvmaze.com" crossorigin />
     <link rel="preconnect" href="https://api.tvmaze.com" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -21,7 +21,7 @@
       /* Shell estático: se pinta antes de cargar el JavaScript (mejora FCP/LCP en móvil).
          React lo reemplaza al montar (createRoot vacía el contenedor). */
       html {
-        background: #0e0d13;
+        background: #0b0b10;
       }
       .epix-splash {
         min-height: 100dvh;
@@ -30,25 +30,26 @@
         gap: 16px;
         align-items: flex-start;
         padding: 88px 16px 0;
-        background: #0e0d13;
+        background: #0b0b10;
       }
       .epix-splash__brand {
         margin: 0;
         font:
-          800 28px/1.05 ui-sans-serif,
+          800 28px/1.05 Poppins,
+          ui-sans-serif,
           system-ui,
           -apple-system,
           'Segoe UI',
           Roboto,
           sans-serif;
         letter-spacing: -0.02em;
-        color: #f2f1f6;
+        color: #f5f5f7;
       }
       .epix-splash__skeleton {
         width: 65%;
         height: 220px;
         border-radius: 12px;
-        background: #1e1d27;
+        background: #1d1d26;
       }
       .epix-splash__skeleton--short {
         width: 40%;
@@ -58,13 +59,13 @@
       @media (prefers-color-scheme: light) {
         html,
         .epix-splash {
-          background: #fafafc;
+          background: #f6f7fb;
         }
         .epix-splash__brand {
-          color: #141218;
+          color: #10131f;
         }
         .epix-splash__skeleton {
-          background: #f1f0f5;
+          background: #edeff5;
         }
       }
       @media (prefers-reduced-motion: no-preference) {
@@ -82,6 +83,8 @@
         }
       }
     </style>
+    <link rel="preload" href="/fonts/poppins-latin-800.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/poppins-latin-700.woff2" as="font" type="font/woff2" crossorigin />
   </head>
   <body>
     <div id="root">

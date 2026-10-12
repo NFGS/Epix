@@ -1,10 +1,10 @@
 {
   "version": 1,
   "designSystem": {
-    "slug": "spotify",
-    "path": "design-systems/spotify"
+    "slug": "epix-stream",
+    "path": "docs/design"
   },
   "skill": null,
-  "boundAt": "2026-10-05T14:05:00Z",
-  "notes": "Base: Spotify (content-first darkness, geometría pill/círculo, tipografía bold/regular). Disciplina editorial: Runway (títulos comprimidos, labels uppercase, UI invisible). Override de marca: acento violeta Epix #6C4CF1 en lugar del verde. Adaptación documentada en docs/design/DESIGN.md."
+  "boundAt": "2026-10-08T10:45:00Z",
+  "notes": "Base: identidad propia «Epix Stream» derivada de las referencias del owner (mockup «BD Stream» + Style Guide: azul/rosa/negro/blanco, Poppins × Lato). Ya no se bindea a un design-system del catálogo Open Design (antes Spotify × Runway con acento violeta #6C4CF1); la fuente de verdad visual es docs/design/DESIGN.md, reescrito el 2026-10-08 con contrastes WCAG 2.2 AA documentados."
 }

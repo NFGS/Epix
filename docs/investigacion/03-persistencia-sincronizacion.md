@@ -91,7 +91,7 @@ abrir la app o vía Background Sync; Supabase Realtime (`postgres_changes`) noti
 
 Los design tokens son decisiones de diseño (color, tipografía, espaciado, radios) nombradas y
 almacenadas como datos, con formato abierto JSON (W3C Design Tokens Community Group, 2025).
-Ejemplos: `color.brand.primary = #6C4CF1`, `font.heading = Inter`, `space.md = 16px`. Aportan
+Ejemplos: `color.brand.primary = #2563EB`, `font.heading = Poppins`, `space.md = 16px`. Aportan
 consistencia porque constituyen una única fuente de verdad: eliminan valores mágicos, habilitan
 temas claro/oscuro y accesibilidad, y sincronizan diseño y código con traductores como Style
 Dictionary; por eso son la base de los design systems (Interaction Design Foundation, s. f.). En

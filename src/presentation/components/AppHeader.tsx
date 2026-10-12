@@ -10,7 +10,7 @@ export function AppHeader() {
   return (
     <header className="sticky top-0 z-20 border-b border-border bg-surface/80 backdrop-blur-md">
       <div className="mx-auto flex h-14 w-full max-w-3xl items-center justify-between px-4">
-        <Link to="/" className="text-xl font-extrabold tracking-[-0.02em] text-fg">
+        <Link to="/" className="font-display text-xl font-extrabold tracking-[-0.02em] text-fg">
           {t.appName}
         </Link>
         <Link

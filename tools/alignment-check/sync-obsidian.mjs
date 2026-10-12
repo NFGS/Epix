@@ -61,7 +61,7 @@ const bloques = {
   'Epix/Estado del Proyecto.md': [
     '<!-- epix-facts:begin -->',
     `> [!info] Hechos canónicos — sincronizados automáticamente por \`tools/alignment-check\` (no editar a mano)`,
-    `> **Versión:** v${H.version} · **App:** ${H.app} · **Pruebas:** ${H.pruebasUnitarias} unit + ${H.pruebasE2E} E2E (cobertura ${H.cobertura}) · **Bundle:** ${H.bundleEntradaGzipKB} KB gzip (entrada) · **Lighthouse:** ${H.lighthouse}`,
+    `> **Versión:** v${H.version} · **App:** ${H.app} · **Pruebas:** ${H.pruebasUnitarias} unit + ${H.pruebasE2E} E2E (cobertura ${H.cobertura}) · **Bundle:** ${H.bundleEntradaGzipKB} KB gzip (entrada) · **Lighthouse:** ${H.lighthouse} · **Diseño:** ${H.sistemaDiseno}`,
     `> **Deploy:** ${H.deployModelo} (**${H.deployEstado}** desde ${H.deployFechaCongelamiento}) · **Releases:** v1.0.0 · ${H.releaseDestacada} · **Sincronizado:** ${fecha}`,
     '<!-- epix-facts:end -->',
   ].join('\n'),

@@ -19,6 +19,7 @@ y el versionado [SemVer](https://semver.org/lang/es/).
   las ramas/PR obtienen previews. Sin tokens que rotar.
 
 ### Changed
+- Rediseño visual **«Epix Stream»** (ADR-0012): azul `#2563EB` + rosa de afecto, Poppins × Lato autohospedadas (84 KB) — solo visual, con accesibilidad AA documentada y gates en verde.
 - Consistencia documental de los 4 entornos: SPEC, guías y modelo de datos actualizados
   (cuentas OTP, push real, estado congelado); Notion y Obsidian alineados.
 - Limpieza de ecosistema: se retira el proveedor alternativo **Resend** del

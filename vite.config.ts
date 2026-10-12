@@ -55,8 +55,8 @@ export default defineConfig({
           'PWA de series y TV con la API de TVmaze: búsqueda, agenda, favoritos e historial offline-first.',
         display: 'standalone',
         start_url: '/',
-        background_color: '#0e0d13',
-        theme_color: '#6C4CF1',
+        background_color: '#0B0B10',
+        theme_color: '#2563EB',
         lang: 'es',
         icons: [
           { src: 'icons/pwa-192x192.png', sizes: '192x192', type: 'image/png' },
