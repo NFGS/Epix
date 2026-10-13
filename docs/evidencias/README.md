@@ -72,7 +72,7 @@ La observabilidad externa se verificó end-to-end con `sentry-evento.mjs` (error
 ## Rediseño «Epix Stream» (2026-10-08)
 
 Capturas del nuevo sistema visual (390×844, `restyle/`), cotejadas contra las referencias del
-owner (`docs/design/referencias/muestra-1.webp`, `muestra-2.webp`):
+owner (provistas directamente; **no versionadas**):
 
 | Archivo | Qué evidencia |
 | --- | --- |

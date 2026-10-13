@@ -84,8 +84,8 @@ components:
 # Epix — Design System «Epix Stream» (DESIGN.md)
 
 > **Origen:** identidad visual propia derivada de las referencias del owner
-> ([`muestra-1.webp`](./referencias/muestra-1.webp) y [`muestra-2.webp`](./referencias/muestra-2.webp),
-> mockup de plataforma de streaming oscura + Style Guide explícito).
+> (mockups de plataforma de streaming oscura + Style Guide explícito, provistos
+> directamente durante el rediseño — **no versionados** en el repositorio).
 > **Base:** contenido-primero en negro/carbón, acento **azul vivo** para acción/activo,
 > **rosa magenta** reservado al afecto (favoritos), tipografía **Poppins** (display/UI) × **Lato** (cuerpo).
 > **Craft aplicado:** `anti-ai-slop`, `color`, `state-coverage`, `animation-discipline`, `accessibility-baseline`.
@@ -169,7 +169,7 @@ blanco contrasten con independencia del póster detrás.
   - **Poppins** (500/600/700/800) — display/UI: títulos de pantalla y sección, botones, chips, labels uppercase. Geométrica pura (círculos), monolinear, x-height alta: la voz "plataforma".
   - **Lato** (400/700) — cuerpo: párrafos, resúmenes, metadatos, episodios. Humanista, "seria pero amable": la voz de lectura.
   - **Presupuesto total: ~78 KB** (Poppins ≈ 7.8 KB ×4, Lato ≈ 23 KB ×2). Preload de Poppins 700/800 en `index.html`.
-  - *Excepción documentada (overused-font):* Lato está **anclada por el Style Guide del owner** (muestra-2: "Text: Poppins y Lato"); es decisión de marca, no un default del agente.
+  - *Excepción documentada (overused-font):* Lato está **anclada por el Style Guide del owner** («Text: Poppins y Lato»); es decisión de marca, no un default del agente.
 - **Asignación por elemento** (no por clase suelta): `h1–h4` y `button` heredan Poppins vía base CSS (`--font-display`); el resto del cuerpo va en Lato (`--font-sans`). El brand de cabecera usa la utilidad `font-display`.
 - **Binarismo 700/400** (500–600 en chips y secciones). La jerarquía se logra por peso y color, no por tamaño.
 
@@ -247,11 +247,10 @@ Toda superficie que carga datos debe renderizar los **5 estados**; solo el "popu
 
 ## 10. Referencias
 
-- **Referencias del owner (fuente de esta identidad):** [`docs/design/referencias/muestra-1.webp`](./referencias/muestra-1.webp)
-  (mockup «BD Stream»: fondo negro/carbón, acento azul vivo en nav/CTA/enlaces, tarjetas redondeadas, badges de
-  rating con estrella, corazón circular sobre póster, chips/pills, títulos blancos bold) y
-  [`docs/design/referencias/muestra-2.webp`](./referencias/muestra-2.webp) (misma UI + Style Guide: *Text: Poppins
-  y Lato; Color: azul, rosa/magenta, negro, blanco*).
+- **Referencias del owner (fuente de esta identidad):** mockups «BD Stream» provistos directamente durante el
+  rediseño (**no versionados** en el repositorio, a solicitud del owner): fondo negro/carbón, acento azul vivo en
+  nav/CTA/enlaces, tarjetas redondeadas, badges de rating con estrella, corazón circular sobre póster,
+  chips/pills, títulos blancos bold + Style Guide: *Text: Poppins y Lato; Color: azul, rosa/magenta, negro, blanco*.
 - Poppins — Indian Type Foundry (geométrica, monolinear). Lato — Łukasz Dziedzic (humanista). Ambas vía Google Fonts (OFL), autohospedadas.
 - W3C. (2024). *Web Content Accessibility Guidelines (WCAG) 2.2*. https://www.w3.org/TR/WCAG22/
 - Material Design 3 — color roles (validación del oráculo `google-design`, variante BRAND) · Apple HIG — Touch targets 44 pt.

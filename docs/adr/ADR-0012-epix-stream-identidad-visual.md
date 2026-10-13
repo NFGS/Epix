@@ -12,7 +12,7 @@ coherente y accesible (`RNF-05`: WCAG 2.2 AA) y un presupuesto de bundle acotado
 La identidad vigente (ADR-0008, Open Design: base *Spotify* × disciplina *Runway*, acento violeta
 `#6C4CF1`) cumplía el objetivo de "contenido-primero", pero el owner solicitó un **cambio de
 identidad visual** (solo visual, sin tocar arquitectura ni flujos) guiado por dos imágenes de
-referencia propias, guardadas en `docs/design/referencias/muestra-1.webp` y `muestra-2.webp`.
+referencia propias, provistas directamente durante el rediseño (no versionadas en el repositorio).
 
 Las referencias describen una **plataforma de streaming oscura con style guide explícito**:
 tipografías **Poppins** (principal) + **Lato** (secundaria) y colores **azul** (primario),
@@ -112,7 +112,7 @@ La decisión reemplaza a ADR-0008, que queda como historial (no se reescribe en 
 
 - `docs/design/DESIGN.md`; `.open-design.json`.
 - `src/index.css` (tokens `@theme`) y `src/presentation/` (componentes que consumen tokens).
-- Referencias del owner: `docs/design/referencias/muestra-1.webp`, `muestra-2.webp`.
+- Referencias del owner: provistas directamente durante el rediseño (no versionadas en el repositorio).
 - Evidencias: `docs/evidencias/restyle/` (6 capturas).
 - Gates: lint, typecheck, 498 unit (cobertura 98.8 %), build, size-limit (JS/CSS), E2E 16/16.
 - `docs/requisitos.md` (`REQ-02`/`RF-04`, `RNF-01`, `RNF-05`).

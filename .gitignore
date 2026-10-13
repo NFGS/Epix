@@ -48,3 +48,7 @@ Memory/
 
 # Estado local del CLI de Supabase (vinculación de proyecto, caché)
 supabase/.temp/
+
+# Imágenes de referencia del rediseño (no versionadas; a solicitud del owner)
+Muestra*.webp
+docs/design/referencias/
