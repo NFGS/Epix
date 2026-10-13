@@ -3,6 +3,8 @@
 **Para:** hhenao@sena.edu.co
 **Asunto:** Avance proyecto Epix — Documentación en Notion y repositorio GitHub
 
+> ✅ **Enviado al instructor el 2026-10-12** (reporte del owner). Se conserva como registro de la entrega.
+
 ---
 
 Buen día, docente Hernán Henao.
@@ -46,7 +48,7 @@ SENA — Centro de Comercio y Turismo, Armenia (Quindío)
 
 ---
 
-## Instrucciones para el envío (para Fabián)
+## Instrucciones para el envío (para Fabián) — ✅ COMPLETADO (2026-10-12)
 
 1. Verificar en una ventana de incógnito que el enlace abre sin iniciar sesión:
    https://sunset-conga-11b.notion.site/Epix-Documentaci-n-del-Proyecto-3f07d55fd95e802a95b9ce5191f3ecc8

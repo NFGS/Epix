@@ -23,7 +23,7 @@
     "deployModelo": "integración nativa Vercel↔GitHub",
     "deployEstado": "congelado",
     "deployFechaCongelamiento": "2026-10-08",
-    "pendientesUsuario": ["capturas en Android físico", "correo al docente"]
+    "pendientesUsuario": ["capturas en Android físico"]
   },
   "github": {
     "repo": "NFGS/Epix",
